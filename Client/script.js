@@ -260,17 +260,33 @@ setupCanvas();
 let selecting = false;
 
 function cellHoverListen(elem) {
+    let split = elem.id.split(",");
+    selection.end = [parseInt(split[0]), parseInt(split[1])];
+    
     if(!(animation.active)) {
         elem.style.cursor = "pointer";
         
         if(!(selecting)) {
-            elem.style.backgroundColor = "var(--grey2)";
-            elem.style.fontWeight = "bold";
-            elem.style.transition = "all calc(var(--delay) * 0.7)";
+            let alreadyFound = false;
+
+            for(let i = 0; i < game.foundAllPoints.length; i++) {
+                if(
+                    (game.foundAllPoints[i][0] == selection.end[0]) &&
+                    (game.foundAllPoints[i][1] == selection.end[1])
+                ) {
+                    alreadyFound = true;
+
+                    break;
+                }
+            }
+
+            if(!(alreadyFound)) {
+                elem.style.backgroundColor = "var(--grey2)";
+                elem.style.fontWeight = "bold";
+                elem.style.transition = "all calc(var(--delay) * 0.7)";
+            }
         }
         else {
-            let split = elem.id.split(",");
-            selection.end = [parseInt(split[0]), parseInt(split[1])];
             guessedPosEnd = selection.end;
             checkForValidSelection();
         }
@@ -644,6 +660,8 @@ function guess() {
 }
 
 function foundWord() {
+    timerLast.start = new Date();
+
     game.found.push(guessedWord);
     game.foundPosesStart.push(guessedPosStart);
     game.foundPosesEnd.push(guessedPosEnd);
@@ -652,15 +670,16 @@ function foundWord() {
     let rowDiff = guessedPosEnd[0] - guessedPosStart[0];
     let rowChange = 0;
     if(rowDiff != 0) {
-        rowChange = rowDiff / rowDiff;
+        rowChange = Math.abs(rowDiff) / rowDiff;
     }
 
     let colDiff = guessedPosEnd[1] - guessedPosStart[1];
     let colChange = 0;
     if(colDiff != 0) {
-        colChange = colDiff / colDiff;
+        colChange = Math.abs(colDiff) / colDiff;
     }
     
+    console.log("> " + rowChange + "." + colChange);
     let row = guessedPosStart[0];
     let col = guessedPosStart[1];
 
@@ -713,3 +732,51 @@ function highlightFound() {
         r.stroke();
     }
 }
+
+// timers
+let timerMain = {
+    start: new Date(), 
+    now: null, 
+    elem: document.getElementById("mainTimer"), 
+    update: function() {
+        let startSeconds = Math.floor(timerMain.start / 1000);
+
+        timerMain.now = new Date();
+        let nowSeconds = Math.floor(timerMain.now / 1000);
+
+        let diff = nowSeconds - startSeconds;
+        let minutes = Math.floor(diff / 60);
+        let seconds = diff - (minutes * 60);
+        if(seconds < 10) {
+            seconds = "0" + seconds;
+        }
+
+        timerMain.elem.innerText = minutes + ":" + seconds;
+    }
+}
+
+let timerLast = {
+    start: new Date(), 
+    now: null, 
+    elem: document.getElementById("lastTimer"), 
+    update: function() {
+        let startSeconds = Math.floor(timerLast.start / 1000);
+
+        timerLast.now = new Date();
+        let nowSeconds = Math.floor(timerLast.now / 1000);
+
+        let diff = nowSeconds - startSeconds;
+        let minutes = Math.floor(diff / 60);
+        let seconds = diff - (minutes * 60);
+        if(seconds < 10) {
+            seconds = "0" + seconds;
+        }
+
+        timerLast.elem.innerText = minutes + ":" + seconds;
+    }
+}
+
+let timersInterval = window.setInterval(function() {
+    timerMain.update();
+    timerLast.update();
+}, 1000);
