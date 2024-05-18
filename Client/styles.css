@@ -91,3 +91,35 @@ button:hover {
 .landing div button:first-child {
     margin-right: calc(var(--hSpace) * 3);
 }
+
+/* game */
+
+.game {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: calc(var(--topMargin) * 0.5);
+    justify-content: space-between;
+}
+.game section {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+
+table tr td {
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 1em;
+    color: var(--black);
+    transition: calc(var(--delay) * 0.5);
+}
+table tr td:hover {
+    cursor: pointer;
+    background-color: var(--grey2);
+    font-weight: bold;
+}
