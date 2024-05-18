@@ -16,6 +16,7 @@ function random(min, max) {
 }
 
 let debugGenerate = false;
+
 function generateGame() {
     // generate a random list of words
     for(let i = 0; i < settings.wordCount; i++) {
@@ -60,7 +61,7 @@ function generateGame() {
     while(index < game.words.length) {
         for(let row = 0; row < game.height; row++) {
             for(let col = 0; col < game.width; col++) {
-                if(random(1, 10) == 1) {
+                if(random(1, 500) == 1) {
                     let addCheck = addWord(row, col, game.words[index]);
 
                     if(addCheck) {
@@ -105,6 +106,24 @@ function generateGame() {
 
         for(let col = 0; col < game.width; col++) {
             let td = document.createElement("td");
+            td.id = row + "," + col;
+
+            td.addEventListener(
+                "mouseover", 
+                function(){cellHoverListen(td);}
+            );
+            td.addEventListener(
+                "mouseleave", 
+                function(){cellUnHoverListen(td);}
+            );
+            td.addEventListener(
+                "click", 
+                function(){cellClick(td);}
+            );
+            
+            // listeners for selection
+            td.addEventListener("mouseover", drawSelection);
+            td.addEventListener("click", drawSelection);
 
             if(debugGenerate) {
                 if(game.data[row][col].includes(".")) {
@@ -193,3 +212,200 @@ function addWord(row, col, word) {
 }
 
 generateGame();
+
+let c = document.querySelector("canvas");
+let r = c.getContext("2d");
+let w = -1;
+let h = -1;
+let spaceBetweenCells = -1;
+
+function setupCanvas() {
+    c.style.position = "absolute";
+    let table = document.querySelector("table");
+    c.width = table.scrollWidth;
+    c.height = table.scrollHeight;
+    w = c.width;
+    h = c.height;
+    // c.style.backgroundColor = "green";
+    c.style.opacity = "0.5";
+
+    spaceBetweenCells = (w - (25 * game.width)) / game.width;
+}
+
+setupCanvas();
+
+let selecting = false;
+
+function cellHoverListen(elem) {
+    elem.style.cursor = "pointer";
+    
+    if(!(selecting)) {
+        elem.style.backgroundColor = "var(--grey2)";
+        elem.style.fontWeight = "bold";
+    }
+    else {
+        let split = elem.id.split(",");
+        selection.end = [parseInt(split[0]), parseInt(split[1])];
+        checkForValidSelection();
+    }
+}
+
+function cellUnHoverListen(elem) {
+    elem.style.cursor = "default";
+    elem.style.backgroundColor = "transparent";
+    elem.style.fontWeight = "normal";
+}
+
+let selection = {
+    valid: false, 
+    start: [-1, -1], 
+    end: [-1, -1]
+}
+function cellClick(elem) {
+    if(!(selecting)) {
+        selecting = true;
+        selection.valid = false;
+
+        let split = elem.id.split(",");
+        selection.start = [parseInt(split[0]), parseInt(split[1])];
+        selection.end = [-1, -1];
+    }
+}
+
+document.querySelector("table").addEventListener("mouseover", drawSelection);
+
+function checkForValidSelection() {
+    selection.valid = false;
+    
+    let rowdiff = Math.abs(selection.end[1] - selection.start[1]);
+    let coldiff = Math.abs(selection.end[0] - selection.start[0]);
+    
+    if((rowdiff == 0) || (coldiff == 0)) {
+        selection.valid = true;
+    }
+    else if(rowdiff == coldiff) {
+        selection.valid = true;
+    }
+}
+
+let startMousePos = [-1, -1];
+function drawSelection(e) {
+    if(selecting) {
+        // reset
+        let cells = document.getElementsByTagName("td");
+        
+        for(let i = 0; i < cells.length; i++) {
+            cells[i].style.color = "var(--black)";
+            cells[i].style.fontWeight = "normal";
+            cells[i].style.backgroundColor = "transparent";
+        }
+
+        // cell at start of selection should always be highlighted
+        if(selection.start[0] != -1) {
+            let startId = selection.start[0] + "," + selection.start[1];
+            document.getElementById(startId).style.backgroundColor = "var(--colorMain)";
+            document.getElementById(startId).style.fontWeight = "bold";
+            document.getElementById(startId).style.opacity = "0.85";
+        }
+        
+        // if selection is valid, highlight letters in selection
+        if(selection.valid) {
+            // ensure cell at start of selection is always shown
+
+            r.clearRect(0, 0, w, h);
+
+            // highlight letters in selection
+
+            let rowdiff = selection.end[0] - selection.start[0];
+            let coldiff = selection.end[1] - selection.start[1];
+
+            let row = selection.start[0];
+            let col = selection.start[1];
+
+            let selected = [];
+
+            if(coldiff == 0) {
+                for(let i = 0; i < Math.abs(rowdiff) + 1; i++) {
+                    selected.push(row + "," + col);
+                    
+                    if(rowdiff > 0) {
+                        ++row;
+                    }
+                    else {
+                        --row;
+                    }
+                }
+            }
+            else if(rowdiff == 0) {
+                for(let i = 0; i < Math.abs(coldiff) + 1; i++) {
+                    selected.push(row + "," + col);
+                    
+                    if(coldiff > 0) {
+                        ++col;
+                    }
+                    else {
+                        --col;
+                    }
+                }
+            }
+            else {
+                let rowchange = (rowdiff > 0) ? 1 : -1;
+                let colchange = (coldiff > 0) ? 1 : -1;
+
+                for(let i = 0; i < Math.abs(rowdiff) + 1; i++) {
+                    selected.push(row + "," + col);
+                    
+                    row += rowchange;
+                    col += colchange;
+                }
+            }
+
+            for(let i = 0; i < selected.length; i++) {
+                document.getElementById(selected[i]).style.backgroundColor = "var(--colorMain)";
+                document.getElementById(selected[i]).style.fontWeight = "bold";
+                document.getElementById(selected[i]).style.opacity = "0.85";
+            }
+        }
+        // otherwise, draw line
+        else {
+            let bounds = c.getBoundingClientRect();
+            let toX = e.pageX - bounds.left - scrollX;
+            let toY = e.pageY - bounds.top - scrollY;
+
+            toX /= bounds.width; 
+            toY /= bounds.height;
+
+            toX *= w;
+            toY *= h;
+
+            let offset = 5 / 2;
+
+            r.clearRect(0, 0, w, h);
+            
+            r.beginPath();
+            r.moveTo(
+                startMousePos[0], 
+                startMousePos[1]
+            );
+            r.lineTo(
+                toX, 
+                toY
+            );
+
+            r.lineWidth = 10;
+            r.strokeStyle = "#69eeb2";
+            r.stroke();
+        }
+    }
+    else {
+        let bounds = c.getBoundingClientRect();
+        startMousePos[0] = e.pageX - bounds.left - scrollX;
+        startMousePos[1] = e.pageY - bounds.top - scrollY;
+
+        startMousePos[0] /= bounds.width; 
+        startMousePos[1] /= bounds.height;
+
+        startMousePos[0] *= w;
+        startMousePos[1] *= h;
+    }
+}

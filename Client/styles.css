@@ -118,8 +118,11 @@ table tr td {
     color: var(--black);
     transition: calc(var(--delay) * 0.5);
 }
-table tr td:hover {
-    cursor: pointer;
-    background-color: var(--grey2);
-    font-weight: bold;
+
+.game table {
+    z-index: 0;
+}
+.game canvas {
+    pointer-events: none;
+    z-index: 1;
 }
