@@ -1,3 +1,6 @@
+let debugGenerate = false;
+let showAnswers = false;
+
 const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 
 const settings = {
@@ -8,14 +11,13 @@ const game = {
     width: 15, 
     height: 20, 
     words: [], 
+    found: [], 
     data: []
 }
 
 function random(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
-
-let debugGenerate = true;
 
 function generateGame() {
     // generate a random list of words
@@ -54,6 +56,11 @@ function generateGame() {
         game.data.push(row);
     }
 
+    if(showAnswers) {
+        console.log("WORDS:");
+        console.log("----------");
+    }
+
     let index = 0;
     let done = false;
     
@@ -68,6 +75,14 @@ function generateGame() {
                         if(debugGenerate) {
                             console.log("generated " + index + ", " + game.words[index]);
                         }
+
+                        if(showAnswers) {
+                            if(showAnswers) {
+                                console.log(game.words[index]);
+                                console.log("..at: ", row, ",", col);
+                            }
+                        }
+
                         ++index;
                     }
 
@@ -230,8 +245,8 @@ function setupCanvas() {
     c.height = table.scrollHeight;
     w = c.width;
     h = c.height;
-    // c.style.backgroundColor = "green";
-    c.style.opacity = "0.5";
+
+    r.lineCap = "round";
 
     spaceBetweenCells = (w - (25 * game.width)) / game.width;
 }
@@ -241,29 +256,33 @@ setupCanvas();
 let selecting = false;
 
 function cellHoverListen(elem) {
-    elem.style.cursor = "pointer";
-    
-    if(!(selecting)) {
-        elem.style.backgroundColor = "var(--grey2)";
-        elem.style.fontWeight = "bold";
-    }
-    else {
-        let split = elem.id.split(",");
-        selection.end = [parseInt(split[0]), parseInt(split[1])];
-        checkForValidSelection();
+    if(!(animation.active)) {
+        elem.style.cursor = "pointer";
+        
+        if(!(selecting)) {
+            elem.style.backgroundColor = "var(--grey2)";
+            elem.style.fontWeight = "bold";
+        }
+        else {
+            let split = elem.id.split(",");
+            selection.end = [parseInt(split[0]), parseInt(split[1])];
+            checkForValidSelection();
+        }
     }
 }
 
 function cellUnHoverListen(elem) {
-    elem.style.cursor = "default";
-    elem.style.backgroundColor = "transparent";
-    elem.style.fontWeight = "normal";
+    if(!(animation.active)) {
+        elem.style.cursor = "default";
+        elem.style.backgroundColor = "transparent";
+        elem.style.fontWeight = "normal";
 
-    // make sure answers stay highlighted when mouse moves off
-    if(debugGenerate && (elem.children.length == 1)) {
-        elem.style.color = "var(--black)";
-        elem.style.fontWeight = "bold";
-        elem.style.backgroundColor = "var(--color2)";
+        // make sure answers stay highlighted when mouse moves off
+        if(debugGenerate && (elem.children.length == 1)) {
+            elem.style.color = "var(--black)";
+            elem.style.fontWeight = "bold";
+            elem.style.backgroundColor = "var(--color2)";
+        }
     }
 }
 
@@ -271,19 +290,22 @@ let selection = {
     valid: false, 
     start: [-1, -1], 
     end: [-1, -1], 
-    letters: []
+    letters: [], 
+    poses: []
 }
 function cellClick(elem) {
-    if(!(selecting)) {
-        selecting = true;
-        selection.valid = false;
+    if(!(animation.active)) {
+        if(!(selecting)) {
+            selecting = true;
+            selection.valid = false;
 
-        let split = elem.id.split(",");
-        selection.start = [parseInt(split[0]), parseInt(split[1])];
-        selection.end = [-1, -1];
-    }
-    else if(selection.valid) {
-        guess();
+            let split = elem.id.split(",");
+            selection.start = [parseInt(split[0]), parseInt(split[1])];
+            selection.end = [-1, -1];
+        }
+        else if(selection.valid) {
+            guess();
+        }
     }
 }
 
@@ -306,7 +328,9 @@ function checkForValidSelection() {
 let startMousePos = [-1, -1];
 
 function drawSelection(e) {
-    if(selecting) {
+    c.style.opacity = "0.5";
+
+    if(selecting && !(animation.active)) {
         // reset
         let cells = document.getElementsByTagName("td");
         
@@ -385,6 +409,7 @@ function drawSelection(e) {
 
             for(let i = 0; i < selected.length; i++) {
                 selection.letters.push(document.getElementById(selected[i]).innerText);
+                selection.poses.push(selected[i]);
 
                 document.getElementById(selected[i]).style.backgroundColor = "var(--colorMain)";
                 document.getElementById(selected[i]).style.fontWeight = "bold";
@@ -435,7 +460,102 @@ function drawSelection(e) {
     }
 }
 
+let animation = {
+    active: false, 
+    interval: null, 
+    loop: null, 
+    properties: {}
+}
 function guess() {
-    console.log("You guessed:");
-    console.log(selection.letters);
+    selecting = false;
+
+    let startPos = selection.start;
+    let endPos = selection.end;
+
+    let found = false;
+    let full = "";
+
+    for(let i = 0; i < selection.letters.length; i++) {
+        full += selection.letters[i];
+    }
+
+    if(game.words.includes(full)) {
+        found = true;
+    }
+
+    // indicate whether guess was corrrect or not
+
+    let cells = document.getElementsByTagName("td");
+
+    // first clear the highlighting from any letters highlighted from selection
+    for(let i = 0; i < cells.length; i++) {
+        if(!(debugGenerate) || (cells[i].children.length == 0)) {
+            cells[i].style.color = "var(--black)";
+            cells[i].style.fontWeight = "normal";
+            cells[i].style.backgroundColor = "transparent";
+        }
+        else {
+            cells[i].style.color = "var(--black)";
+            cells[i].style.fontWeight = "bold";
+            cells[i].style.backgroundColor = "var(--color2)";
+        }
+    }
+
+    animation.active = true;
+    animation.properties = {
+        found: found, 
+        startPos: startPos, 
+        endPos: endPos, 
+        size: 1
+    };
+    animation.loop = function() {
+        if(animation.properties.found) {
+            r.strokeStyle = "#3cfaa7";
+        }
+        else {
+            r.strokeStyle = "red";
+        }
+        r.lineWidth = animation.properties.size;
+
+        r.beginPath();
+
+        let width = (w / game.width);
+        let height = (h / game.height);
+
+        let startOffset = [(width / 2), 0 + (height / 2)];
+        let endOffset = [(width / 2), 0 + (height / 2)];
+
+        let x = (animation.properties.startPos[1] * width) + startOffset[0];
+        let y = (animation.properties.startPos[0] * height) + startOffset[1];
+        r.moveTo(
+            x, 
+            y, 
+            width, 
+            height
+        );
+
+        x = (animation.properties.endPos[1] * width) + endOffset[0];
+        y = (animation.properties.endPos[0] * height) + endOffset[1];
+        r.lineTo(
+            x, 
+            y, 
+            width, 
+            height
+        );
+
+        r.stroke();
+
+        animation.properties.size += 8;
+
+        if(animation.properties.size > 25) {
+            window.clearInterval(animation.interval);
+            
+            window.setTimeout(function() {
+                animation.active = false;
+                r.clearRect(0, 0, w, h);
+            }, 250);
+        }
+    }
+
+    animation.interval = window.setInterval(animation.loop, (1000 / 30));
 }
