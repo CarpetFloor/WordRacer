@@ -1,0 +1,15 @@
+-Automatic lobbies:
+    >A player can either create a game which will make a lobby and 
+        put them in it
+    >Or, a player can join a game by browsing through the currently 
+        open lobbies
+-Each game is only for 2 players
+-Show each found word with color corresponding to player who found it
+-Get more points the longer the word is
+-Get more points the less time it took to find the word
+-Sections to display:
+    -Words found list, including by who and how many points
+    -Timer, including time since last word found
+    -Stats of both players, including points and number of words found
+    -Number of words left
+-Should be a game review section after the game is over

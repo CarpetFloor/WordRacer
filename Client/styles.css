@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+
+:root {
+    /* spacing */
+    --topMargin: 5em;
+    --hSpace: 0.5em;
+
+    /* animation */
+    --delay: 0.35s;
+    
+    /* colors */
+    --black: rgb(50, 50, 50);
+    
+    --white1: #e5eee0;
+    --white2: #d9eddf;
+    --white3: #ecfef4;
+
+    --grey1: #d9eddf;
+    --grey2: #9bb0a5;
+    --grey3: #9792ff;
+
+    --colorMain: #49d197;
+
+    --colorDark1: #69875b;
+    --colorDark2: #003b11;
+    --colorDark3: #386c5f;
+
+    --colorLight1: #69eeb2;
+    --colorLight2: #8ada88;
+    --colorLight3: #bde181;
+    --colorLight4: #cefbe3;
+
+    --color2: #00caff;
+    --color3: #0094da;
+}
+
+/* general styling */
+
+html {
+    font-size: 17px;
+    background-color: var(--white1);
+    color: var(--black);
+}
+* {
+    font-family: "Nunito", sans-serif;
+}
+
+button {
+    outline: none;
+    border: none;
+    background-color: var(--colorMain);
+    color: var(--white3);
+    line-height: 0;
+    padding: 1.5em;
+    font-weight: bold;
+    font-size: 1em;
+    border-radius: 5px;
+
+    transition: all var(--delay);
+}
+button:hover {
+    cursor: pointer;
+    color: white;
+    background-color: var(--colorLight1);
+}
+
+/* landing page */
+
+.landing {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: var(--topMargin);
+    align-items: center;
+}
+.landing h1 {
+    font-size: 3em;
+    margin: 0;
+    margin-bottom: 0.5em;
+}
+.landing button {
+    font-size: 1.2em;
+}
+.landing div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.landing div button:first-child {
+    margin-right: calc(var(--hSpace) * 3);
+}
