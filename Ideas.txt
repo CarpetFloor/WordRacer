@@ -7,6 +7,7 @@
 -Show each found word with color corresponding to player who found it
 -Get more points the longer the word is
 -Get more points the less time it took to find the word
+-Get more points for a streak
 -Sections to display:
     -Words found list, including by who and how many points
     -Timer, including time since last word found
