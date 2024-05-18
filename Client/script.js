@@ -124,7 +124,7 @@ function generateGame() {
             td.id = row + "," + col;
 
             td.addEventListener(
-                "mouseover", 
+                "mousemove", 
                 function(){cellHoverListen(td);}
             );
             td.addEventListener(
@@ -137,7 +137,7 @@ function generateGame() {
             );
             
             // listeners for selection
-            td.addEventListener("mouseover", drawSelection);
+            td.addEventListener("mousemove", drawSelection);
             td.addEventListener("click", drawSelection);
 
             if(debugGenerate) {
@@ -273,7 +273,10 @@ function cellHoverListen(elem) {
 
 function cellUnHoverListen(elem) {
     if(!(animation.active)) {
-        elem.style.cursor = "default";
+        if(!(selecting)) {
+            elem.style.cursor = "default";
+        }
+
         elem.style.backgroundColor = "transparent";
         elem.style.fontWeight = "normal";
 
@@ -331,6 +334,8 @@ function drawSelection(e) {
     c.style.opacity = "0.5";
 
     if(selecting && !(animation.active)) {
+        document.body.style.cursor = "pointer";
+        
         // reset
         let cells = document.getElementsByTagName("td");
         
@@ -418,6 +423,46 @@ function drawSelection(e) {
         }
         // otherwise, draw line
         else {
+            r.clearRect(0, 0, w, h);
+            
+            r.beginPath();
+
+            let width = (w / game.width);
+            let height = (h / game.height);
+            
+            let fromX = selection.start[1] * width;
+            fromX += (width / 2);
+            let fromY = selection.start[0] * height;
+            fromY += (height / 2);
+            // console.log(, selection.start[0], selection.start[1]);
+
+            /*
+            if(Math.abs(fromX - selection.start[1] * width) > 5) {
+                fromX = 0;
+
+                let x = 0;
+                while(selection.start[1] + 1 > fromX) {
+                    fromX += x * width;
+                    ++x;
+                }
+            }
+
+            if(Math.abs(fromY - selection.start[0] * height) > 5) {
+                fromY = 0;
+
+                let y = 0;
+                while(selection.start[0] + 1 > fromY) {
+                    fromY += y * height;
+                    ++y;
+                }
+            }
+            */
+            
+            r.moveTo(
+                fromX, 
+                fromY
+            );
+
             let bounds = c.getBoundingClientRect();
             let toX = e.pageX - bounds.left - scrollX;
             let toY = e.pageY - bounds.top - scrollY;
@@ -428,15 +473,6 @@ function drawSelection(e) {
             toX *= w;
             toY *= h;
 
-            let offset = 5 / 2;
-
-            r.clearRect(0, 0, w, h);
-            
-            r.beginPath();
-            r.moveTo(
-                startMousePos[0], 
-                startMousePos[1]
-            );
             r.lineTo(
                 toX, 
                 toY
