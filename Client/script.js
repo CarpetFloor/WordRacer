@@ -465,10 +465,16 @@ function drawSelection(e) {
                     document.getElementById(selected[i]).style.fontWeight = "bold";
                     document.getElementById(selected[i]).style.opacity = "0.85";
                 }
+
+                // highlight found words
+                highlightFound();
             }
             // otherwise draw line, but not if selection only consists of 1 letter
             else if(selection.end[0] != -1) {
                 r.clearRect(0, 0, w, h);
+
+                // highlight found words
+                highlightFound();
                 
                 r.beginPath();
 
@@ -504,9 +510,6 @@ function drawSelection(e) {
                 r.strokeStyle = "#69eeb2";
                 r.stroke();
             }
-
-            // highlight found words
-            highlightFound();
         }
         else {
             let bounds = c.getBoundingClientRect();
