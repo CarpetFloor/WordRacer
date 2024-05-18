@@ -15,7 +15,7 @@ function random(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-let debugGenerate = false;
+let debugGenerate = true;
 
 function generateGame() {
     // generate a random list of words
@@ -133,7 +133,11 @@ function generateGame() {
                     td.innerText = game.data[row][col];
                     td.style.color = "var(--black)";
                     td.style.fontWeight = "bold";
-                    td.style.backgroundColor = "var(--grey3)";
+                    td.style.backgroundColor = "var(--color2)";
+
+                    let answerIndicator = document.createElement("p");
+                    answerIndicator.style.display = "none";
+                    td.appendChild(answerIndicator);
                 }
             }
             else {
@@ -254,12 +258,20 @@ function cellUnHoverListen(elem) {
     elem.style.cursor = "default";
     elem.style.backgroundColor = "transparent";
     elem.style.fontWeight = "normal";
+
+    // make sure answers stay highlighted when mouse moves off
+    if(debugGenerate && (elem.children.length == 1)) {
+        elem.style.color = "var(--black)";
+        elem.style.fontWeight = "bold";
+        elem.style.backgroundColor = "var(--color2)";
+    }
 }
 
 let selection = {
     valid: false, 
     start: [-1, -1], 
-    end: [-1, -1]
+    end: [-1, -1], 
+    letters: []
 }
 function cellClick(elem) {
     if(!(selecting)) {
@@ -269,6 +281,9 @@ function cellClick(elem) {
         let split = elem.id.split(",");
         selection.start = [parseInt(split[0]), parseInt(split[1])];
         selection.end = [-1, -1];
+    }
+    else if(selection.valid) {
+        guess();
     }
 }
 
@@ -289,15 +304,23 @@ function checkForValidSelection() {
 }
 
 let startMousePos = [-1, -1];
+
 function drawSelection(e) {
     if(selecting) {
         // reset
         let cells = document.getElementsByTagName("td");
         
         for(let i = 0; i < cells.length; i++) {
-            cells[i].style.color = "var(--black)";
-            cells[i].style.fontWeight = "normal";
-            cells[i].style.backgroundColor = "transparent";
+            if(!(debugGenerate) || (cells[i].children.length == 0)) {
+                cells[i].style.color = "var(--black)";
+                cells[i].style.fontWeight = "normal";
+                cells[i].style.backgroundColor = "transparent";
+            }
+            else {
+                cells[i].style.color = "var(--black)";
+                cells[i].style.fontWeight = "bold";
+                cells[i].style.backgroundColor = "var(--color2)";
+            }
         }
 
         // cell at start of selection should always be highlighted
@@ -310,7 +333,7 @@ function drawSelection(e) {
         
         // if selection is valid, highlight letters in selection
         if(selection.valid) {
-            // ensure cell at start of selection is always shown
+            selection.letters = [];
 
             r.clearRect(0, 0, w, h);
 
@@ -361,6 +384,8 @@ function drawSelection(e) {
             }
 
             for(let i = 0; i < selected.length; i++) {
+                selection.letters.push(document.getElementById(selected[i]).innerText);
+
                 document.getElementById(selected[i]).style.backgroundColor = "var(--colorMain)";
                 document.getElementById(selected[i]).style.fontWeight = "bold";
                 document.getElementById(selected[i]).style.opacity = "0.85";
@@ -408,4 +433,9 @@ function drawSelection(e) {
         startMousePos[0] *= w;
         startMousePos[1] *= h;
     }
+}
+
+function guess() {
+    console.log("You guessed:");
+    console.log(selection.letters);
 }
