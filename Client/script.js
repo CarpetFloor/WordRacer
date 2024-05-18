@@ -262,6 +262,7 @@ function cellHoverListen(elem) {
         if(!(selecting)) {
             elem.style.backgroundColor = "var(--grey2)";
             elem.style.fontWeight = "bold";
+            elem.style.transition = "all calc(var(--delay) * 0.7)";
         }
         else {
             let split = elem.id.split(",");
@@ -279,6 +280,7 @@ function cellUnHoverListen(elem) {
 
         elem.style.backgroundColor = "transparent";
         elem.style.fontWeight = "normal";
+        elem.style.transition = "all calc(var(--delay) * 0.7)";
 
         // make sure answers stay highlighted when mouse moves off
         if(debugGenerate && (elem.children.length == 1)) {
@@ -329,170 +331,179 @@ function checkForValidSelection() {
 }
 
 let startMousePos = [-1, -1];
+let finishedDrawingSelection = true;
 
 function drawSelection(e) {
-    c.style.opacity = "0.5";
+    if(finishedDrawingSelection) {
+        finishedDrawingSelection = false;
+        c.style.opacity = "0.5";
 
-    if(selecting && !(animation.active)) {
-        document.body.style.cursor = "pointer";
-        
-        // reset
-        let cells = document.getElementsByTagName("td");
-        
-        for(let i = 0; i < cells.length; i++) {
-            if(!(debugGenerate) || (cells[i].children.length == 0)) {
-                cells[i].style.color = "var(--black)";
-                cells[i].style.fontWeight = "normal";
-                cells[i].style.backgroundColor = "transparent";
+        if(selecting && !(animation.active)) {
+            document.body.style.cursor = "pointer";
+
+            // reset
+            for(let i = 0; i < selection.poses.length; i++) {
+                let elem = document.getElementById(selection.poses[i]);
+
+                if(!(debugGenerate) || (elem.children.length == 0)) {
+                    elem.style.color = "var(--black)";
+                    elem.style.fontWeight = "normal";
+                    elem.style.backgroundColor = "transparent";
+                }
+                else {
+                    elem.style.color = "var(--black)";
+                    elem.style.fontWeight = "bold";
+                    elem.style.backgroundColor = "var(--color2)";
+                }
             }
+
+            selection.poses = [];
+
+            // cell at start of selection should always be highlighted
+            if(selection.start[0] != -1) {
+                let startId = selection.start[0] + "," + selection.start[1];
+                document.getElementById(startId).style.backgroundColor = "var(--colorMain)";
+                document.getElementById(startId).style.fontWeight = "bold";
+                document.getElementById(startId).style.opacity = "0.85";
+            }
+            
+            // if selection is valid, highlight letters in selection
+            if(selection.valid) {
+                selection.letters = [];
+
+                r.clearRect(0, 0, w, h);
+
+                // highlight letters in selection
+
+                let rowdiff = selection.end[0] - selection.start[0];
+                let coldiff = selection.end[1] - selection.start[1];
+
+                let row = selection.start[0];
+                let col = selection.start[1];
+
+                let selected = [];
+
+                if(coldiff == 0) {
+                    for(let i = 0; i < Math.abs(rowdiff) + 1; i++) {
+                        selected.push(row + "," + col);
+                        
+                        if(rowdiff > 0) {
+                            ++row;
+                        }
+                        else {
+                            --row;
+                        }
+                    }
+                }
+                else if(rowdiff == 0) {
+                    for(let i = 0; i < Math.abs(coldiff) + 1; i++) {
+                        selected.push(row + "," + col);
+                        
+                        if(coldiff > 0) {
+                            ++col;
+                        }
+                        else {
+                            --col;
+                        }
+                    }
+                }
+                else {
+                    let rowchange = (rowdiff > 0) ? 1 : -1;
+                    let colchange = (coldiff > 0) ? 1 : -1;
+
+                    for(let i = 0; i < Math.abs(rowdiff) + 1; i++) {
+                        selected.push(row + "," + col);
+                        
+                        row += rowchange;
+                        col += colchange;
+                    }
+                }
+
+                for(let i = 0; i < selected.length; i++) {
+                    selection.letters.push(document.getElementById(selected[i]).innerText);
+                    selection.poses.push(selected[i]);
+
+                    document.getElementById(selected[i]).style.transition = "none";
+                    document.getElementById(selected[i]).style.backgroundColor = "var(--colorMain)";
+                    document.getElementById(selected[i]).style.fontWeight = "bold";
+                    document.getElementById(selected[i]).style.opacity = "0.85";
+                }
+            }
+            // otherwise, draw line
             else {
-                cells[i].style.color = "var(--black)";
-                cells[i].style.fontWeight = "bold";
-                cells[i].style.backgroundColor = "var(--color2)";
-            }
-        }
+                r.clearRect(0, 0, w, h);
+                
+                r.beginPath();
 
-        // cell at start of selection should always be highlighted
-        if(selection.start[0] != -1) {
-            let startId = selection.start[0] + "," + selection.start[1];
-            document.getElementById(startId).style.backgroundColor = "var(--colorMain)";
-            document.getElementById(startId).style.fontWeight = "bold";
-            document.getElementById(startId).style.opacity = "0.85";
-        }
-        
-        // if selection is valid, highlight letters in selection
-        if(selection.valid) {
-            selection.letters = [];
+                let width = (w / game.width);
+                let height = (h / game.height);
+                
+                let fromX = selection.start[1] * width;
+                fromX += (width / 2);
+                let fromY = selection.start[0] * height;
+                fromY += (height / 2);
+                // console.log(, selection.start[0], selection.start[1]);
 
-            r.clearRect(0, 0, w, h);
+                /*
+                if(Math.abs(fromX - selection.start[1] * width) > 5) {
+                    fromX = 0;
 
-            // highlight letters in selection
-
-            let rowdiff = selection.end[0] - selection.start[0];
-            let coldiff = selection.end[1] - selection.start[1];
-
-            let row = selection.start[0];
-            let col = selection.start[1];
-
-            let selected = [];
-
-            if(coldiff == 0) {
-                for(let i = 0; i < Math.abs(rowdiff) + 1; i++) {
-                    selected.push(row + "," + col);
-                    
-                    if(rowdiff > 0) {
-                        ++row;
-                    }
-                    else {
-                        --row;
+                    let x = 0;
+                    while(selection.start[1] + 1 > fromX) {
+                        fromX += x * width;
+                        ++x;
                     }
                 }
-            }
-            else if(rowdiff == 0) {
-                for(let i = 0; i < Math.abs(coldiff) + 1; i++) {
-                    selected.push(row + "," + col);
-                    
-                    if(coldiff > 0) {
-                        ++col;
-                    }
-                    else {
-                        --col;
+
+                if(Math.abs(fromY - selection.start[0] * height) > 5) {
+                    fromY = 0;
+
+                    let y = 0;
+                    while(selection.start[0] + 1 > fromY) {
+                        fromY += y * height;
+                        ++y;
                     }
                 }
-            }
-            else {
-                let rowchange = (rowdiff > 0) ? 1 : -1;
-                let colchange = (coldiff > 0) ? 1 : -1;
+                */
+                
+                r.moveTo(
+                    fromX, 
+                    fromY
+                );
 
-                for(let i = 0; i < Math.abs(rowdiff) + 1; i++) {
-                    selected.push(row + "," + col);
-                    
-                    row += rowchange;
-                    col += colchange;
-                }
-            }
+                let bounds = c.getBoundingClientRect();
+                let toX = e.pageX - bounds.left - scrollX;
+                let toY = e.pageY - bounds.top - scrollY;
 
-            for(let i = 0; i < selected.length; i++) {
-                selection.letters.push(document.getElementById(selected[i]).innerText);
-                selection.poses.push(selected[i]);
+                toX /= bounds.width; 
+                toY /= bounds.height;
 
-                document.getElementById(selected[i]).style.backgroundColor = "var(--colorMain)";
-                document.getElementById(selected[i]).style.fontWeight = "bold";
-                document.getElementById(selected[i]).style.opacity = "0.85";
+                toX *= w;
+                toY *= h;
+
+                r.lineTo(
+                    toX, 
+                    toY
+                );
+
+                r.lineWidth = 10;
+                r.strokeStyle = "#69eeb2";
+                r.stroke();
             }
         }
-        // otherwise, draw line
         else {
-            r.clearRect(0, 0, w, h);
-            
-            r.beginPath();
-
-            let width = (w / game.width);
-            let height = (h / game.height);
-            
-            let fromX = selection.start[1] * width;
-            fromX += (width / 2);
-            let fromY = selection.start[0] * height;
-            fromY += (height / 2);
-            // console.log(, selection.start[0], selection.start[1]);
-
-            /*
-            if(Math.abs(fromX - selection.start[1] * width) > 5) {
-                fromX = 0;
-
-                let x = 0;
-                while(selection.start[1] + 1 > fromX) {
-                    fromX += x * width;
-                    ++x;
-                }
-            }
-
-            if(Math.abs(fromY - selection.start[0] * height) > 5) {
-                fromY = 0;
-
-                let y = 0;
-                while(selection.start[0] + 1 > fromY) {
-                    fromY += y * height;
-                    ++y;
-                }
-            }
-            */
-            
-            r.moveTo(
-                fromX, 
-                fromY
-            );
-
             let bounds = c.getBoundingClientRect();
-            let toX = e.pageX - bounds.left - scrollX;
-            let toY = e.pageY - bounds.top - scrollY;
+            startMousePos[0] = e.pageX - bounds.left - scrollX;
+            startMousePos[1] = e.pageY - bounds.top - scrollY;
 
-            toX /= bounds.width; 
-            toY /= bounds.height;
+            startMousePos[0] /= bounds.width; 
+            startMousePos[1] /= bounds.height;
 
-            toX *= w;
-            toY *= h;
-
-            r.lineTo(
-                toX, 
-                toY
-            );
-
-            r.lineWidth = 10;
-            r.strokeStyle = "#69eeb2";
-            r.stroke();
+            startMousePos[0] *= w;
+            startMousePos[1] *= h;
         }
-    }
-    else {
-        let bounds = c.getBoundingClientRect();
-        startMousePos[0] = e.pageX - bounds.left - scrollX;
-        startMousePos[1] = e.pageY - bounds.top - scrollY;
 
-        startMousePos[0] /= bounds.width; 
-        startMousePos[1] /= bounds.height;
-
-        startMousePos[0] *= w;
-        startMousePos[1] *= h;
+        finishedDrawingSelection = true;
     }
 }
 
