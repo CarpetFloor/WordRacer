@@ -102,7 +102,7 @@ button:hover {
     margin-left: auto;
     margin-right: auto;
     margin-top: calc(var(--topMargin) * 0.5);
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 .game section {
     display: flex;
@@ -126,4 +126,23 @@ table tr td {
 .game canvas {
     pointer-events: none;
     z-index: 1;
+    margin-left: 5em;
+}
+
+.game table {
+    margin-right: 5em;
+    margin-left: 5em;
+}
+
+.game .found h1 {
+    margin: 0;
+    margin-bottom: 0.75em;
+    font-size: 1.4em;
+}
+.game .found p {
+    margin: 0;
+    font-size: 1em;
+}
+.game .found p:not(:last-child) {
+    margin-bottom: 0.5em;
 }

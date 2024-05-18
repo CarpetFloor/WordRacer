@@ -1,5 +1,6 @@
 let debugGenerate = false;
-let showAnswers = false;
+// only in console
+let showAnswers = true;
 
 const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 
@@ -12,6 +13,9 @@ const game = {
     height: 20, 
     words: [], 
     found: [], 
+    foundPosesStart: [], 
+    foundPosesEnd: [], 
+    foundAllPoints: [], 
     data: []
 }
 
@@ -267,6 +271,7 @@ function cellHoverListen(elem) {
         else {
             let split = elem.id.split(",");
             selection.end = [parseInt(split[0]), parseInt(split[1])];
+            guessedPosEnd = selection.end;
             checkForValidSelection();
         }
     }
@@ -301,15 +306,47 @@ let selection = {
 function cellClick(elem) {
     if(!(animation.active)) {
         if(!(selecting)) {
-            selecting = true;
-            selection.valid = false;
-
             let split = elem.id.split(",");
             selection.start = [parseInt(split[0]), parseInt(split[1])];
-            selection.end = [-1, -1];
+
+            let alreadyFound = false;
+
+            for(let i = 0; i < game.foundAllPoints.length; i++) {
+                if(
+                    (game.foundAllPoints[i][0] == selection.start[0]) &&
+                    (game.foundAllPoints[i][1] == selection.start[1])
+                ) {
+                    alreadyFound = true;
+
+                    break;
+                }
+            }
+
+            if(!(alreadyFound)) {
+                selecting = true;
+                selection.valid = false;
+
+                guessedPosStart = selection.start;
+                selection.end = [-1, -1];
+            }
         }
         else if(selection.valid) {
-            guess();
+            let alreadyFound = false;
+
+            for(let i = 0; i < game.foundAllPoints.length; i++) {
+                if(
+                    (game.foundAllPoints[i][0] == selection.end[0]) &&
+                    (game.foundAllPoints[i][1] == selection.end[1])
+                ) {
+                    alreadyFound = true;
+
+                    break;
+                }
+            }
+
+            if(!(alreadyFound)) {
+                guess();
+            }
         }
     }
 }
@@ -467,6 +504,9 @@ function drawSelection(e) {
                 r.strokeStyle = "#69eeb2";
                 r.stroke();
             }
+
+            // highlight found words
+            highlightFound();
         }
         else {
             let bounds = c.getBoundingClientRect();
@@ -490,6 +530,11 @@ let animation = {
     loop: null, 
     properties: {}
 }
+
+let guessedWord = "";
+let guessedPosStart = [-1, -1];
+let guessedPosEnd = [-1, -1];
+
 function guess() {
     selecting = false;
 
@@ -497,13 +542,13 @@ function guess() {
     let endPos = selection.end;
 
     let found = false;
-    let full = "";
+    guessedWord = "";
 
     for(let i = 0; i < selection.letters.length; i++) {
-        full += selection.letters[i];
+        guessedWord += selection.letters[i];
     }
 
-    if(game.words.includes(full)) {
+    if(game.words.includes(guessedWord)) {
         found = true;
     }
 
@@ -528,11 +573,13 @@ function guess() {
     animation.active = true;
     animation.properties = {
         found: found, 
-        startPos: startPos, 
-        endPos: endPos, 
+        startPos: [startPos[0], startPos[1]], 
+        endPos: [endPos[0], endPos[1]], 
         size: 1
     };
     animation.loop = function() {
+        r.clearRect(0, 0, w, h);
+
         if(animation.properties.found) {
             r.strokeStyle = "#3cfaa7";
         }
@@ -569,6 +616,8 @@ function guess() {
 
         r.stroke();
 
+        highlightFound();
+
         animation.properties.size += 8;
 
         if(animation.properties.size > 25) {
@@ -577,9 +626,87 @@ function guess() {
             window.setTimeout(function() {
                 animation.active = false;
                 r.clearRect(0, 0, w, h);
+
+                highlightFound();
+
+                // add word to found words
+                if(found) {
+                    foundWord();
+                }
             }, 250);
         }
     }
 
     animation.interval = window.setInterval(animation.loop, (1000 / 30));
+}
+
+function foundWord() {
+    game.found.push(guessedWord);
+    game.foundPosesStart.push(guessedPosStart);
+    game.foundPosesEnd.push(guessedPosEnd);
+
+    // add all points of guess to game.foundAllPoints
+    let rowDiff = guessedPosEnd[0] - guessedPosStart[0];
+    let rowChange = 0;
+    if(rowDiff != 0) {
+        rowChange = rowDiff / rowDiff;
+    }
+
+    let colDiff = guessedPosEnd[1] - guessedPosStart[1];
+    let colChange = 0;
+    if(colDiff != 0) {
+        colChange = colDiff / colDiff;
+    }
+    
+    let row = guessedPosStart[0];
+    let col = guessedPosStart[1];
+
+    for(let i = 0; i < guessedWord.length; i++) {
+        game.foundAllPoints.push([row, col]);
+
+        row += rowChange;
+        col += colChange;
+    }
+
+    let p = document.createElement("p");
+    p.innerText = guessedWord;
+
+    document.getElementsByClassName("found")[0].appendChild(p);
+
+    highlightFound();
+}
+
+function highlightFound() {
+    for(let i = 0; i < game.found.length; i++) {
+        r.strokeStyle = "#8ada88";
+        r.lineWidth = 25;
+
+        r.beginPath();
+
+        let width = (w / game.width);
+        let height = (h / game.height);
+
+        let startOffset = [(width / 2), 0 + (height / 2)];
+        let endOffset = [(width / 2), 0 + (height / 2)];
+
+        let x = (game.foundPosesStart[i][1] * width) + startOffset[0];
+        let y = (game.foundPosesStart[i][0] * height) + startOffset[1];
+        r.moveTo(
+            x, 
+            y, 
+            width, 
+            height
+        );
+
+        x = (game.foundPosesEnd[i][1] * width) + endOffset[0];
+        y = (game.foundPosesEnd[i][0] * height) + endOffset[1];
+        r.lineTo(
+            x, 
+            y, 
+            width, 
+            height
+        );
+
+        r.stroke();
+    }
 }
