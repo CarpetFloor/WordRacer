@@ -429,8 +429,8 @@ function drawSelection(e) {
                     document.getElementById(selected[i]).style.opacity = "0.85";
                 }
             }
-            // otherwise, draw line
-            else {
+            // otherwise draw line, but not if selection only consists of 1 letter
+            else if(selection.end[0] != -1) {
                 r.clearRect(0, 0, w, h);
                 
                 r.beginPath();
@@ -442,29 +442,6 @@ function drawSelection(e) {
                 fromX += (width / 2);
                 let fromY = selection.start[0] * height;
                 fromY += (height / 2);
-                // console.log(, selection.start[0], selection.start[1]);
-
-                /*
-                if(Math.abs(fromX - selection.start[1] * width) > 5) {
-                    fromX = 0;
-
-                    let x = 0;
-                    while(selection.start[1] + 1 > fromX) {
-                        fromX += x * width;
-                        ++x;
-                    }
-                }
-
-                if(Math.abs(fromY - selection.start[0] * height) > 5) {
-                    fromY = 0;
-
-                    let y = 0;
-                    while(selection.start[0] + 1 > fromY) {
-                        fromY += y * height;
-                        ++y;
-                    }
-                }
-                */
                 
                 r.moveTo(
                     fromX, 
