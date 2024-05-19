@@ -1,3 +1,5 @@
+let socket = io();
+
 let create = document.getElementsByClassName("create")[0];
 
 let createButton = document.getElementsByClassName("openCreate")[0];
@@ -12,3 +14,9 @@ createButton.addEventListener("click", function() {
         create.style.display = "none";
     }
 });
+
+// get active games
+socket.emit("request active games");
+socket.on("send active games", (games) => {
+    console.log(games);
+})
