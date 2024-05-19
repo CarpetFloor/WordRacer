@@ -273,7 +273,7 @@ function cellHoverListen(elem) {
     let split = elem.id.split(",");
     selection.end = [parseInt(split[0]), parseInt(split[1])];
     
-    if(!(animation.active)) {
+    if(!(animation.active) && !(gameOver)) {
         elem.style.cursor = "pointer";
         
         if(!(selecting)) {
@@ -304,7 +304,7 @@ function cellHoverListen(elem) {
 }
 
 function cellUnHoverListen(elem) {
-    if(!(animation.active)) {
+    if(!(animation.active) && !(gameOver)) {
         if(!(selecting)) {
             elem.style.cursor = "default";
         }
@@ -330,7 +330,7 @@ let selection = {
     poses: []
 }
 function cellClick(elem) {
-    if(!(animation.active)) {
+    if(!(animation.active) && !(gameOver)) {
         if(!(selecting)) {
             let split = elem.id.split(",");
             selection.start = [parseInt(split[0]), parseInt(split[1])];
@@ -397,7 +397,7 @@ let startMousePos = [-1, -1];
 let finishedDrawingSelection = true;
 
 function drawSelection(e) {
-    if(finishedDrawingSelection) {
+    if(finishedDrawingSelection && !(gameOver)) {
         finishedDrawingSelection = false;
         c.style.opacity = "0.5";
 
@@ -565,108 +565,110 @@ let guessedPosStart = [-1, -1];
 let guessedPosEnd = [-1, -1];
 
 function guess() {
-    selecting = false;
+    if(!(gameOver)) {
+        selecting = false;
 
-    let startPos = selection.start;
-    let endPos = selection.end;
+        let startPos = selection.start;
+        let endPos = selection.end;
 
-    let found = false;
-    guessedWord = "";
+        let found = false;
+        guessedWord = "";
 
-    for(let i = 0; i < selection.letters.length; i++) {
-        guessedWord += selection.letters[i];
+        for(let i = 0; i < selection.letters.length; i++) {
+            guessedWord += selection.letters[i];
+        }
+
+        if(game.words.includes(guessedWord)) {
+            found = true;
+        }
+
+        // indicate whether guess was corrrect or not
+
+        let cells = document.getElementsByTagName("td");
+
+        // first clear the highlighting from any letters highlighted from selection
+        for(let i = 0; i < cells.length; i++) {
+            if(!(debugGenerate) || (cells[i].children.length == 0)) {
+                cells[i].style.color = "var(--black)";
+                cells[i].style.fontWeight = "normal";
+                cells[i].style.backgroundColor = "transparent";
+            }
+            else {
+                cells[i].style.color = "var(--black)";
+                cells[i].style.fontWeight = "bold";
+                cells[i].style.backgroundColor = "var(--color2)";
+            }
+        }
+
+        animation.active = true;
+        animation.properties = {
+            found: found, 
+            startPos: [startPos[0], startPos[1]], 
+            endPos: [endPos[0], endPos[1]], 
+            size: 1
+        };
+        animation.loop = function() {
+            r.clearRect(0, 0, w, h);
+
+            if(animation.properties.found) {
+                r.strokeStyle = "#3cfaa7";
+            }
+            else {
+                r.strokeStyle = "red";
+            }
+            r.lineWidth = animation.properties.size;
+
+            r.beginPath();
+
+            let width = (w / game.width);
+            let height = (h / game.height);
+
+            let startOffset = [(width / 2), 0 + (height / 2)];
+            let endOffset = [(width / 2), 0 + (height / 2)];
+
+            let x = (animation.properties.startPos[1] * width) + startOffset[0];
+            let y = (animation.properties.startPos[0] * height) + startOffset[1];
+            r.moveTo(
+                x, 
+                y, 
+                width, 
+                height
+            );
+
+            x = (animation.properties.endPos[1] * width) + endOffset[0];
+            y = (animation.properties.endPos[0] * height) + endOffset[1];
+            r.lineTo(
+                x, 
+                y, 
+                width, 
+                height
+            );
+
+            r.stroke();
+
+            highlightFound();
+
+            animation.properties.size += 8;
+
+            if(animation.properties.size > 25) {
+                window.clearInterval(animation.interval);
+                
+                window.setTimeout(function() {
+                    animation.active = false;
+                    r.clearRect(0, 0, w, h);
+
+                    highlightFound();
+
+                    // add word to found words
+                    if(found) {
+                        foundWord();
+                    }
+                }, 250);
+            }
+        }
+
+        animation.interval = window.setInterval(animation.loop, (1000 / 30));
     }
-
-    if(game.words.includes(guessedWord)) {
-        found = true;
-    }
-
-    // indicate whether guess was corrrect or not
-
-    let cells = document.getElementsByTagName("td");
-
-    // first clear the highlighting from any letters highlighted from selection
-    for(let i = 0; i < cells.length; i++) {
-        if(!(debugGenerate) || (cells[i].children.length == 0)) {
-            cells[i].style.color = "var(--black)";
-            cells[i].style.fontWeight = "normal";
-            cells[i].style.backgroundColor = "transparent";
-        }
-        else {
-            cells[i].style.color = "var(--black)";
-            cells[i].style.fontWeight = "bold";
-            cells[i].style.backgroundColor = "var(--color2)";
-        }
-    }
-
-    animation.active = true;
-    animation.properties = {
-        found: found, 
-        startPos: [startPos[0], startPos[1]], 
-        endPos: [endPos[0], endPos[1]], 
-        size: 1
-    };
-    animation.loop = function() {
-        r.clearRect(0, 0, w, h);
-
-        if(animation.properties.found) {
-            r.strokeStyle = "#3cfaa7";
-        }
-        else {
-            r.strokeStyle = "red";
-        }
-        r.lineWidth = animation.properties.size;
-
-        r.beginPath();
-
-        let width = (w / game.width);
-        let height = (h / game.height);
-
-        let startOffset = [(width / 2), 0 + (height / 2)];
-        let endOffset = [(width / 2), 0 + (height / 2)];
-
-        let x = (animation.properties.startPos[1] * width) + startOffset[0];
-        let y = (animation.properties.startPos[0] * height) + startOffset[1];
-        r.moveTo(
-            x, 
-            y, 
-            width, 
-            height
-        );
-
-        x = (animation.properties.endPos[1] * width) + endOffset[0];
-        y = (animation.properties.endPos[0] * height) + endOffset[1];
-        r.lineTo(
-            x, 
-            y, 
-            width, 
-            height
-        );
-
-        r.stroke();
-
-        highlightFound();
-
-        animation.properties.size += 8;
-
-        if(animation.properties.size > 25) {
-            window.clearInterval(animation.interval);
-            
-            window.setTimeout(function() {
-                animation.active = false;
-                r.clearRect(0, 0, w, h);
-
-                highlightFound();
-
-                // add word to found words
-                if(found) {
-                    foundWord();
-                }
-            }, 250);
-        }
-    }
-
-    animation.interval = window.setInterval(animation.loop, (1000 / 30));
 }
 
 let points = 0;
@@ -812,11 +814,24 @@ function foundWord() {
     wordElem.style.backgroundColor = "#8ada88";
     wordElem.style.opacity = "0.85";
 
+    for(let i = 0; i < game.words.length - 1; i++) {
+        game.found.push(1);
+    }
+
     highlightFound();
+
+    if(game.found.length == game.words.length) {
+        endGame();
+    }
 }
 
 function highlightFound() {
-    for(let i = 0; i < game.found.length; i++) {
+    let temp = game.found.length;
+    if(temp > 1) {
+        temp = 1;
+    }
+
+    for(let i = 0; i < temp; i++) {
         r.strokeStyle = "#8ada88";
         r.lineWidth = 25;
 
@@ -897,3 +912,48 @@ let timersInterval = window.setInterval(function() {
     timerMain.update();
     timerLast.update();
 }, 1000);
+
+let gameOver = false;
+function endGame() {
+    window.clearInterval(timersInterval);
+    gameOver = true;
+
+    let table = document.querySelector("table");
+    table.style.cursor = "default";
+    document.body.style.cursor = "default";
+
+    // make sure cursor will not be pointer
+    for(let i = 0; i < table.children.length; i++) {
+        table.children[i].style.cursor = "default";
+
+        for(let j = 0; j < table.children[i].children.length; j++) {
+            table.children[i].children[j].style.cursor = "default";
+        }
+    }
+
+    let backButton = document.createElement("button");
+    backButton.className = "navIconButton";
+    backButton.style.marginLeft = "auto";
+    backButton.style.marginRight = "auto";
+    backButton.style.transform = "translateX(-45%)";
+
+    backButton.onclick = function() {
+        window.open("/./index.html", "_self");
+    }
+    
+    let icon = document.createElement("img");
+    icon.src = "/./Icons/home.png";
+    icon.className = "icon";
+    icon.style.marginTop = "-0.1em";
+    icon.style.filter = "invert(1) brightness(0.97)";
+    
+    backButton.appendChild(icon);
+
+    let p = document.createElement("p");
+    p.innerText = "Back";
+    
+    backButton.appendChild(p);
+
+    let top = document.getElementsByClassName("top")[0];
+    document.body.insertBefore(backButton, top);
+}
