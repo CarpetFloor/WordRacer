@@ -814,10 +814,6 @@ function foundWord() {
     wordElem.style.backgroundColor = "#8ada88";
     wordElem.style.opacity = "0.85";
 
-    for(let i = 0; i < game.words.length - 1; i++) {
-        game.found.push(1);
-    }
-
     highlightFound();
 
     if(game.found.length == game.words.length) {
@@ -826,12 +822,7 @@ function foundWord() {
 }
 
 function highlightFound() {
-    let temp = game.found.length;
-    if(temp > 1) {
-        temp = 1;
-    }
-
-    for(let i = 0; i < temp; i++) {
+    for(let i = 0; i < game.found.length; i++) {
         r.strokeStyle = "#8ada88";
         r.lineWidth = 25;
 
@@ -915,6 +906,20 @@ let timersInterval = window.setInterval(function() {
 
 let gameOver = false;
 function endGame() {
+    let totalSecondsDiff = Math.floor(timerMain.now / 1000) - Math.floor(timerMain.start / 1000);
+    
+    let highScoreCheck = localStorage.getItem("practiceHighScore");
+    if(highScoreCheck != null) {
+        let highScore = parseInt(highScoreCheck);
+
+        if(totalSecondsDiff < highScore) {
+            localStorage.setItem("practiceHighScore", totalSecondsDiff);
+        }
+    }
+    else {
+        localStorage.setItem("practiceHighScore", totalSecondsDiff);
+    }
+
     window.clearInterval(timersInterval);
     gameOver = true;
 

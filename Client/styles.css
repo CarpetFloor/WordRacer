@@ -116,6 +116,20 @@ button:hover {
 .landing div button:first-child {
     margin-right: calc(var(--hSpace) * 3);
 }
+.landing #practiceHighScoreHover {
+    color: var(--black);
+    filter: brightness(1.15);
+    position: absolute;
+    margin-top: 4em;
+    transition: all var(--delay);
+    user-select: none;
+    opacity: 0;
+    margin-left: -1em;
+}
+.landing div button:first-child:hover ~ #practiceHighScoreHover {
+    opacity: 1;
+    margin-left: 0;
+}
 
 /* game */
 

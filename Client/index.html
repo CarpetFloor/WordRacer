@@ -14,8 +14,26 @@
 
         <div>
             <button onclick="window.open('Pages/practice.html', '_self')">Practice</button>
+            <p id="practiceHighScoreHover"></p>
             <button onclick="window.open('', '_self')">Online</button>
         </div>
+
     </section>
+
+    <!-- set practice highscore -->
+    <script>
+        let practiceHighScoreCheck = localStorage.getItem("practiceHighScore");
+        if(practiceHighScoreCheck != null) {
+            let total = parseInt(practiceHighScoreCheck);
+            let minutes = Math.floor(total / 60);
+            let seconds = total - (minutes * 60);
+            if(seconds < 10) {
+                seconds = "0" + seconds;
+            }
+
+            let elem = document.getElementById("practiceHighScoreHover");
+            elem.innerText = "Highscore: " + minutes + ":" + seconds;
+        }
+    </script>
 </body>
 </html>
