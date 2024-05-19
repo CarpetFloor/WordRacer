@@ -31,8 +31,12 @@ const pages = [
     "gameLobby"
 ];
 const pageScripts = [
-    ["/Scripts/online.js"], 
+    ["/Scripts/onlineMenu.js"], 
     []
+]
+const titles = [
+    "Word Racer - Online Menu", 
+    "Word Racer - Lobby"
 ]
 const loadedScripts = [];
 
@@ -45,8 +49,10 @@ function loadPage(page) {
 
     fetch(src)
         .then((response) => response.text())
-        .then((text) => {
-            document.body.innerHTML = text;
+        .then((content) => {
+            document.body.innerHTML = content;
+
+            document.title = titles[page];
             
             if(debugPageLoader) {
                 console.log("Loaded page: " + src);
