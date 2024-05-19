@@ -935,7 +935,9 @@ function endGame() {
             table.children[i].children[j].style.cursor = "default";
         }
     }
+}
 
+function addBackButton() {
     let backButton = document.createElement("button");
     backButton.className = "navIconButton";
     backButton.style.marginLeft = "auto";
@@ -962,3 +964,4 @@ function endGame() {
     let top = document.getElementsByClassName("top")[0];
     document.body.insertBefore(backButton, top);
 }
+addBackButton();
