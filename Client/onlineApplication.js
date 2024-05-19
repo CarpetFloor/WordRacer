@@ -25,38 +25,68 @@ socket.on("players map updated", (playersMapAsArray) => {
 
 let debugPageLoader = true;
 
-// all paths relative from Client directory
-const pages = [
-    "onlineMenu", 
-    "gameLobby"
-];
-const pageScripts = [
-    ["/Scripts/onlineMenu.js"], 
-    []
-]
-const pageScriptsContent = [
-    [],  
-    []
-]
-const intervals = [
-    [], 
-    []
-]
-const timeouts = [
-    [], 
-    []
-]
-const titles = [
-    "Word Racer - Online Menu", 
-    "Word Racer - Lobby"
-]
-const loadedScripts = [];
+let pages = [];
+
+function Page(file, title, scriptsToLoad) {
+    this.file = file;
+    this.title = title;
+    this.scriptsToLoad = scriptsToLoad;
+    this.activeScripts = [];
+    this.intervals = [];
+    this.timeouts = [];
+}
+
+function generatePagesData() {
+    pages.push(new Page(
+        "onlineMenu", 
+        "Word Racer - Online Menu", 
+        ["/Scripts/onlineMenu.js"]
+    ));
+
+    pages.push(new Page(
+        "gameLobby", 
+        "Word Racer - Lobby", 
+        []
+    ));
+}
+generatePagesData();
+
+let loadedScripts = [];
 
 let currentPage = -1;
 
-function loadPage(page) {
-    currentPage = page;
-    let src = "/./Pages/" + pages[page] + ".html";
+function loadPage(index) {
+    // reset script data and socket listeners
+    if(currentPage != -1) {
+        socket.removeAllListeners();
+        
+        for(let i = 0; i < loadedScripts.length; i++) {
+            loadedScripts[i].remove();
+        }
+
+        let page = pages[currentPage];
+
+        for(let i = 0; i < page.activeScripts.length; i++) {
+            page.activeScripts[i] = [];
+            
+            for(let j = 0; j < page.intervals.length; j++) {
+                window.clearInterval(page.intervals[j]);
+            }
+
+            page.intervals = [];
+
+            for(let j = 0; j < page.timeouts.length; j++) {
+                window.clearTimeout(page.timeouts[j]);
+            }
+
+            page.timeouts = [];
+        }
+    }
+
+    currentPage = index;
+    const page = pages[index];
+
+    let src = "/./Pages/" + page.file + ".html";
 
     if(debugPageLoader) {
         console.log("Loading page: " + src);
@@ -67,36 +97,19 @@ function loadPage(page) {
         .then((content) => {
             document.body.innerHTML = content;
 
-            document.title = titles[page];
+            document.title = page.title;
             
             if(debugPageLoader) {
                 console.log("Loaded page: " + src);
-            }
-
-            for(let i = 0; i < loadedScripts.length; i++) {
-                loadedScripts[i].remove();
-                pageScriptsContent[i] = [];
-                
-                for(let j = 0; j < intervals[i].length; i++) {
-                    window.clearInterval(intervals[i][j]);
-                }
-
-                intervals[i] = [];
-
-                for(let j = 0; j < timeouts[i].length; i++) {
-                    window.clearTimeout(timeouts[i][j]);
-                }
-
-                timeouts[i] = [];
             }
 
             if(debugPageLoader) {
                 console.log("Loading scripts");
             }
 
-            for(let i = 0; i < pageScripts[page].length; i++) {
+            for(let i = 0; i < page.scriptsToLoad.length; i++) {
                 let script = document.createElement("script");
-                script.src = pageScripts[page][i];
+                script.src = page.scriptsToLoad[i];
 
                 document.body.appendChild(script);
                 loadedScripts.push(script);
@@ -104,6 +117,7 @@ function loadPage(page) {
 
             if(debugPageLoader) {
                 console.log("Loaded scripts");
+                console.log("----------------------------------------\n\n\n");
             }
         }
     );

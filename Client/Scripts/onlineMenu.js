@@ -1,8 +1,5 @@
-let pageReference = currentPage;
-pageScriptsContent[pageReference].push(function() {
-    console.log("HERE");
-    console.log(myid);
-
+let pageReference = pages[currentPage];
+pageReference.activeScripts.push(function() {
     let playersMap = new Map();
 
     // toggle create game menu
@@ -86,6 +83,6 @@ pageScriptsContent[pageReference].push(function() {
     });
 
     let a = window.setInterval(function(){console.log("testing")}, 1000);
-    intervals[pageReference].push(a);
+    pageReference.intervals.push(a);
 });
-pageScriptsContent[pageReference][0]();
+pageReference.activeScripts[pageReference.activeScripts.length - 1]();
