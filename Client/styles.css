@@ -163,12 +163,19 @@ button:hover {
 }
 .online .create .container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 
 }
-.online .create .container div {
+.online .create .container .containerTop {
+    display: flex;
+    flex-direction: row;
+}
+.online .create .container .containerTop div {
     display: flex;
     flex-direction: column;
+}
+.online .create .container button {
+    width: 10em;
 }
 
 .online .join .container {

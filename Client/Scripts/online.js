@@ -1,4 +1,8 @@
-let socket = io();
+console.log(myid);
+
+let playersMap = new Map();
+
+// toggle create game menu
 
 let create = document.getElementsByClassName("create")[0];
 
@@ -15,44 +19,64 @@ createButton.addEventListener("click", function() {
     }
 });
 
-playersMap = new Map();
+// create a new game from either type
 
-// get active games
-socket.emit("request active games");
-socket.on("send active games", (games, playersMapAsArray) => {
-    /**
-     * Because array originally created by looping with for each, 
-     * order doesn't matter so can reconstruct playersMap with 
-     * for each iteration
-     */
-    playersMapAsArray.forEach(pair => {
-        playersMap.set(pair[0], pair[1]);
-    });
+let boutCreateButton = document.getElementById("boutCreateButton");
+boutCreateButton.addEventListener("click", function() {
+    socket.emit("create game", "bout");
+});
+
+let clashCreateButton = document.getElementById("clashCreateButton");
+boutCreateButton.addEventListener("click", function() {
+    socket.emit("create game", "clash");
+});
+
+socket.on("created game", () => {
+    window.open("/../Pages/gameLobby.html", "_self");
+});
+/**
+ * Get active games, can be sent multiple times after page loaded 
+ * when a new game is created, so make sure to reset everything. 
+ */
+// socket.emit("request active games");
+socket.on("send active games", (games) => {
+    console.log("games received");
+    console.log(games);
 
     let parent = document.getElementsByClassName("join")[0];
+    
+    // clear existing HTML
+    for(let i = 0; i < parent.children.length; i++) {
+        parent.children[i].remove();
+    }
+        
+    // create HTML
+    
 
     for(let i = 0; i < games.length; i++) {
-        let container = document.createElement("div");
-        container.className = "container";
+        // only show games that haven't yet started
+        if(!(games[i].active)) {
+            let container = document.createElement("div");
+            container.className = "container";
 
-        let typeImage = document.createElement("img");
-        typeImage.src = "placeholder.png";
-        typeImage.className = "icon";
+            let typeImage = document.createElement("img");
+            typeImage.src = "placeholder.png";
+            typeImage.className = "icon";
 
-        container.appendChild(typeImage);
+            container.appendChild(typeImage);
 
-        let p = document.createElement("p");
-        console.log(games[i].host);
-        p.innerText = playersMap.get(games[i].host) + "'s game";
+            let p = document.createElement("p");
+            p.innerText = playersMap.get(games[i].host) + "'s game";
 
-        container.appendChild(p);
+            container.appendChild(p);
 
-        let joinImage = document.createElement("img");
-        joinImage.src = "placeholder.png";
-        joinImage.className = "icon";
+            let joinImage = document.createElement("img");
+            joinImage.src = "placeholder.png";
+            joinImage.className = "icon";
 
-        container.appendChild(joinImage);
+            container.appendChild(joinImage);
 
-        parent.appendChild(container);
+            parent.appendChild(container);
+        }
     }
-})
+});
