@@ -2,6 +2,7 @@
 
 let socket = io();
 let myid = null;
+let playersMap = new Map();
 
 socket.on("connection established", (idSent) => {
     myid = idSent;
@@ -9,21 +10,18 @@ socket.on("connection established", (idSent) => {
 });
 
 socket.on("players map updated", (playersMapAsArray) => {
-    console.log("map received");
     playersMap = new Map();
 
     playersMapAsArray.forEach(pair => {
         playersMap.set(pair[0], pair[1]);
     });
-
-    console.log(playersMap);
 });
 
 // SPA stuff
 
 // I probably should have used React
 
-let debugPageLoader = true;
+let debugPageLoader = false;
 
 let pages = [];
 
@@ -59,7 +57,7 @@ function loadPage(index) {
     // reset script data and socket listeners
     if(currentPage != -1) {
         socket.removeAllListeners();
-        
+
         for(let i = 0; i < loadedScripts.length; i++) {
             loadedScripts[i].remove();
         }

@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 });
 
 // players
-let players = [12345432, 11335533];
+let players = [];
 
 let playersMap = new Map();
 
@@ -41,7 +41,10 @@ let countForNewPlayerName = 0;
 io.on("connection", (socket) => {
     // initiale user data when first connecting
     ++countForNewPlayerName;
+    players.push(socket.id);
     playersMap.set(socket.id, "player" + countForNewPlayerName);
+    
+    // send the newly-connected client their id
     io.to(socket.id).emit("connection established", socket.id);
     
     let playersMapAsArray = [];
@@ -49,10 +52,12 @@ io.on("connection", (socket) => {
         playersMapAsArray.push([key, value]);
     });
 
-    socket.emit("players map updated", playersMapAsArray);
+    // send all clients the updated players map
+    io.sockets.emit("players map updated", playersMapAsArray);
 
     socket.on("request active games", () => {
-        socket.emit("send active games", games);
+        // send the actve games to the requester
+        io.to(socket.id).emit("send active games", games);
     });
 
     socket.on("create game", (type) => {
@@ -63,9 +68,11 @@ io.on("connection", (socket) => {
         game.players.push(socket.id);
         games.push(game);
 
+        // let requester know that the game has been created
         io.to(socket.id).emit("created game");
 
-        socket.emit("send active games", games);
+        // send the updated games array to all clients
+        io.sockets.emit("send active games", games);
     });
 
     socket.on("disconnect", () => {
@@ -76,11 +83,25 @@ io.on("connection", (socket) => {
             playersMapAsArray.push([key, value]);
         });
 
-        socket.emit("players map updated", playersMapAsArray);
+        // send all clients the updated players map
+        io.sockets.emit("players map updated", playersMapAsArray);
 
-        // if player was in a bout game, end the game
+        for(let i = 0; i < games.length; i++) {
+            let inGame = games[i].players.includes(socket.id);
 
-        // otherwise if player was in a clash game just remove them
+            if(inGame) {
+                // if player was in a bout game, end the game
+                if(games[i].type == "bout") {
+                    games.splice(i, 1);
+
+                    // kick other players
+                }
+                // otherwise if player was in a clash game just remove them
+            }
+        }
+
+        // send all clients the updated games array
+        io.sockets.emit("send active games", games);
     });
 
 });

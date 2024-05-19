@@ -1,7 +1,5 @@
 let pageReference = pages[currentPage];
 pageReference.activeScripts.push(function() {
-    let playersMap = new Map();
-
     // toggle create game menu
 
     let create = document.getElementsByClassName("create")[0];
@@ -27,22 +25,23 @@ pageReference.activeScripts.push(function() {
     });
 
     let clashCreateButton = document.getElementById("clashCreateButton");
-    boutCreateButton.addEventListener("click", function() {
+    clashCreateButton.addEventListener("click", function() {
         socket.emit("create game", "clash");
     });
 
     socket.on("created game", () => {
         loadPage(1);
     });
-    /**
-     * Get active games, can be sent multiple times after page loaded 
-     * when a new game is created, so make sure to reset everything. 
-     */
-    // socket.emit("request active games");
-    socket.on("send active games", (games) => {
-        console.log("games received");
-        console.log(games);
+    
+    /*
+    let activeGamesInterval = window.setInterval(function() {
+        socket.emit("request active games");
+    }, 1000);
+    pageReference.intervals.push(activeGamesInterval);
+    */
 
+    socket.emit("request active games");
+    socket.on("send active games", (games) => {
         let parent = document.getElementsByClassName("join")[0];
         
         // clear existing HTML
@@ -51,7 +50,6 @@ pageReference.activeScripts.push(function() {
         }
             
         // create HTML
-        
 
         for(let i = 0; i < games.length; i++) {
             // only show games that haven't yet started
@@ -81,8 +79,5 @@ pageReference.activeScripts.push(function() {
         }
 
     });
-
-    let a = window.setInterval(function(){console.log("testing")}, 1000);
-    pageReference.intervals.push(a);
 });
 pageReference.activeScripts[pageReference.activeScripts.length - 1]();
