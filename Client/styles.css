@@ -145,6 +145,14 @@ button:hover {
     flex-direction: column;
 }
 
+.online .name {
+    display: flex;
+    flex-direction: row;
+}
+.online .name p:first-of-type {
+    margin-right: var(--hSpace);
+}
+
 .online .openCreate {
     margin-bottom: 2em;
 }

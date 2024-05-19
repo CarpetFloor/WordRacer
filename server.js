@@ -1,3 +1,11 @@
+/**
+ * Note about storing users: To avoid frequent server computation, 
+ * store, send, etc. all users as their socket id. To deal with 
+ * usernames, create a map with socke ids as keys and usernames as 
+ * values that should get updated whenever a user changes their 
+ * username.
+ */
+
 const express = require("express");
 const app = express();
 const http = require("http");
@@ -14,7 +22,11 @@ app.get("/", (req, res) => {
 });
 
 // players
-let players = [];
+let players = [12345432, 11335533];
+
+let playersMap = new Map();
+playersMap.set(12345432, "BruceWayne");
+playersMap.set(11335533, "Somebody");
 
 // active games
 function Game() {
@@ -25,16 +37,21 @@ function Game() {
 let games = [];
 
 let temp = new Game();
-temp.host = "BruceWayne";
+temp.host = 12345432;
 temp.type = "bout";
 temp.players = [12345432, 11335533];
-games.push(temp)
+games.push(temp);
 
 // handle users
 io.on("connection", (socket) => {
     socket.on("request active games", () => {
-        console.log("Sending active games");
-        socket.emit("send active games", games);
+        // because maps can't be sent, convert to array
+        let playersMapAsArray = [];
+        playersMap.forEach((value, key) => {
+            playersMapAsArray.push([key, value]);
+        });
+
+        socket.emit("send active games", games, playersMapAsArray);
     })
 
     socket.on("disconnect", () => {
