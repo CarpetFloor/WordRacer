@@ -45,6 +45,16 @@ function generateGame() {
         game.words.push(picked);
     }
 
+    // add words to HTML words list
+    let elem = document.getElementsByClassName("found")[0];
+
+    for(let i = 0; i < game.words.length; i++) {
+        let p = document.createElement("p");
+        p.innerText = game.words[i];
+
+        elem.appendChild(p);
+    }
+
     if(debugGenerate) {
         console.log(game.words);
     }
@@ -392,7 +402,7 @@ function drawSelection(e) {
         c.style.opacity = "0.5";
 
         if(selecting && !(animation.active)) {
-            document.body.style.cursor = "pointer";
+            document.querySelector("table").style.cursor = "pointer";
 
             // reset
             for(let i = 0; i < selection.poses.length; i++) {
@@ -689,12 +699,12 @@ function foundWord() {
     // first, if animation is already playing clear it
     if(gainedPointsInterval != null) {
         window.clearInterval(gainedPointsInterval);
-
-        document.getElementById("gainedPoints").style.opacity = "0";
-        document.getElementById("gainedPoints").style.marginTop = "0.25em";
-        document.getElementById("gainedPoints").style.marginBottom = "-2em";
-        document.getElementById("gainedPoints").style.scale = "1";
     }
+    document.getElementById("gainedPoints").style.opacity = "0";
+    document.getElementById("gainedPoints").style.marginTop = "0.25em";
+    document.getElementById("gainedPoints").style.marginBottom = "-2em";
+    document.getElementById("gainedPoints").style.scale = "1";
+    document.getElementById("gainedPoints").style.marginLeft = "50vw";
     
     document.getElementById("gainedPoints").innerText = "+" + pointsGained + "pts";
     let opacity = 0;
@@ -742,6 +752,7 @@ function foundWord() {
                     let fadeOpacity = 1;
                     let fadeMarginLeft = 50;
                     gainedPointsFadeAwayInteval = window.setInterval(function() {
+                        console.log("HERE");
                         if(gainedPointsInterval == null) {
                             document.getElementById("gainedPoints").style.opacity = fadeOpacity;
                             document.getElementById("gainedPoints").style.marginLeft = fadeMarginLeft + "vw";
@@ -793,10 +804,12 @@ function foundWord() {
         col += colChange;
     }
 
-    let p = document.createElement("p");
-    p.innerText = guessedWord;
+    let parent = document.getElementsByClassName("found")[0];
+    let wordElem = parent.children[game.words.indexOf(guessedWord) + 1];
 
-    document.getElementsByClassName("found")[0].appendChild(p);
+    wordElem.style.textDecoration = "line-through";
+    wordElem.style.backgroundColor = "#8ada88";
+    wordElem.style.opacity = "0.85";
 
     highlightFound();
 }

@@ -181,12 +181,12 @@ table tr td {
 .game canvas {
     pointer-events: none;
     z-index: 1;
-    margin-left: 5em;
+    margin-left: 2.5em;
 }
 
 .game table {
-    margin-right: 5em;
-    margin-left: 5em;
+    margin-right: 2.5em;
+    margin-left: 2.5em;
 }
 
 .game .found h1 {
@@ -197,6 +197,11 @@ table tr td {
 .game .found p {
     margin: 0;
     font-size: 1em;
+    border-radius: 20px;
+    margin-left: -1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    width: fit-content;
 }
 .game .found p:not(:last-child) {
     margin-bottom: 0.5em;
