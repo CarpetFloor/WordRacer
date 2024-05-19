@@ -659,7 +659,111 @@ function guess() {
     animation.interval = window.setInterval(animation.loop, (1000 / 30));
 }
 
+let points = 0;
+let gainedPointsInterval = null;
+let gainedPointsFadeAwayInteval = null;
+
 function foundWord() {
+    // calculate how many points are gained from word
+    let pointsGained = 0;
+    pointsGained += guessedWord.length * 5;
+    
+    let secondsDiff = 
+        Math.floor(timerLast.now / 1000) - 
+        Math.floor(timerLast.start / 1000);
+    
+    /**
+     * Start with getting 60 bonus points (for a minute), 
+     * but for every second since the last word was 
+     * found lose a bonus point. But don't allow bonus 
+     * points to be negative.
+     */
+    let pointsFromTime = 60 - secondsDiff;
+    if(pointsFromTime < 0) {
+        pointsFromTime = 0;
+    }
+    pointsGained += pointsFromTime;
+
+    // animate gained points
+
+    // first, if animation is already playing clear it
+    if(gainedPointsInterval != null) {
+        window.clearInterval(gainedPointsInterval);
+
+        document.getElementById("gainedPoints").style.opacity = "0";
+        document.getElementById("gainedPoints").style.marginTop = "0.25em";
+        document.getElementById("gainedPoints").style.marginBottom = "-2em";
+        document.getElementById("gainedPoints").style.scale = "1";
+    }
+    
+    document.getElementById("gainedPoints").innerText = "+" + pointsGained + "pts";
+    let opacity = 0;
+
+    let marginTop = 0.75;
+    let marginBottom = 0 - 2.75;
+    let marginChange = 0.15;
+    
+    let scale = 0.75;
+    
+    // well, this is certainly one way to do animation
+
+    gainedPointsInterval = window.setInterval(function() {
+        opacity += 0.2;
+        marginTop -= marginChange;
+        marginBottom += marginChange;
+        scale += 0.05;
+        
+        let done = false;
+        if(opacity > 1) {
+            opacity = 1;
+            
+            done = true;
+        }
+
+        document.getElementById("gainedPoints").style.opacity = opacity;
+        document.getElementById("gainedPoints").style.marginTop = marginTop + "em";
+        document.getElementById("gainedPoints").style.marginBottom = marginBottom + "em";
+        document.getElementById("gainedPoints").style.scale = scale;
+
+        if(done) {
+            window.clearInterval(gainedPointsInterval);
+            gainedPointsInterval = null;
+
+            // ensure floating-point errors don't cause styles to not be set properly
+            document.getElementById("gainedPoints").style.opacity = "1";
+            document.getElementById("gainedPoints").style.marginTop = "0.25em";
+            document.getElementById("gainedPoints").style.marginBottom = "-2em";
+            document.getElementById("gainedPoints").style.scale = "1";
+
+            // fade away
+            window.setTimeout(function() {
+                // don't fade away if the animation has been started again
+                if(gainedPointsInterval == null) {
+                    let fadeOpacity = 1;
+                    let fadeMarginLeft = 50;
+                    gainedPointsFadeAwayInteval = window.setInterval(function() {
+                        if(gainedPointsInterval == null) {
+                            document.getElementById("gainedPoints").style.opacity = fadeOpacity;
+                            document.getElementById("gainedPoints").style.marginLeft = fadeMarginLeft + "vw";
+
+                            fadeOpacity -= 0.15;
+                            fadeMarginLeft += 2;
+
+                            if(fadeOpacity <= 0) {
+                                document.getElementById("gainedPoints").style.opacity = "0";
+                                window.clearInterval(gainedPointsFadeAwayInteval);
+                            }
+                        }
+                        else {
+                            window.clearInterval(gainedPointsFadeAwayInteval);
+                        }
+                    }, 1000 / 30);
+                }
+            }, 1000 * 3.5)
+        }
+    }, 1000 / 30);
+    
+
     timerLast.start = new Date();
 
     game.found.push(guessedWord);
@@ -679,7 +783,6 @@ function foundWord() {
         colChange = Math.abs(colDiff) / colDiff;
     }
     
-    console.log("> " + rowChange + "." + colChange);
     let row = guessedPosStart[0];
     let col = guessedPosStart[1];
 

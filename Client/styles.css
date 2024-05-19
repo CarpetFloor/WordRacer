@@ -119,6 +119,7 @@ button:hover {
     margin-right: auto;
     align-items: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    transform: translateX(-5%);
 }
 .top p {
     margin: 0;
@@ -137,6 +138,30 @@ button:hover {
 }
 .top div #lastTimer {
     width: 5em;
+    margin-right: -2.5em;
+}
+
+#gainedPoints {
+    margin: 0;
+    padding: 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    line-height: 1em;
+    width: 10em;
+    height: 1em;
+    text-align: center;
+    margin-top: 0.25em;
+    margin-bottom: -2em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    background-color: var(--grey3);
+    color: gold;
+    border-radius: 20px;
+    user-select: none;
+    margin-left: 50vw;
+    transform: translateX(-75%);
+    position: absolute;
+    opacity: 0;
 }
 
 table tr td {
