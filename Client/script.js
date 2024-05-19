@@ -752,7 +752,6 @@ function foundWord() {
                     let fadeOpacity = 1;
                     let fadeMarginLeft = 50;
                     gainedPointsFadeAwayInteval = window.setInterval(function() {
-                        console.log("HERE");
                         if(gainedPointsInterval == null) {
                             document.getElementById("gainedPoints").style.opacity = fadeOpacity;
                             document.getElementById("gainedPoints").style.marginLeft = fadeMarginLeft + "vw";
@@ -773,7 +772,9 @@ function foundWord() {
             }, 1000 * 3.5)
         }
     }, 1000 / 30);
-    
+
+    points += pointsGained;
+    document.getElementById("totalPoints").innerText = points + "pts";
 
     timerLast.start = new Date();
 

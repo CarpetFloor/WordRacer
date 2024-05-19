@@ -141,6 +141,19 @@ button:hover {
     margin-right: -2.5em;
 }
 
+.total {
+    position: absolute;
+    font-size: 1.5em;
+    margin-left: 50vw;
+    margin-top: 1em;
+}
+.total p:first-of-type {
+    font-weight: bold;
+}
+.total #totalPoints {
+    color: var(--colorDark3);
+}
+
 #gainedPoints {
     margin: 0;
     padding: 0;
