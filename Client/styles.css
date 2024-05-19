@@ -131,6 +131,47 @@ button:hover {
     margin-left: 0;
 }
 
+/* online */
+
+.online {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    justify-content: flex-start;
+}
+
+.online section {
+    display: flex;
+    flex-direction: column;
+}
+
+.online .openCreate {
+    margin-bottom: 2em;
+}
+
+.online .create {
+    display: none;
+    margin-bottom: 3em;
+}
+.online .create .container {
+    display: flex;
+    flex-direction: row;
+
+}
+.online .create .container div {
+    display: flex;
+    flex-direction: column;
+}
+
+.online .join .container {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+}
+.online .join .container:not(:last-of-type) {
+    margin-bottom: 1em;
+}
+
 /* game */
 
 .game {

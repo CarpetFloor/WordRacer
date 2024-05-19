@@ -677,8 +677,15 @@ let gainedPointsFadeAwayInteval = null;
 
 function foundWord() {
     // calculate how many points are gained from word
+
+    // get more points the shorter the word is
     let pointsGained = 0;
-    pointsGained += guessedWord.length * 5;
+
+    let lengthBonus = (5 * 15) - guessedWord.length * 5;
+    if(lengthBonus < 0) {
+        lengthBonus = 0;
+    }
+    pointsGained += lengthBonus;
     
     let secondsDiff = 
         Math.floor(timerLast.now / 1000) - 
@@ -949,7 +956,7 @@ function addBackButton() {
     }
     
     let icon = document.createElement("img");
-    icon.src = "/./Icons/home.png";
+    icon.src = "/./Icons/home-filled.png";
     icon.className = "icon";
     icon.style.marginTop = "-0.1em";
     icon.style.filter = "invert(1) brightness(0.97)";
