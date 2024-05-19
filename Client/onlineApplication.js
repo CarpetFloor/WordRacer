@@ -34,13 +34,28 @@ const pageScripts = [
     ["/Scripts/onlineMenu.js"], 
     []
 ]
+const pageScriptsContent = [
+    [],  
+    []
+]
+const intervals = [
+    [], 
+    []
+]
+const timeouts = [
+    [], 
+    []
+]
 const titles = [
     "Word Racer - Online Menu", 
     "Word Racer - Lobby"
 ]
 const loadedScripts = [];
 
+let currentPage = -1;
+
 function loadPage(page) {
+    currentPage = page;
     let src = "/./Pages/" + pages[page] + ".html";
 
     if(debugPageLoader) {
@@ -60,6 +75,19 @@ function loadPage(page) {
 
             for(let i = 0; i < loadedScripts.length; i++) {
                 loadedScripts[i].remove();
+                pageScriptsContent[i] = [];
+                
+                for(let j = 0; j < intervals[i].length; i++) {
+                    window.clearInterval(intervals[i][j]);
+                }
+
+                intervals[i] = [];
+
+                for(let j = 0; j < timeouts[i].length; i++) {
+                    window.clearTimeout(timeouts[i][j]);
+                }
+
+                timeouts[i] = [];
             }
 
             if(debugPageLoader) {
