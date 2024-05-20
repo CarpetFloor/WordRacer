@@ -11,7 +11,8 @@
     /* colors */
     --black: rgb(50, 50, 50);
     
-    --white1: #e5eee0;
+    /* --white1: #e5eee0; */
+    --white1: rgb(235, 235, 235);
     --white2: #d9eddf;
     --white3: #ecfef4;
 
@@ -22,11 +23,14 @@
     --colorMain: #49d197;
     --highlight: #00ff91;
 
+    --colorMainDarker: #3ea377;
+    --colorMainDarkerHighlight: #4dc591;
+
     --colorDark1: #69875b;
     --colorDark2: #003b11;
     --colorDark3: #386c5f;
 
-    --colorLight1: #69eeb2;
+    --colorLight1: #66e0a9;
     --colorLight2: #8ada88;
     --colorLight3: #bde181;
     --colorLight4: #cefbe3;
@@ -49,7 +53,7 @@ html {
 button {
     outline: none;
     border: none;
-    background-color: var(--colorMain);
+    background-color: var(--colorMainDarker);
     color: var(--white3);
     line-height: 0;
     padding: 1.5em;
@@ -62,7 +66,7 @@ button {
 button:hover {
     cursor: pointer;
     color: white;
-    background-color: var(--colorLight1);
+    background-color: var(--colorMainDarkerHighlight);
 }
 
 .icon {
