@@ -33,6 +33,9 @@ function Game() {
     this.players = []
 }
 let games = [];
+let maxPlayersMap = new Map();
+maxPlayersMap.set("bout", 2);
+maxPlayersMap.set("clash", 4);
 
 // handle users
 io.on("connection", (socket) => {
@@ -83,6 +86,29 @@ io.on("connection", (socket) => {
         io.sockets.emit("send active games", games);
     });
 
+    socket.on("join game", (host) => {
+        let game = null;
+
+        for(let i = 0; i < games.length; i++) {
+            if(games[i].host == host) {
+                game = games[i];
+                break;
+            }
+        }
+        
+        if((game != null) && (game.players.length < maxPlayersMap.get(game.type))) {
+            game.players.push(socket.id);
+            io.to(socket.id).emit("created game", game);
+
+            // notify all other players in the lobby that the players list has been updated
+            for(let i = 0; i < game.players.length; i++) {
+                if(game.players[i] != socket.id) {
+                    io.to(game.players[i]).emit("lobby players modified", game.players);
+                }
+            }
+        }
+    })
+
     socket.on("disconnect", () => {
         players.splice(players.indexOf(socket.id), 1);
         playersMap.delete(socket.id);
@@ -96,16 +122,46 @@ io.on("connection", (socket) => {
         io.sockets.emit("players map updated", playersMapAsArray);
 
         for(let i = 0; i < games.length; i++) {
+            // doesn't mean game is active, just that they are in a game
             let inGame = games[i].players.includes(socket.id);
 
             if(inGame) {
-                // if player was in a bout game, end the game
                 if(games[i].type == "bout") {
-                    games.splice(i, 1);
+                    /**
+                     * If game has not yet started:
+                     * -If player is not the host, simply remove them from the game 
+                     *  and let the other players in the game know they left
+                     * -If player is the host, end the game for everyone
+                     */
 
-                    // kick other players
+                    if(!(games[i].active)) {
+                        // plyer is host
+                        if(games[i].host == socket.id) {
+                            let players = games[i].players;
+
+                            games.splice(i, 1);
+
+                            for(let j = 0; j < players.length; j++) {
+                                io.to(players[j]).emit("game removed");
+                            }
+                        }
+                        // player is NOT the host
+                        else {
+                            let index = games[i].players.indexOf(socket.id);
+                            games[i].players.splice(index, 1);
+
+                            for(let j = 0; j < games[i].players.length; j++) {
+                                io.to(games[i].players[j]).emit(
+                                    "lobby players modified", 
+                                    games[i].players
+                                );
+                            }
+                        }
+                    }
                 }
                 // otherwise if player was in a clash game just remove them
+
+                break;
             }
         }
 

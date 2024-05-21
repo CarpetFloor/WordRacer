@@ -948,6 +948,3 @@ let backButton = document.getElementsByClassName("navIconButton")[0];
 
 backButton.style.marginLeft = "auto";
 backButton.style.marginRight = "auto";
-
-backButton.children[0].style.marginTop = "-0.1em";
-backButton.children[0].style.filter = "invert(1) brightness(0.97)";

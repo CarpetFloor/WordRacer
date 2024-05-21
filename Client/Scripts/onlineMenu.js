@@ -1,5 +1,4 @@
-let pageReference = pages[currentPage];
-pageReference.activeScripts.push(function() {
+pages[currentPage].activeScripts.push(function() {
     // toggle create game menu
 
     let create = document.getElementsByClassName("create")[0];
@@ -68,6 +67,10 @@ pageReference.activeScripts.push(function() {
                 joinImage.src = "placeholder.png";
                 joinImage.className = "icon";
 
+                joinImage.addEventListener("click", function() {
+                    socket.emit("join game", games[i].host);
+                });
+
                 container.appendChild(joinImage);
 
                 parent.appendChild(container);
@@ -76,4 +79,4 @@ pageReference.activeScripts.push(function() {
 
     });
 });
-pageReference.activeScripts[pageReference.activeScripts.length - 1]();
+pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();

@@ -11,11 +11,17 @@ socket.on("connection established", (idSent) => {
 });
 
 socket.on("players map updated", (playersMapAsArray) => {
+    console.log("BEFORE MAP");
+    console.log(playersMap);
+
     playersMap = new Map();
 
     playersMapAsArray.forEach(pair => {
         playersMap.set(pair[0], pair[1]);
     });
+
+    console.log("AFTER MAP");
+    console.log(playersMap);
 });
 
 // SPA stuff
