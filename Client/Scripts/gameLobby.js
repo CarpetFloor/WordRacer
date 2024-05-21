@@ -43,5 +43,15 @@ pages[currentPage].activeScripts.push(function() {
     socket.on("game removed", () => {
         loadPage(0);
     });
+
+    // leave game button
+    let leaveGameButton = document.querySelector(".controls").children[1];
+    leaveGameButton.addEventListener("click", function() {
+        socket.emit("leave lobby", mygame.host);
+        loadPage(0);
+    });
+
+    // start game button
+    let startGameButton = document.querySelector(".controls").children[0];
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();

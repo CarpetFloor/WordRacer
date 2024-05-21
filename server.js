@@ -37,6 +37,19 @@ let maxPlayersMap = new Map();
 maxPlayersMap.set("bout", 2);
 maxPlayersMap.set("clash", 4);
 
+function getGame(host) {
+    let game = null;
+
+    for(let i = 0; i < games.length; i++) {
+        if(games[i].host == host) {
+            game = games[i];
+            break;
+        }
+    }
+
+    return game;
+}
+
 // handle users
 io.on("connection", (socket) => {
     // initiale user data when first connecting
@@ -87,14 +100,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("join game", (host) => {
-        let game = null;
-
-        for(let i = 0; i < games.length; i++) {
-            if(games[i].host == host) {
-                game = games[i];
-                break;
-            }
-        }
+        let game = getGame(host);
         
         if((game != null) && (game.players.length < maxPlayersMap.get(game.type))) {
             game.players.push(socket.id);
@@ -109,6 +115,33 @@ io.on("connection", (socket) => {
         }
     })
 
+    socket.on("leave lobby", (host) => {
+        let game = getGame(host);
+
+        if(socket.id == host) {
+            let removeIndex = games.indexOf(game);
+            games.splice(removeIndex, 1);
+
+            for(let i = 0; i < game.players.length; i++) {
+                io.to(game.players[i]).emit("game removed");
+            }
+
+            // send all clients the updated games array
+            io.sockets.emit("send active games", games);
+        }
+        else {
+            let removeIndex = game.players.indexOf(socket.id);
+            game.players.splice(removeIndex, 1);
+            
+            for(let i = 0; i < game.players.length; i++) {
+                io.to(game.players[i]).emit(
+                    "lobby players modified", 
+                    game.players
+                );
+            }
+        }
+    });
+
     socket.on("disconnect", () => {
         players.splice(players.indexOf(socket.id), 1);
         playersMap.delete(socket.id);
@@ -117,51 +150,51 @@ io.on("connection", (socket) => {
         playersMap.forEach((value, key) => {
             playersMapAsArray.push([key, value]);
         });
-        
+
         // send all clients the updated players map
         io.sockets.emit("players map updated", playersMapAsArray);
 
+        // check if the player was in a game
+        let game = null;
         for(let i = 0; i < games.length; i++) {
-            // doesn't mean game is active, just that they are in a game
-            let inGame = games[i].players.includes(socket.id);
+            if(games[i].players.includes(socket.id)) {
+                game = games[i];
+                break;
+            }
+        }
 
-            if(inGame) {
-                if(games[i].type == "bout") {
-                    /**
-                     * If game has not yet started:
-                     * -If player is not the host, simply remove them from the game 
-                     *  and let the other players in the game know they left
-                     * -If player is the host, end the game for everyone
-                     */
+        if(game != null) {
+            if(game.type == "bout") {
+                /**
+                 * If game has not yet started:
+                 * -If player is not the host, simply remove them from the game 
+                 *  and let the other players in the game know they left
+                 * -If player is the host, end the game for everyone
+                 */
 
-                    if(!(games[i].active)) {
-                        // plyer is host
-                        if(games[i].host == socket.id) {
-                            let players = games[i].players;
+                if(!(game.active)) {
+                    // plyer is host
+                    if(game.host == socket.id) {
+                        let removeIndex = games.indexOf(game);
+                        games.splice(removeIndex, 1);
 
-                            games.splice(i, 1);
-
-                            for(let j = 0; j < players.length; j++) {
-                                io.to(players[j]).emit("game removed");
-                            }
+                        for(let i = 0; i < game.players.length; i++) {
+                            io.to(game.players[i]).emit("game removed");
                         }
-                        // player is NOT the host
-                        else {
-                            let index = games[i].players.indexOf(socket.id);
-                            games[i].players.splice(index, 1);
+                    }
+                    // player is NOT the host
+                    else {
+                        let removeIndex = game.players.indexOf(socket.id);
+                        game.players.splice(removeIndex, 1);
 
-                            for(let j = 0; j < games[i].players.length; j++) {
-                                io.to(games[i].players[j]).emit(
-                                    "lobby players modified", 
-                                    games[i].players
-                                );
-                            }
+                        for(let i = 0; i < game.players.length; i++) {
+                            io.to(game.players[i]).emit(
+                                "lobby players modified", 
+                                game.players
+                            );
                         }
                     }
                 }
-                // otherwise if player was in a clash game just remove them
-
-                break;
             }
         }
 
