@@ -29,17 +29,13 @@ pageReference.activeScripts.push(function() {
         socket.emit("create game", "clash");
     });
 
-    socket.on("created game", () => {
+    // server has created game, redirect client to game lobby page
+    socket.on("created game", (game) => {
+        mygame = game;
         loadPage(1);
     });
-    
-    /*
-    let activeGamesInterval = window.setInterval(function() {
-        socket.emit("request active games");
-    }, 1000);
-    pageReference.intervals.push(activeGamesInterval);
-    */
 
+    // receive an updated list of the games
     socket.emit("request active games");
     socket.on("send active games", (games) => {
         let parent = document.getElementsByClassName("join")[0];

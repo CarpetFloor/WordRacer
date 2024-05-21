@@ -34,15 +34,23 @@ function Game() {
 }
 let games = [];
 
-// don't decrement so that if a player leaves there won't be 2 player1
-let countForNewPlayerName = 0;
-
 // handle users
 io.on("connection", (socket) => {
     // initiale user data when first connecting
-    ++countForNewPlayerName;
+
+    let lowestPlayerNumber = 1;
+
+    for(let i = 0; i < players.length; i++) {
+        let check = "player" + lowestPlayerNumber;
+
+        while(playersMap.get(players[i]) == check) {
+            ++lowestPlayerNumber;
+            check = "player" + lowestPlayerNumber;
+        }
+    }
+
     players.push(socket.id);
-    playersMap.set(socket.id, "player" + countForNewPlayerName);
+    playersMap.set(socket.id, "player" + lowestPlayerNumber);
     
     // send the newly-connected client their id
     io.to(socket.id).emit("connection established", socket.id);
@@ -69,13 +77,14 @@ io.on("connection", (socket) => {
         games.push(game);
 
         // let requester know that the game has been created
-        io.to(socket.id).emit("created game");
+        io.to(socket.id).emit("created game", game);
 
         // send the updated games array to all clients
         io.sockets.emit("send active games", games);
     });
 
     socket.on("disconnect", () => {
+        players.splice(players.indexOf(socket.id), 1);
         playersMap.delete(socket.id);
 
         let playersMapAsArray = [];

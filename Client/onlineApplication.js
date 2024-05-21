@@ -1,8 +1,9 @@
-// socket.io stuff
+// global socket.io stuff
 
 let socket = io();
 let myid = null;
 let playersMap = new Map();
+let mygame = null;
 
 socket.on("connection established", (idSent) => {
     myid = idSent;
@@ -44,7 +45,7 @@ function generatePagesData() {
     pages.push(new Page(
         "gameLobby", 
         "Word Racer - Lobby", 
-        []
+        ["/Scripts/gameLobby.js"]
     ));
 }
 generatePagesData();
