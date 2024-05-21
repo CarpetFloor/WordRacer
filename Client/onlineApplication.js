@@ -127,20 +127,30 @@ function loadPage(index) {
                 console.log("Loading scripts");
             }
 
-            for(let i = 0; i < page.scriptsToLoad.length; i++) {
-                let script = document.createElement("script");
-                script.src = page.scriptsToLoad[i];
+            loadScriptsLoop(page, 0);
+        }
+    );
+}
 
-                document.body.appendChild(script);
-                loadedScripts.push(script);
-            }
+function loadScriptsLoop(page, index) {
+    let script = document.createElement("script");
+    script.src = page.scriptsToLoad[index];
 
+    document.body.appendChild(script);
+    loadedScripts.push(script);
+
+    script.onload = function() {
+        if(index == page.scriptsToLoad.length - 1) {
             if(debugPageLoader) {
                 console.log("Loaded scripts");
                 console.log("----------------------------------------\n\n\n");
             }
         }
-    );
+        else {
+            loadScriptsLoop(page, index + 1);
+        }
+    }
+    
 }
 
 function loadPageByName(name) {

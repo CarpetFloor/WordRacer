@@ -59,6 +59,7 @@ pages[currentPage].activeScripts.push(function() {
 
     socket.on("not enough players to start game", () => {
         if(errorMessageHideTimeout != null) {
+            pages[currentPage].timeouts[0] = null;
             window.clearTimeout(errorMessageHideTimeout);
             errorMessageHideTimeout = null;
         }
@@ -69,6 +70,11 @@ pages[currentPage].activeScripts.push(function() {
             errorMessageHideTimeout = null;
             errorMessage.style.display = "none";
         }, 5000);
+        pages[currentPage].timeouts.push(errorMessageHideTimeout);
+    });
+
+    socket.on("load game page", () => {
+        loadPageByName(mygame.type);
     });
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();

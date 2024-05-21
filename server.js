@@ -23,16 +23,20 @@ app.get("/", (req, res) => {
 
 // players
 let players = [];
+let sockets = [];
 
 let playersMap = new Map();
 
 function Game() {
     this.host = null, 
+    this.roomName = null, 
     this.type = null, 
     this.active = false, 
-    this.players = []
+    this.players = [], 
+    this.connectedCount = 0
 }
 let games = [];
+let roomNames = [];
 
 let maxPlayersMap = new Map();
 maxPlayersMap.set("bout", 2);
@@ -71,6 +75,7 @@ io.on("connection", (socket) => {
     }
 
     players.push(socket.id);
+    sockets.push(socket);
     playersMap.set(socket.id, "player" + lowestPlayerNumber);
     
     // send the newly-connected client their id
@@ -152,15 +157,50 @@ io.on("connection", (socket) => {
 
         // first make sure there are enough players
         if(game.players.length >= minPlayersMap.get(game.type)) {
-            // 
+            // find first available name for room
+            let smallest = 0;
+
+            if(roomNames.length > 0) {
+                smallest = roomNames[0];
+
+                for(let j = 0; j < roomNames.length; j++) {
+                    if(roomNames[j] < smallest) {
+                        smallest = roomNames[j];
+                    }
+                }
+            }
+
+            game.roomName = "game" + smallest;
+            roomNames.push(game.roomName);
+
+            // add all players in the game to a room to allow broadcasting to all players at once
+            for(let i = 0; i < game.players.length; i++) {                
+                let playerIndex = players.indexOf(game.players[i]);
+                let playerSocket = sockets[playerIndex];
+                playerSocket.join(game.roomName);
+            }
+            
+            game.active = true;
+            io.to(game.roomName).emit("load game page");
         }
         else {
             io.to(socket.id).emit("not enough players to start game");
         }
     });
 
+    socket.on("loaded game page", (host) => {
+        let game = getGame(host);
+        ++game.connectedCount;
+
+        if(game.connectedCount == game.players.length) {
+            io.to(game.roomName).emit("game has started");
+        }
+    });
+
     socket.on("disconnect", () => {
-        players.splice(players.indexOf(socket.id), 1);
+        let playerIndex = players.indexOf(socket.id);
+        players.splice(playerIndex, 1);
+        sockets.splice(playerIndex, 1);
         playersMap.delete(socket.id);
 
         playersMapAsArray = [];
@@ -211,6 +251,35 @@ io.on("connection", (socket) => {
                             );
                         }
                     }
+                }
+                /**
+                 * Game has started:
+                 * -Kick everyone from the game
+                 * -Reset/ remove data related to game
+                 */
+                else {
+                    // kick players
+                    for(let i = 0; i < game.players.length; i++) {
+                        io.to(game.roomName).emit("game removed");
+                    }
+
+                    // remove room from tracked room names
+                    let roomNameIndex = roomNames.indexOf(game.roomName);
+                    roomNames.splice(roomNameIndex, 1);
+
+                    // remove players from room
+                    for(let i = 0; i < game.players.length; i++) {
+                        if(game.players[i] != socket.id) {
+                            let playerIndex = players.indexOf(game.players[i]);
+                            let playerSocket = sockets[playerIndex];
+
+                            playerSocket.leave(game.roomName);
+                        }
+                    }
+
+                    // remove game from games list
+                    let gameIndex = games.indexOf(game);
+                    games.splice(gameIndex, 1);
                 }
             }
         }

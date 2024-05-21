@@ -1,36 +1,28 @@
-    <section class="top">
-        <button class="navIconButton"
-        onclick="window.open('/./index.html', '_self')">
-            <img class="icon iconInvert" src="/../Icons/home-filled.png">
-            <p>Back</p>
-        </button>
+<section class="top">
+    <div class="total">
+        <p>Total:</p>
+        <p id="totalPoints">0pts</p>
+    </div>
 
-        <div class="total">
-            <p>Total:</p>
-            <p id="totalPoints">0pts</p>
-        </div>
+    <p id="connectionStatus">Waiting for others to connect...</p>
+</section>
 
-        <p id="mainTimer">0:00</p>
+<p id="gainedPoints">+30pts</p>
+
+<section class="game">
+    <section class="search">
+        <table style="
+        opacity: 0;
+        pointer-events: none;
+        "></table>
         
-        <div>
-            <p>Since last found:</p>
-            <p id="lastTimer">0:00</p>
-        </div>
+        <canvas></canvas>
     </section>
 
-    <p id="gainedPoints">+30pts</p>
-
-    <section class="game">
-        <section class="search">
-            <table></table>
-            
-            <canvas></canvas>
-        </section>
-
-        <section class="found">
-            <h1>Words</h1>
-        </section>
+    <section class="found" style="
+    opacity: 0;
+    pointer-events: none;
+    ">
+        <h1>Words</h1>
     </section>
-
-    <script src="/./words.js"></script>
-    <script src="/./Scripts/bout.js"></script>
+</section>
