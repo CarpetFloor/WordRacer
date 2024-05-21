@@ -71,8 +71,17 @@ function generatePagesData() {
 generatePagesData();
 
 let loadedScripts = [];
-
 let currentPage = -1;
+/**
+ * For stuff like a game loaded page detects that the game has disconnected, so when sending 
+ * the user back to the online menu, the loaded game page can tell the online menu page to show 
+ * an error message.
+ */
+let globalErrorMessage = {
+    show: false, 
+    message: "", 
+    timeout: null
+}
 
 function loadPage(index) {
     // reset script data and socket listeners
@@ -145,6 +154,8 @@ function loadScriptsLoop(page, index) {
                 console.log("Loaded scripts");
                 console.log("----------------------------------------\n\n\n");
             }
+
+            showErrorMessageCheck();
         }
         else {
             loadScriptsLoop(page, index + 1);
@@ -165,6 +176,25 @@ function loadPageByName(name) {
 
     if(index != -1) {
         loadPage(index);
+    }
+}
+
+function showErrorMessageCheck() {
+    if(globalErrorMessage.show) {
+        globalErrorMessage.show = false;
+
+        if(globalErrorMessage.timeout != null) {
+            window.clearTimeout(globalErrorMessage.timeout);
+        }
+
+        let elem = document.querySelector(".errorMessage");
+        elem.innerText = globalErrorMessage.message;
+        elem.style.opacity = "1";
+
+        globalErrorMessage.timeout = window.setTimeout(function() {
+            globalErrorMessage.timeout = null;
+            elem.style.opacity = "0";
+        }, 8000);
     }
 }
 

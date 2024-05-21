@@ -98,8 +98,10 @@ button:hover {
 }
 
 .errorMessage {
+    position: absolute;
     width: fit-content;
-    display: none;
+    opacity: 0;
+    pointer-events: none;
     margin-left: auto;
     margin-right: auto;
     font-weight: bold;

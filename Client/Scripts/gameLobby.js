@@ -64,11 +64,11 @@ pages[currentPage].activeScripts.push(function() {
             errorMessageHideTimeout = null;
         }
 
-        errorMessage.style.display = "flex";
+        errorMessage.style.opacity = "1";
 
         errorMessageHideTimeout = window.setTimeout(function() {
             errorMessageHideTimeout = null;
-            errorMessage.style.display = "none";
+            errorMessage.style.opacity = "0";
         }, 5000);
         pages[currentPage].timeouts.push(errorMessageHideTimeout);
     });

@@ -951,7 +951,8 @@ pages[currentPage].activeScripts.push(function() {
     }
 
     socket.on("game removed", () => {
-        console.log("kicked");
+        globalErrorMessage.message = "The game has ended due to the other player losing connection.";
+        globalErrorMessage.show = true;
         loadPage(0);
     });
 
