@@ -12,7 +12,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-const port = 8080;
+const port = 8081;
 
 // add static file(s)
 app.use(express.static(__dirname + "/Client"));
@@ -113,11 +113,11 @@ io.on("connection", (socket) => {
         players.splice(players.indexOf(socket.id), 1);
         playersMap.delete(socket.id);
 
-        let playersMapAsArray = [];
+        playersMapAsArray = [];
         playersMap.forEach((value, key) => {
             playersMapAsArray.push([key, value]);
         });
-
+        
         // send all clients the updated players map
         io.sockets.emit("players map updated", playersMapAsArray);
 

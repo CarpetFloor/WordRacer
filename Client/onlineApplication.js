@@ -5,24 +5,25 @@ let myid = null;
 let playersMap = new Map();
 let mygame = null;
 
-socket.on("connection established", (idSent) => {
-    myid = idSent;
-    console.log(myid);
-});
-
-socket.on("players map updated", (playersMapAsArray) => {
-    console.log("BEFORE MAP");
-    console.log(playersMap);
-
-    playersMap = new Map();
-
-    playersMapAsArray.forEach(pair => {
-        playersMap.set(pair[0], pair[1]);
+/**
+ * Global socket listeners. Have to put in function so can call later 
+ * when all socket listeners are removed when a new page is loaded.
+ */
+function establishGlobalSocketListeners() {
+    socket.on("connection established", (idSent) => {
+        myid = idSent;
+        console.log(myid);
     });
 
-    console.log("AFTER MAP");
-    console.log(playersMap);
-});
+    socket.on("players map updated", (playersMapAsArray) => {
+        playersMap.clear();
+
+        for(let i = 0; i < playersMapAsArray.length; i++) {
+            playersMap.set(playersMapAsArray[i][0], playersMapAsArray[i][1]);
+        }
+    });
+}
+establishGlobalSocketListeners();
 
 // SPA stuff
 
@@ -64,6 +65,7 @@ function loadPage(index) {
     // reset script data and socket listeners
     if(currentPage != -1) {
         socket.removeAllListeners();
+        establishGlobalSocketListeners();
 
         for(let i = 0; i < loadedScripts.length; i++) {
             loadedScripts[i].remove();

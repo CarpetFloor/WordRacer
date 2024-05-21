@@ -14,9 +14,6 @@ pages[currentPage].activeScripts.push(function() {
         for(let i = 0; i < playersList.length; i++) {
             playersList[i].remove();
         }
-
-        console.log("going through players:");
-        console.log(mygame.players);
         
         // update players list
         for(let i = 0; i < mygame.players.length; i++) {
