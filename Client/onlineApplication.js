@@ -46,13 +46,26 @@ function generatePagesData() {
     pages.push(new Page(
         "onlineMenu", 
         "Word Racer - Online Menu", 
-        ["/Scripts/onlineMenu.js"]
+        [
+            "/Scripts/onlineMenu.js"
+        ]
     ));
 
     pages.push(new Page(
         "gameLobby", 
         "Word Racer - Lobby", 
-        ["/Scripts/gameLobby.js"]
+        [
+            "/Scripts/gameLobby.js"
+        ]
+    ));
+
+    pages.push(new Page(
+        "bout", 
+        "Word Racer - Bout", 
+        [
+            "/words.js", 
+            "/Scripts/bout.js"
+        ]
     ));
 }
 generatePagesData();
@@ -128,6 +141,21 @@ function loadPage(index) {
             }
         }
     );
+}
+
+function loadPageByName(name) {
+    let index = -1;
+    
+    for(let i = 0; i < pages.length; i++) {
+        if(pages[i].file == name) {
+            index = i;
+            break;
+        }
+    }
+
+    if(index != -1) {
+        loadPage(index);
+    }
 }
 
 loadPage(0);

@@ -33,9 +33,14 @@ function Game() {
     this.players = []
 }
 let games = [];
+
 let maxPlayersMap = new Map();
 maxPlayersMap.set("bout", 2);
 maxPlayersMap.set("clash", 4);
+
+let minPlayersMap = new Map();
+minPlayersMap.set("bout", 2);
+minPlayersMap.set("clash", 3);
 
 function getGame(host) {
     let game = null;
@@ -139,6 +144,18 @@ io.on("connection", (socket) => {
                     game.players
                 );
             }
+        }
+    });
+
+    socket.on("request game start", (host) => {
+        let game = getGame(host);
+
+        // first make sure there are enough players
+        if(game.players.length >= minPlayersMap.get(game.type)) {
+            // 
+        }
+        else {
+            io.to(socket.id).emit("not enough players to start game");
         }
     });
 

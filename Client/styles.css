@@ -97,6 +97,15 @@ button:hover {
     filter: invert(1) brightness(0.97);
 }
 
+.errorMessage {
+    width: fit-content;
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: bold;
+    border: 2px solid red;
+}
+
 /* landing page */
 
 .landing {
