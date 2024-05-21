@@ -944,31 +944,10 @@ function endGame() {
     }
 }
 
-function addBackButton() {
-    let backButton = document.createElement("button");
-    backButton.className = "navIconButton";
-    backButton.style.marginLeft = "auto";
-    backButton.style.marginRight = "auto";
-    backButton.style.transform = "translateX(-45%)";
+let backButton = document.getElementsByClassName("navIconButton")[0];
 
-    backButton.onclick = function() {
-        window.open("/./index.html", "_self");
-    }
-    
-    let icon = document.createElement("img");
-    icon.src = "/./Icons/home-filled.png";
-    icon.className = "icon";
-    icon.style.marginTop = "-0.1em";
-    icon.style.filter = "invert(1) brightness(0.97)";
-    
-    backButton.appendChild(icon);
+backButton.style.marginLeft = "auto";
+backButton.style.marginRight = "auto";
 
-    let p = document.createElement("p");
-    p.innerText = "Back";
-    
-    backButton.appendChild(p);
-
-    let top = document.getElementsByClassName("top")[0];
-    document.body.insertBefore(backButton, top);
-}
-addBackButton();
+backButton.children[0].style.marginTop = "-0.1em";
+backButton.children[0].style.filter = "invert(1) brightness(0.97)";
