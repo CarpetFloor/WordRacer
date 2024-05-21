@@ -14,6 +14,8 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const port = 8081;
 
+const wordsList = require("./Client/wordsForServer");
+
 // add static file(s)
 app.use(express.static(__dirname + "/Client"));
 
@@ -33,7 +35,17 @@ function Game() {
     this.type = null, 
     this.active = false, 
     this.players = [], 
-    this.connectedCount = 0
+    this.connectedCount = 0, 
+    this.data = {
+        width: -1, 
+        height: -1, 
+        words: [], 
+        found: [], 
+        foundPosesStart: [], 
+        foundPosesEnd: [], 
+        foundAllPoints: [], 
+        grid: []
+    }
 }
 let games = [];
 let roomNames = [];
@@ -45,6 +57,12 @@ maxPlayersMap.set("clash", 4);
 let minPlayersMap = new Map();
 minPlayersMap.set("bout", 2);
 minPlayersMap.set("clash", 3);
+
+let wordCountMap = new Map();
+wordCountMap.set("bout", 12);
+
+let gameSizeMap = new Map();
+gameSizeMap.set("bout", {width: 15, height: 20});
 
 function getGame(host) {
     let game = null;
@@ -193,7 +211,8 @@ io.on("connection", (socket) => {
         ++game.connectedCount;
 
         if(game.connectedCount == game.players.length) {
-            io.to(game.roomName).emit("game has started");
+            setupGameData(game);
+            io.to(game.roomName).emit("game has started", game.data);
         }
     });
 
@@ -287,7 +306,6 @@ io.on("connection", (socket) => {
         // send all clients the updated games array
         io.sockets.emit("send active games", games);
     });
-
 });
 
 // start server
@@ -295,3 +313,176 @@ server.listen(port, () => {
   console.log("server started on port", port);
 });
 
+// for filling in random letters
+const letters = [
+    "a", 
+    "b", 
+    "c", 
+    "d", 
+    "e", 
+    "f", 
+    "g", 
+    "h", 
+    "i", 
+    "j", 
+    "k", 
+    "l", 
+    "m", 
+    "n", 
+    "o", 
+    "p", 
+    "q", 
+    "r", 
+    "s", 
+    "t", 
+    "u", 
+    "v", 
+    "w", 
+    "x", 
+    "y", 
+    "z"
+];
+
+function random(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+function addWord(gameData, row, col, word) {
+    let possibleDirs = [
+        // left
+        [-1, 0], 
+        // right
+        [1, 0], 
+        // up
+        [0, -1], 
+        // down
+        [0, 1], 
+        // up-left
+        [1, -1], 
+        // up-right
+        [1, -1], 
+        // down-left
+        [-1, 1], 
+        // down-right
+        [1, 1], 
+    ]
+    let dir = possibleDirs[random(0, possibleDirs.length - 1)];
+    let rchange = dir[0];
+    let cchange = dir[1];
+
+    // first make sure there is enough space
+    if(row + (rchange * word.length) > gameData.width - 1) {
+        return false;
+    }
+    if(row + (rchange * word.length) < 0) {
+        return false;
+    }
+    if(col + (cchange * word.length) > gameData.height - 1) {
+        return false;
+    }
+    if(col + (cchange * word.length) < 0) {
+        return false;
+    }
+
+    // make sure a word has not already been filled in
+    let r = row;
+    let c = col;
+
+    for(let i = 0; i < word.length; i++) {
+        if(gameData.grid[r][c] != 0) {
+            return false;
+        }
+
+        r += rchange;
+        c += cchange;
+    }
+
+    // actually fill in word
+    r = row;
+    c = col;
+
+    for(let i = 0; i < word.length; i++) {
+        gameData.grid[r][c] = word[i];
+
+        r += rchange;
+        c += cchange;
+    }
+
+    return true;
+}
+
+function setupGameData(game) {
+    let gameData = game.data;
+
+    // set size of game
+    let sizeData = gameSizeMap.get(game.type);
+    gameData.width = sizeData.width;
+    gameData.height = sizeData.height;
+
+    // generate a random list of words
+    for(let i = 0; i < wordCountMap.get(game.type); i++) {
+        let index = random(0, wordsList.words.length - 1);
+        let picked = wordsList.words[index];
+
+        // make sure each word is distinct
+        if(gameData.words.includes(picked)) {
+            while(gameData.words.includes(picked)) {
+                ++index;
+
+                if(index == gameData.words.length) {
+                    index = 0;
+                }
+            }
+
+            picked = wordsList.words[index];
+        }
+
+        gameData.words.push(picked);
+    }
+
+    // generate array that represent game
+    for(let row = 0; row < gameData.height; row++) {
+        let row = [];
+
+        for(let col = 0; col < gameData.width; col++) {
+            row.push(0);
+        }
+
+        gameData.grid.push(row);
+    }
+
+    // fill words at random spots
+    let index = 0;
+    let done = false;
+    while(index < gameData.words.length) {
+        for(let row = 0; row < gameData.height; row++) {
+            for(let col = 0; col < gameData.width; col++) {
+                if(random(1, 500) == 1) {
+                    let addCheck = addWord(gameData, row, col, gameData.words[index]);
+
+                    if(addCheck) {
+                        ++index;
+                    }
+
+                    if(index > gameData.words.length - 1) {
+                        done = true;
+                        break;
+                    }
+                }
+            }
+
+            if(done) {
+                break;
+            }
+        }
+    }
+
+    // fill in remaining letters
+    for(let row = 0; row < gameData.height; row++) {
+        for(let col = 0; col < gameData.width; col++) {
+            if(gameData.grid[row][col] == 0) {
+                gameData.grid[row][col] = letters[random(0, letters.length - 1)];
+            }
+        }
+    }
+}

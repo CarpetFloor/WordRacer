@@ -4,7 +4,6 @@ pages[currentPage].activeScripts.push(function() {
     let maxPlayers = (mygame.type == "bout") ? 2 : 4;
 
     let errorMessage = document.querySelector(".errorMessage");
-    console.log(errorMessage);
     let errorMessageHideTimeout = null;
 
     updatePage();

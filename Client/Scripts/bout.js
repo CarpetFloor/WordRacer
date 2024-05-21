@@ -1,273 +1,20 @@
 pages[currentPage].activeScripts.push(function() {
-    let debugGenerate = false;
-    // only in console
-    let showAnswers = false;
-
-    const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
-
-    const settings = {
-        wordCount: 12
+    // for calculating point bonused based off of time
+    let timer = {
+        start: new Date(), 
+        now: null
     }
 
-    const game = {
-        width: 15, 
-        height: 20, 
-        words: [], 
-        found: [], 
-        foundPosesStart: [], 
-        foundPosesEnd: [], 
-        foundAllPoints: [], 
-        data: []
-    }
+    let game = null;
 
     function random(min, max) {
         return Math.floor(Math.random() * (max - min) + min);
     }
 
-    function generateGame() {
-        // generate a random list of words
-        for(let i = 0; i < settings.wordCount; i++) {
-            let index = random(0, wordsList.length - 1);
-            let picked = wordsList[index];
-
-            // make sure each word is distinct
-            if(game.words.includes(picked)) {
-                while(game.words.includes(picked)) {
-                    ++index;
-
-                    if(index == game.words.length) {
-                        index = 0;
-                    }
-                }
-
-                picked = wordsList[index];
-            }
-
-            game.words.push(picked);
-        }
-
-        // add words to HTML words list
-        let elem = document.getElementsByClassName("found")[0];
-
-        for(let i = 0; i < game.words.length; i++) {
-            let p = document.createElement("p");
-            p.innerText = game.words[i];
-
-            elem.appendChild(p);
-        }
-
-        if(debugGenerate) {
-            console.log(game.words);
-        }
-
-        // generate array that represent game
-        for(let row = 0; row < game.height; row++) {
-            let row = [];
-
-            for(let col = 0; col < game.width; col++) {
-                row.push(0);
-            }
-
-            game.data.push(row);
-        }
-
-        if(showAnswers) {
-            console.log("WORDS:");
-            console.log("----------");
-        }
-
-        let index = 0;
-        let done = false;
-        
-        // fill words at random spots
-        while(index < game.words.length) {
-            for(let row = 0; row < game.height; row++) {
-                for(let col = 0; col < game.width; col++) {
-                    if(random(1, 500) == 1) {
-                        let addCheck = addWord(row, col, game.words[index]);
-
-                        if(addCheck) {
-                            if(debugGenerate) {
-                                console.log("generated " + index + ", " + game.words[index]);
-                            }
-
-                            if(showAnswers) {
-                                if(showAnswers) {
-                                    console.log(game.words[index]);
-                                    console.log("..at: ", row, ",", col);
-                                }
-                            }
-
-                            ++index;
-                        }
-
-                        if(index > game.words.length - 1) {
-                            done = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(done) {
-                    break;
-                }
-            }
-        }
-
-        // fill in remaining letters
-        for(let row = 0; row < game.height; row++) {
-            for(let col = 0; col < game.width; col++) {
-                if(game.data[row][col] == 0) {
-                    let extra = "";
-                    if(debugGenerate) {
-                        extra = ".";
-                    }
-
-                    game.data[row][col] = extra + letters[random(0, letters.length - 1)];
-                }
-            }
-        }
-
-        let table = document.querySelector("table");
-
-        // generate html
-        for(let row = 0; row < game.height; row++) {
-            let tr = document.createElement("tr");
-
-            for(let col = 0; col < game.width; col++) {
-                let td = document.createElement("td");
-                td.id = row + "," + col;
-
-                /*
-                td.addEventListener(
-                    "mousemove", 
-                    function(){cellHoverListen(td);}
-                );
-                td.addEventListener(
-                    "mouseleave", 
-                    function(){cellUnHoverListen(td);}
-                );
-                td.addEventListener(
-                    "click", 
-                    function(){cellClick(td);}
-                );
-                
-                // listeners for selection
-                td.addEventListener("mousemove", drawSelection);
-                td.addEventListener("click", drawSelection);
-                */
-
-                if(debugGenerate) {
-                    if(game.data[row][col].includes(".")) {
-                        td.innerText = (game.data[row][col])[1];
-                    }
-                    else {
-                        td.innerText = game.data[row][col];
-                        td.style.color = "var(--black)";
-                        td.style.fontWeight = "bold";
-                        td.style.backgroundColor = "var(--color2)";
-
-                        let answerIndicator = document.createElement("p");
-                        answerIndicator.style.display = "none";
-                        td.appendChild(answerIndicator);
-                    }
-                }
-                else {
-                    td.innerText = (game.data[row][col]);
-                }
-
-                tr.appendChild(td);
-            }
-
-            table.appendChild(tr);
-        }
-    }
-
-    function addWord(row, col, word) {
-        let possibleDirs = [
-            // left
-            [-1, 0], 
-            // right
-            [1, 0], 
-            // up
-            [0, -1], 
-            // down
-            [0, 1], 
-            // up-left
-            [1, -1], 
-            // up-right
-            [1, -1], 
-            // down-left
-            [-1, 1], 
-            // down-right
-            [1, 1], 
-        ]
-        let dir = possibleDirs[random(0, possibleDirs.length - 1)];
-        let rchange = dir[0];
-        let cchange = dir[1];
-
-        // first make sure there is enough space
-        if(row + (rchange * word.length) > game.width - 1) {
-            return false;
-        }
-        if(row + (rchange * word.length) < 0) {
-            return false;
-        }
-        if(col + (cchange * word.length) > game.height - 1) {
-            return false;
-        }
-        if(col + (cchange * word.length) < 0) {
-            return false;
-        }
-
-        // make sure a word has not already been filled in
-        let r = row;
-        let c = col;
-
-        for(let i = 0; i < word.length; i++) {
-            if(game.data[r][c] != 0) {
-                return false;
-            }
-
-            r += rchange;
-            c += cchange;
-        }
-
-        // actually fill in word
-        r = row;
-        c = col;
-
-        for(let i = 0; i < word.length; i++) {
-            game.data[r][c] = word[i];
-
-            r += rchange;
-            c += cchange;
-        }
-
-        return true;
-    }
-
-    generateGame();
-
     let c = document.querySelector("canvas");
     let r = c.getContext("2d");
     let w = -1;
     let h = -1;
-
-    function setupCanvas() {
-        c.style.position = "absolute";
-        let table = document.querySelector("table");
-        c.width = table.scrollWidth;
-        c.height = table.scrollHeight;
-        w = c.width;
-        h = c.height;
-
-        r.lineCap = "round";
-
-        spaceBetweenCells = (w - (25 * game.width)) / game.width;
-    }
-
-    setupCanvas();
 
     let selecting = false;
 
@@ -314,13 +61,6 @@ pages[currentPage].activeScripts.push(function() {
             elem.style.backgroundColor = "transparent";
             elem.style.fontWeight = "normal";
             elem.style.transition = "all calc(var(--delay) * 0.7)";
-
-            // make sure answers stay highlighted when mouse moves off
-            if(debugGenerate && (elem.children.length == 1)) {
-                elem.style.color = "var(--black)";
-                elem.style.fontWeight = "bold";
-                elem.style.backgroundColor = "var(--color2)";
-            }
         }
     }
 
@@ -379,8 +119,6 @@ pages[currentPage].activeScripts.push(function() {
         }
     }
 
-    // document.querySelector("table").addEventListener("mouseover", drawSelection);
-
     function checkForValidSelection() {
         selection.valid = false;
         
@@ -410,7 +148,7 @@ pages[currentPage].activeScripts.push(function() {
                 for(let i = 0; i < selection.poses.length; i++) {
                     let elem = document.getElementById(selection.poses[i]);
 
-                    if(!(debugGenerate) || (elem.children.length == 0)) {
+                    if(elem.children.length == 0) {
                         elem.style.color = "var(--black)";
                         elem.style.fontWeight = "normal";
                         elem.style.backgroundColor = "transparent";
@@ -590,7 +328,7 @@ pages[currentPage].activeScripts.push(function() {
 
             // first clear the highlighting from any letters highlighted from selection
             for(let i = 0; i < cells.length; i++) {
-                if(!(debugGenerate) || (cells[i].children.length == 0)) {
+                if(cells[i].children.length == 0) {
                     cells[i].style.color = "var(--black)";
                     cells[i].style.fontWeight = "normal";
                     cells[i].style.backgroundColor = "transparent";
@@ -655,7 +393,7 @@ pages[currentPage].activeScripts.push(function() {
                 if(animation.properties.size > 25) {
                     window.clearInterval(animation.interval);
                     
-                    window.setTimeout(function() {
+                    let timeout = window.setTimeout(function() {
                         animation.active = false;
                         r.clearRect(0, 0, w, h);
 
@@ -666,10 +404,13 @@ pages[currentPage].activeScripts.push(function() {
                             foundWord();
                         }
                     }, 250);
+
+                    pages[currentPage].timeouts.push(timeout);
                 }
             }
 
-            // animation.interval = window.setInterval(animation.loop, (1000 / 30));
+            animation.interval = window.setInterval(animation.loop, (1000 / 30));
+            pages[currentPage].intervals.push(animation.interval);
         }
     }
 
@@ -689,9 +430,10 @@ pages[currentPage].activeScripts.push(function() {
         }
         pointsGained += lengthBonus;
         
+        timer.now = new Date();
         let secondsDiff = 
-            Math.floor(timerLast.now / 1000) - 
-            Math.floor(timerLast.start / 1000);
+            Math.floor(timer.now / 1000) - 
+            Math.floor(timer.start / 1000);
         
         /**
          * Start with getting 60 bonus points (for a minute), 
@@ -728,7 +470,6 @@ pages[currentPage].activeScripts.push(function() {
         
         // well, this is certainly one way to do animation
 
-        /*
         gainedPointsInterval = window.setInterval(function() {
             opacity += 0.2;
             marginTop -= marginChange;
@@ -758,7 +499,7 @@ pages[currentPage].activeScripts.push(function() {
                 document.getElementById("gainedPoints").style.scale = "1";
 
                 // fade away
-                window.setTimeout(function() {
+                let timeout = window.setTimeout(function() {
                     // don't fade away if the animation has been started again
                     if(gainedPointsInterval == null) {
                         let fadeOpacity = 1;
@@ -780,16 +521,21 @@ pages[currentPage].activeScripts.push(function() {
                                 window.clearInterval(gainedPointsFadeAwayInteval);
                             }
                         }, 1000 / 30);
+
+                        pages[currentPage].intervals.push(gainedPointsFadeAwayInteval);
                     }
-                }, 1000 * 3.5)
+                }, 1000 * 3.5);
+                
+                pages[currentPage].timeouts.push(timeout);
             }
         }, 1000 / 30);
-        */
+        
+        pages[currentPage].intervals.push(gainedPointsInterval);
 
         points += pointsGained;
         document.getElementById("totalPoints").innerText = points + "pts";
 
-        timerLast.start = new Date();
+        timer.start = new Date();
 
         game.found.push(guessedWord);
         game.foundPosesStart.push(guessedPosStart);
@@ -867,73 +613,8 @@ pages[currentPage].activeScripts.push(function() {
         }
     }
 
-    // timers
-    let timerMain = {
-        start: new Date(), 
-        now: null, 
-        elem: document.getElementById("mainTimer"), 
-        update: function() {
-            let startSeconds = Math.floor(timerMain.start / 1000);
-
-            timerMain.now = new Date();
-            let nowSeconds = Math.floor(timerMain.now / 1000);
-
-            let diff = nowSeconds - startSeconds;
-            let minutes = Math.floor(diff / 60);
-            let seconds = diff - (minutes * 60);
-            if(seconds < 10) {
-                seconds = "0" + seconds;
-            }
-
-            timerMain.elem.innerText = minutes + ":" + seconds;
-        }
-    }
-
-    let timerLast = {
-        start: new Date(), 
-        now: null, 
-        elem: document.getElementById("lastTimer"), 
-        update: function() {
-            let startSeconds = Math.floor(timerLast.start / 1000);
-
-            timerLast.now = new Date();
-            let nowSeconds = Math.floor(timerLast.now / 1000);
-
-            let diff = nowSeconds - startSeconds;
-            let minutes = Math.floor(diff / 60);
-            let seconds = diff - (minutes * 60);
-            if(seconds < 10) {
-                seconds = "0" + seconds;
-            }
-
-            timerLast.elem.innerText = minutes + ":" + seconds;
-        }
-    }
-
-    /*
-    let timersInterval = window.setInterval(function() {
-        timerMain.update();
-        timerLast.update();
-    }, 1000);
-    */
-
     let gameOver = false;
     function endGame() {
-        let totalSecondsDiff = Math.floor(timerMain.now / 1000) - Math.floor(timerMain.start / 1000);
-        
-        let highScoreCheck = localStorage.getItem("practiceHighScore");
-        if(highScoreCheck != null) {
-            let highScore = parseInt(highScoreCheck);
-
-            if(totalSecondsDiff < highScore) {
-                localStorage.setItem("practiceHighScore", totalSecondsDiff);
-            }
-        }
-        else {
-            localStorage.setItem("practiceHighScore", totalSecondsDiff);
-        }
-
-        window.clearInterval(timersInterval);
         gameOver = true;
 
         let table = document.querySelector("table");
@@ -958,15 +639,104 @@ pages[currentPage].activeScripts.push(function() {
 
     socket.emit("loaded game page", mygame.host);
 
-    socket.on("game has started", () => {
+    socket.on("game has started", (gameData) => {
+        game = gameData;
+
+        // hide waiting for players messages
         document.querySelector("#connectionStatus").style.opacity = "0";
         document.querySelector("#connectionStatus").style.pointerEvents = "none";
-        
+
+        addWordsList();
+
+        // show found words list
         document.querySelector(".found").style.opacity = "1";
         document.querySelector(".found").style.pointerEvents = "auto";
+
+        fillTable();
         
+        // show table
         document.querySelector("table").style.opacity = "1";
         document.querySelector("table").style.pointerEvents = "auto";
+
+        setupCanvas();
+
+        // add event listeners
+        addEventListener();
     });
+
+    function setupCanvas() {
+        let table = document.querySelector("table");
+        
+        c.style.position = "absolute";
+        c.style.display = "flex";
+        
+        c.width = table.scrollWidth;
+        c.height = table.scrollHeight;
+        
+        w = c.width;
+        h = c.height;
+
+        r.lineCap = "round";
+    }
+
+    function addWordsList() {
+        let elem = document.getElementsByClassName("found")[0];
+
+        for(let i = 0; i < game.words.length; i++) {
+            let p = document.createElement("p");
+            p.innerText = game.words[i];
+
+            elem.appendChild(p);
+        }
+    }
+
+    function fillTable() {
+        for(let row = 0; row < game.height; row++) {
+            let tr = document.createElement("tr");
+    
+            for(let col = 0; col < game.width; col++) {
+                let td = document.createElement("td");
+                td.id = row + "," + col;
+                
+                td.innerText = (game.grid[row][col]);
+    
+                tr.appendChild(td);
+            }
+    
+            document.querySelector("table").appendChild(tr);
+        }
+    }
+
+    function addEventListener() {
+        document.querySelector("table").addEventListener("mouseover", drawSelection);
+
+        addCellEventListeners();
+    }
+
+    function addCellEventListeners() {
+        let table = document.querySelector("table");
+        for(let trIndex = 0; trIndex < table.children.length; trIndex++) {
+            for(let cellIndex = 0; cellIndex < table.children[trIndex].children.length; cellIndex++) {
+                let cell = table.children[trIndex].children[cellIndex];
+
+                cell.addEventListener(
+                    "mousemove", 
+                    function(){cellHoverListen(cell);}
+                );
+                cell.addEventListener(
+                    "mouseleave", 
+                    function(){cellUnHoverListen(cell);}
+                );
+                cell.addEventListener(
+                    "click", 
+                    function(){cellClick(cell);}
+                );
+                
+                // listeners for selection
+                cell.addEventListener("mousemove", drawSelection);
+                cell.addEventListener("click", drawSelection);
+            }
+        }
+    }
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();
