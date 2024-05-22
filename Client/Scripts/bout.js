@@ -1,6 +1,8 @@
 pages[currentPage].activeScripts.push(function() {
     let myIndex = -1;
     let otherIndex = -1;
+    const myFoundColor = "#888fda";
+    const otherFoundColor = "#eb4034";
 
     for(let i = 0; i < mygame.players.length; i++) {
         if(mygame.players[i] != myid) {
@@ -435,6 +437,13 @@ pages[currentPage].activeScripts.push(function() {
     let otherGainedPointsFadeAwayInteval = null;
 
     function foundWord() {
+        let parent = document.getElementsByClassName("found")[0];
+        let wordElem = parent.children[game.words.indexOf(guessedWord) + 1];
+
+        wordElem.style.textDecoration = "line-through";
+        wordElem.style.backgroundColor = myFoundColor;
+        wordElem.style.opacity = "0.85";
+
         // calculate how many points are gained from word
 
         // get more points the shorter the word is
@@ -582,13 +591,7 @@ pages[currentPage].activeScripts.push(function() {
             col += colChange;
         }
 
-        let parent = document.getElementsByClassName("found")[0];
-        let wordElem = parent.children[game.words.indexOf(guessedWord) + 1];
-
-        wordElem.style.textDecoration = "line-through";
-        wordElem.style.backgroundColor = "#8ada88";
-        wordElem.style.opacity = "0.85";
-
+        iFoundTheWord = true;
         highlightFound();
 
         if(game.found.length == game.words.length) {
@@ -596,9 +599,15 @@ pages[currentPage].activeScripts.push(function() {
         }
     }
 
+    let iFoundTheWord = false;
     function highlightFound() {
         for(let i = 0; i < game.found.length; i++) {
-            r.strokeStyle = "#8ada88";
+            if(iFoundTheWord) {
+                r.strokeStyle = myFoundColor;
+            }
+            else {
+                r.strokeStyle = otherFoundColor;
+            }
             r.lineWidth = 25;
 
             r.beginPath();
@@ -757,8 +766,36 @@ pages[currentPage].activeScripts.push(function() {
         }
     }
 
+    // darken a hex by a given RGB amount
+    function darken(hex, amount) {
+        let decs = [];
+
+        for(let i = 1; i < hex.length; i += 2) {
+            let value = Number("0x" + hex.charAt(i) + hex.charAt(i + 1));
+            value -= amount;
+            if(value < 0) {
+                value = 0;
+            }
+
+            decs.push(value);
+        }
+
+        let ansHex = "#";
+
+        for(let i = 0; i < decs.length; i++) {
+            ansHex += (decs[i]).toString(16);
+        }
+
+        return ansHex;
+    }
+
     let myPoints = document.querySelector("#youPoints");
+    // darken hex by given RGB value
+    myPoints.style.color = darken(myFoundColor, 50);
+
     let otherPoints = document.querySelector("#otherPoints");
+    // darken hex by given RGB value
+    myPoints.style.color = darken(otherFoundColor, 50);
 
     /**
      * This implementation was the easiest to implement without a significant amount 
@@ -787,7 +824,7 @@ pages[currentPage].activeScripts.push(function() {
             let wordElem = parent.children[game.words.indexOf(word) + 1];
 
             wordElem.style.textDecoration = "line-through";
-            wordElem.style.backgroundColor = "#8ada88";
+            wordElem.style.backgroundColor = otherFoundColor;
             wordElem.style.opacity = "0.85";
 
             // first, if animation is already playing clear it
@@ -898,6 +935,7 @@ pages[currentPage].activeScripts.push(function() {
                 col += colChange;
             }
 
+            iFoundTheWord = false;
             highlightFound();
 
             if(game.found.length == game.words.length) {
