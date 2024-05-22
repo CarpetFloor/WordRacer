@@ -6,6 +6,8 @@
  * username.
  */
 
+const showAnswers = true;
+
 const express = require("express");
 const app = express();
 const http = require("http");
@@ -35,6 +37,7 @@ function Game() {
     this.type = null, 
     this.active = false, 
     this.players = [], 
+    this.points = [], 
     this.connectedCount = 0, 
     this.data = {
         width: -1, 
@@ -214,6 +217,16 @@ io.on("connection", (socket) => {
             setupGameData(game);
             io.to(game.roomName).emit("game has started", game.data);
         }
+    });
+
+    socket.on("found word", (host, word, pointsGained, guessedPosStart, guessedPosEnd) => {
+        let game = getGame(host);
+        game.data.found.push(word);
+
+        let playerIndex = game.players.indexOf(socket.id);
+        game.points[playerIndex] += pointsGained;
+
+        io.to(game.roomName).emit("word has been found", word, game.points, pointsGained, socket.id, guessedPosStart, guessedPosEnd);
     });
 
     socket.on("disconnect", () => {
@@ -412,6 +425,10 @@ function addWord(gameData, row, col, word) {
 }
 
 function setupGameData(game) {
+    for(let i = 0; i < game.players.length; i++) {
+        game.points.push(0);
+    }
+
     let gameData = game.data;
 
     // set size of game
@@ -461,6 +478,11 @@ function setupGameData(game) {
                     let addCheck = addWord(gameData, row, col, gameData.words[index]);
 
                     if(addCheck) {
+                        if(showAnswers) {
+                            console.log(gameData.words[index]);
+                            console.log("(", row, ",", col, ")");
+                            console.log("____________________");
+                        }
                         ++index;
                     }
 
@@ -475,6 +497,10 @@ function setupGameData(game) {
                 break;
             }
         }
+    }
+
+    if(showAnswers) {
+        console.log("\n\n++++++++++\n\n");
     }
 
     // fill in remaining letters

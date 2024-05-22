@@ -63,7 +63,6 @@ function generatePagesData() {
         "bout", 
         "Word Racer - Bout", 
         [
-            "/words.js", 
             "/Scripts/bout.js"
         ]
     ));

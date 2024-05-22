@@ -1,4 +1,17 @@
 pages[currentPage].activeScripts.push(function() {
+    let myIndex = -1;
+    let otherIndex = -1;
+
+    for(let i = 0; i < mygame.players.length; i++) {
+        if(mygame.players[i] != myid) {
+            otherIndex = i;
+            document.querySelector("#otherName").innerText = playersMap.get(mygame.players[i]);
+        }
+        else {
+            myIndex = i;
+        }
+    }
+
     // for calculating point bonused based off of time
     let timer = {
         start: new Date(), 
@@ -418,6 +431,9 @@ pages[currentPage].activeScripts.push(function() {
     let gainedPointsInterval = null;
     let gainedPointsFadeAwayInteval = null;
 
+    let otherGainedPointsInterval = null;
+    let otherGainedPointsFadeAwayInteval = null;
+
     function foundWord() {
         // calculate how many points are gained from word
 
@@ -447,19 +463,21 @@ pages[currentPage].activeScripts.push(function() {
         }
         pointsGained += pointsFromTime;
 
+        socket.emit("found word", mygame.host, guessedWord, pointsGained, guessedPosStart, guessedPosEnd);
+
         // animate gained points
 
         // first, if animation is already playing clear it
         if(gainedPointsInterval != null) {
             window.clearInterval(gainedPointsInterval);
         }
-        document.getElementById("gainedPoints").style.opacity = "0";
-        document.getElementById("gainedPoints").style.marginTop = "0.25em";
-        document.getElementById("gainedPoints").style.marginBottom = "-2em";
-        document.getElementById("gainedPoints").style.scale = "1";
-        document.getElementById("gainedPoints").style.marginLeft = "50vw";
+        document.getElementById("myGainedPoints").style.opacity = "0";
+        document.getElementById("myGainedPoints").style.marginTop = "0.25em";
+        document.getElementById("myGainedPoints").style.marginBottom = "-2em";
+        document.getElementById("myGainedPoints").style.scale = "1";
+        document.getElementById("myGainedPoints").style.marginLeft = "50vw";
         
-        document.getElementById("gainedPoints").innerText = "+" + pointsGained + "pts";
+        document.getElementById("myGainedPoints").innerText = "+" + pointsGained + "pts";
         let opacity = 0;
 
         let marginTop = 0.75;
@@ -483,20 +501,20 @@ pages[currentPage].activeScripts.push(function() {
                 done = true;
             }
 
-            document.getElementById("gainedPoints").style.opacity = opacity;
-            document.getElementById("gainedPoints").style.marginTop = marginTop + "em";
-            document.getElementById("gainedPoints").style.marginBottom = marginBottom + "em";
-            document.getElementById("gainedPoints").style.scale = scale;
+            document.getElementById("myGainedPoints").style.opacity = opacity;
+            document.getElementById("myGainedPoints").style.marginTop = marginTop + "em";
+            document.getElementById("myGainedPoints").style.marginBottom = marginBottom + "em";
+            document.getElementById("myGainedPoints").style.scale = scale;
 
             if(done) {
                 window.clearInterval(gainedPointsInterval);
                 gainedPointsInterval = null;
 
                 // ensure floating-point errors don't cause styles to not be set properly
-                document.getElementById("gainedPoints").style.opacity = "1";
-                document.getElementById("gainedPoints").style.marginTop = "0.25em";
-                document.getElementById("gainedPoints").style.marginBottom = "-2em";
-                document.getElementById("gainedPoints").style.scale = "1";
+                document.getElementById("myGainedPoints").style.opacity = "1";
+                document.getElementById("myGainedPoints").style.marginTop = "0.25em";
+                document.getElementById("myGainedPoints").style.marginBottom = "-2em";
+                document.getElementById("myGainedPoints").style.scale = "1";
 
                 // fade away
                 let timeout = window.setTimeout(function() {
@@ -506,14 +524,14 @@ pages[currentPage].activeScripts.push(function() {
                         let fadeMarginLeft = 50;
                         gainedPointsFadeAwayInteval = window.setInterval(function() {
                             if(gainedPointsInterval == null) {
-                                document.getElementById("gainedPoints").style.opacity = fadeOpacity;
-                                document.getElementById("gainedPoints").style.marginLeft = fadeMarginLeft + "vw";
+                                document.getElementById("myGainedPoints").style.opacity = fadeOpacity;
+                                document.getElementById("myGainedPoints").style.marginLeft = fadeMarginLeft + "vw";
 
                                 fadeOpacity -= 0.15;
                                 fadeMarginLeft += 2;
 
                                 if(fadeOpacity <= 0) {
-                                    document.getElementById("gainedPoints").style.opacity = "0";
+                                    document.getElementById("myGainedPoints").style.opacity = "0";
                                     window.clearInterval(gainedPointsFadeAwayInteval);
                                 }
                             }
@@ -533,7 +551,7 @@ pages[currentPage].activeScripts.push(function() {
         pages[currentPage].intervals.push(gainedPointsInterval);
 
         points += pointsGained;
-        document.getElementById("totalPoints").innerText = points + "pts";
+        document.getElementById("youPoints").innerText = points + "pts";
 
         timer.start = new Date();
 
@@ -738,5 +756,154 @@ pages[currentPage].activeScripts.push(function() {
             }
         }
     }
+
+    let myPoints = document.querySelector("#youPoints");
+    let otherPoints = document.querySelector("#otherPoints");
+
+    /**
+     * This implementation was the easiest to implement without a significant amount 
+     * of moving code to the server and restructuring. Whenever the user finds a word, 
+     * it does the exact same thing as is done in practice, the only difference is also 
+     * letting the server know what word has been found, and other relevant data so that 
+     * the server can let every other player about the word that was found. Next, every 
+     * player receives the following socket emit from the server, and each player just 
+     * makes sure that if they aren't the person who just found the word, they do all 
+     * of the same things that the person who just found the word did so that the word 
+     * shows up as found on their end.
+     */
+    /**
+     * Alternatively, it probably would have been better to handle all point calculations 
+     * server-side, and then have all word found html/ css changes be done only here, but 
+     * the goal with this was to create a multiplayer version of the practice mode as 
+     * quick as possible.
+     */
+    socket.on("word has been found", (word, allPoints, pointsGained, playerId, guessedPosStart, guessedPosEnd) => {
+        myPoints.innerText = allPoints[myIndex];
+        otherPoints.innerText = allPoints[otherIndex];
+        
+        if(playerId != myid) {
+            // update words list
+            let parent = document.querySelector(".found");
+            let wordElem = parent.children[game.words.indexOf(word) + 1];
+
+            wordElem.style.textDecoration = "line-through";
+            wordElem.style.backgroundColor = "#8ada88";
+            wordElem.style.opacity = "0.85";
+
+            // first, if animation is already playing clear it
+            if(otherGainedPointsInterval != null) {
+                window.clearInterval(otherGainedPointsInterval);
+            }
+            document.getElementById("otherGainedPoints").style.opacity = "0";
+            document.getElementById("otherGainedPoints").style.marginTop = "0.25em";
+            document.getElementById("otherGainedPoints").style.marginBottom = "-2em";
+            document.getElementById("otherGainedPoints").style.scale = "1";
+            document.getElementById("otherGainedPoints").style.marginLeft = "50vw";
+            
+            document.getElementById("otherGainedPoints").innerText = "+" + pointsGained + "pts";
+            let opacity = 0;
+
+            let marginTop = 0.75;
+            let marginBottom = 0 - 2.75;
+            let marginChange = 0.15;
+            
+            let scale = 0.75;
+
+            otherGainedPointsInterval = window.setInterval(function() {
+                opacity += 0.2;
+                marginTop -= marginChange;
+                marginBottom += marginChange;
+                scale += 0.05;
+                
+                let done = false;
+                if(opacity > 1) {
+                    opacity = 1;
+                    
+                    done = true;
+                }
+
+                document.getElementById("otherGainedPoints").style.opacity = opacity;
+                document.getElementById("otherGainedPoints").style.marginTop = marginTop + "em";
+                document.getElementById("otherGainedPoints").style.marginBottom = marginBottom + "em";
+                document.getElementById("otherGainedPoints").style.scale = scale;
+
+                if(done) {
+                    window.clearInterval(otherGainedPointsInterval);
+                    otherGainedPointsInterval = null;
+
+                    // ensure floating-point errors don't cause styles to not be set properly
+                    document.getElementById("otherGainedPoints").style.opacity = "1";
+                    document.getElementById("otherGainedPoints").style.marginTop = "0.25em";
+                    document.getElementById("otherGainedPoints").style.marginBottom = "-2em";
+                    document.getElementById("otherGainedPoints").style.scale = "1";
+
+                    // fade away
+                    let timeout = window.setTimeout(function() {
+                        // don't fade away if the animation has been started again
+                        if(otherGainedPointsInterval == null) {
+                            let fadeOpacity = 1;
+                            let fadeMarginLeft = 50;
+                            otherGainedPointsFadeAwayInteval = window.setInterval(function() {
+                                if(otherGainedPointsInterval == null) {
+                                    document.getElementById("otherGainedPoints").style.opacity = fadeOpacity;
+                                    document.getElementById("otherGainedPoints").style.marginLeft = fadeMarginLeft + "vw";
+
+                                    fadeOpacity -= 0.15;
+                                    fadeMarginLeft += 2;
+
+                                    if(fadeOpacity <= 0) {
+                                        document.getElementById("otherGainedPoints").style.opacity = "0";
+                                        window.clearInterval(otherGainedPointsFadeAwayInteval);
+                                    }
+                                }
+                                else {
+                                    window.clearInterval(otherGainedPointsFadeAwayInteval);
+                                }
+                            }, 1000 / 30);
+
+                            pages[currentPage].intervals.push(otherGainedPointsFadeAwayInteval);
+                        }
+                    }, 1000 * 3.5);
+                    
+                    pages[currentPage].timeouts.push(timeout);
+                }
+            }, 1000 / 30);
+            
+            pages[currentPage].intervals.push(otherGainedPointsInterval);
+
+            game.found.push(guessedWord);
+            game.foundPosesStart.push(guessedPosStart);
+            game.foundPosesEnd.push(guessedPosEnd);
+
+            // add all points of guess to game.foundAllPoints
+            let rowDiff = guessedPosEnd[0] - guessedPosStart[0];
+            let rowChange = 0;
+            if(rowDiff != 0) {
+                rowChange = Math.abs(rowDiff) / rowDiff;
+            }
+
+            let colDiff = guessedPosEnd[1] - guessedPosStart[1];
+            let colChange = 0;
+            if(colDiff != 0) {
+                colChange = Math.abs(colDiff) / colDiff;
+            }
+            
+            let row = guessedPosStart[0];
+            let col = guessedPosStart[1];
+
+            for(let i = 0; i < word.length; i++) {
+                game.foundAllPoints.push([row, col]);
+
+                row += rowChange;
+                col += colChange;
+            }
+
+            highlightFound();
+
+            if(game.found.length == game.words.length) {
+                endGame();
+            }
+        }
+    })
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();

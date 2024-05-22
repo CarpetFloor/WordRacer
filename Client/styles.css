@@ -332,3 +332,26 @@ table tr td {
 .game .found p:not(:last-child) {
     margin-bottom: 0.5em;
 }
+
+/* bout */
+
+.boutTop {
+    display: flex;
+    flex-direction: row;
+}
+.boutTop div {
+    display: flex;
+    flex-direction: row;
+}
+
+.gainedPointsContainer {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+.gainedPointsContainer p {
+    opacity: 1;
+    pointer-events: none;
+}
