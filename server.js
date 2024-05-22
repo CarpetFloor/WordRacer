@@ -529,13 +529,18 @@ function setupGameData(game) {
     }
 }
 
+let debugPrints = false;
+
 // debug
 function debugPrintGames() {
-    console.log("Games");
-    for(let i = 0; i < games.length; i++) {
-        console.log(games[i]);
-        console.log("____________________");
-    }
+    if(debugPrints) {
+        console.log("Games");
+        console.log("++++++++++");
+        for(let i = 0; i < games.length; i++) {
+            console.log(games[i]);
+            console.log("____________________");
+        }
 
-    console.log("\n\n====================\n\n");
+        console.log("\n\n====================\n\n");
+    }
 }

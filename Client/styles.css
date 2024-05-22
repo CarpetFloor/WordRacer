@@ -311,6 +311,34 @@ button:hover {
     padding: 1.25em;
     width: 7em;
 }
+.online .create .container .comingSoon {
+    background-color: var(--grey2);
+    opacity: 0.75;
+    z-index: 0;
+}
+.online .create .container .comingSoon:hover {
+    cursor: default;
+    opacity: 0.45;
+}
+.online .create .container .comingSoonMessage {
+    opacity: 0;
+    z-index: 1;
+    margin-top: -4.5em;
+    background-color: var(--grey3);
+    color: white;
+    padding: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    border-radius: 15px;
+    border: 1px solid grey;
+    border-bottom: 3px solid grey;
+    transition: all 0.25s;
+    pointer-events: none;
+}
+.online .create .container .comingSoon:hover ~ .comingSoonMessage {
+    opacity: 1;
+    margin-top: -4em;
+}
 
 .online .joinHeader {
     margin-bottom: 0.5em;

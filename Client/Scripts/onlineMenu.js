@@ -56,10 +56,12 @@ pages[currentPage].activeScripts.push(function() {
         socket.emit("create game", "bout");
     });
 
+    /*
     let clashCreateButton = document.getElementById("clashCreateButton");
     clashCreateButton.addEventListener("click", function() {
         socket.emit("create game", "clash");
     });
+    */
 
     // server has created game, redirect client to game lobby page
     socket.on("created game", (game) => {
