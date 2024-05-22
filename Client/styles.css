@@ -157,6 +157,15 @@ button:hover {
     flex-direction: column;
     width: fit-content;
     justify-content: flex-start;
+    width: fit-content;
+    max-width: 50vw;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: var(--topMargin);
+}
+
+.online * {
+    margin: 0;
 }
 
 .online section {
@@ -167,43 +176,193 @@ button:hover {
 .online .name {
     display: flex;
     flex-direction: row;
+    margin-top: 1em;
+    margin-bottom: 2em;
+    font-size: 1.1em;
+    align-items: center;
 }
 .online .name p:first-of-type {
     margin-right: var(--hSpace);
 }
+.online .name #nameInput {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    font-size: 1em;
+    color: var(--black);
+    font-weight: bold;
+    width: fit-content;
+    padding: 0.25em;
+    padding-left: 0.7em;
+    padding-right: 1.75em;
+    border-radius: 15px;
+    border: 2px solid var(--black);
+    transition: all var(--delay);
+    transition: width 0.15s;
+}
+.online .name #nameInput:hover {
+    border-color: var(--colorMainDarker);
+}
+.online .name #nameInput:focus {
+    padding-right: 3.5em;
+    border-color: var(--colorMainDarker);
+}
+.online .name img {
+    padding: 0.25em;
+    border-radius: 20px;
+}
+.online .name img:hover {
+    cursor: pointer;
+    background-color: var(--colorMainDarkerHighlight);
+}
+.online .name .nameInputNotActive {
+    display: flex;
+}
+.online .name .nameInputNotActive:first-of-type {
+    margin-left: -1.75em;
+}
+.online .name .nameInputActive {
+    display: none;
+}
+.online .name .nameInputActive {
+    margin-left: -3.5em;
+}
+.online .name .nameInputActive:last-of-type {
+    margin-left: 0;
+}
+.online .name #nameInput:focus ~ .nameInputNotActive {
+    display: none;
+}
+.online .name #nameInput:focus ~ .nameInputActive {
+    display: flex;
+}
+
+.online .info h1 {
+    font-size: 1.8em;
+}
+.online .info p:not(:last-of-type) {
+    margin-bottom: 0.5em;
+}
 
 .online .openCreate {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 2em;
     margin-bottom: 2em;
+    width: fit-content;
+    padding: 1em;
+}
+.online .openCreate .icon {
+    filter: invert(1);
+    margin-right: 0.5em;
 }
 
 .online .create {
-    display: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
     margin-bottom: 3em;
+    border-radius: 7px;
+    background-color: var(--black);
+    height: 0;
+    padding: 0;
+    padding-top: 0.25em;
+    transition: all 0.35s, background-color 0.2s;
 }
 .online .create .container {
     display: flex;
     flex-direction: column;
-
+    align-items: center;
+    margin: 0;
+    width: fit-content;
+    background-color: white;
+    padding: 1.25em;
+    border-radius: 10px;
+    border: 2px solid var(--colorDark3);
+    border-bottom: 7px solid var(--colorDark3);
+}
+.online .create .container:first-child {
+    margin-right: 2em;
 }
 .online .create .container .containerTop {
     display: flex;
     flex-direction: row;
+    align-items: center;
+}
+.online .create .container .containerTop .icon {
+    scale: 1.2;
+    border-radius: 3px;
+    padding: 0.45em;
+    background-color: var(--colorLight1);
+    border: 2px solid black;
 }
 .online .create .container .containerTop div {
+    margin-left: 1em;
     display: flex;
     flex-direction: column;
 }
+.online .create .container .containerTop div p:first-of-type {
+    font-size: 1.2em;
+    font-weight: bold;
+}
 .online .create .container button {
-    width: 10em;
+    margin-top: 1em;
+    padding: 1.25em;
+    width: 7em;
+}
+
+.online .joinHeader {
+    margin-bottom: 0.5em;
 }
 
 .online .join .container {
     display: flex;
     flex-direction: row;
+    align-items: center;
     margin: 0;
+    width: fit-content;
+    background-color: var(--grey1);
+    padding: 1em;
+    border-radius: 10px;
+    border: 1px solid var(--grey2);
+    border-bottom: 4px solid var(--grey2);
 }
-.online .join .container:not(:last-of-type) {
+.online .join .container:not(:last-child) {
     margin-bottom: 1em;
+}
+.online .join .container *:not(:last-child) {
+    margin-right: 0.5em;
+}
+.online .join .container .typeIcon {
+    scale: 1.1;
+    border-radius: 5px;
+    padding: 0.35em;
+    background-color: var(--colorMain);
+    border: 2px solid var(--black);
+}
+.online .join .container .gameName {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.online .join .joinButton {
+    margin-left: 0.5em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5em;
+    border-radius: 25px;
+    background-clip: padding-box;
+    border-bottom: 3px solid transparent;
+}
+.online .join .joinButton:hover {
+    border-color: var(--black);
+}
+.online .join .joinButton *:not(:last-child) {
+    margin-right: 0.5em;
+}
+.online .join .joinButton .icon {
+    filter: invert(1);
 }
 
 /* game */

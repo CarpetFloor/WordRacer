@@ -1,4 +1,28 @@
 pages[currentPage].activeScripts.push(function() {
+    let widthCalcCanvas = document.createElement("canvas");
+    widthCalcCanvas.font = "Nunito";
+    let widthCalcR = widthCalcCanvas.getContext("2d");
+
+    let nameInput = document.querySelector("#nameInput");
+    nameInput.value = playersMap.get(myid);
+
+    let measure = widthCalcR.measureText(nameInput.value);
+    let width = measure.width;
+    if(width < 25) {
+        width = 25;
+    }
+    nameInput.style.width = (width * 2) + "px";
+
+    const minWidth = 10;
+    nameInput.oninput = function() {
+        let measure = widthCalcR.measureText(nameInput.value);
+        let width = measure.width;
+        if(width < minWidth) {
+            width = minWidth;
+        }
+        nameInput.style.width = (width * 2) + "px";
+    }
+    
     // toggle create game menu
 
     let create = document.getElementsByClassName("create")[0];
@@ -9,10 +33,19 @@ pages[currentPage].activeScripts.push(function() {
         showCreate = !(showCreate);
         
         if(showCreate) {
-            create.style.display = "flex";
+            create.style.height = "10em";
+            create.style.padding = "1.5em";
+            create.style.paddingTop = "2em";
+            create.style.paddingBottom = "2em";
+
+            create.style.backgroundColor = "var(--white3)";
         }
         else {
-            create.style.display = "none";
+            create.style.height = "0";
+            create.style.padding = "0";
+            create.style.paddingTop = "0.25em";
+
+            create.style.backgroundColor = "var(--black)";
         }
     });
 
@@ -53,30 +86,44 @@ pages[currentPage].activeScripts.push(function() {
                 container.className = "container";
 
                 let typeImage = document.createElement("img");
-                typeImage.src = "placeholder.png";
-                typeImage.className = "icon";
+                if(games[i].type == "bout") {
+                    typeImage.src = "/../Icons/users-square-filled.png";
+                }
+                else {
+                    typeImage.src = "/../Icons/users-alt-square-filled.png";
+                }
+                typeImage.classList.add("icon");
+                typeImage.classList.add("typeIcon");
 
                 container.appendChild(typeImage);
 
                 let p = document.createElement("p");
+                p.className = "gameName";
                 p.innerText = playersMap.get(games[i].host) + "'s game";
 
                 container.appendChild(p);
 
-                let joinImage = document.createElement("img");
-                joinImage.src = "placeholder.png";
-                joinImage.className = "icon";
+                let joinButton = document.createElement("button");
+                joinButton.className = "joinButton";
 
-                joinImage.addEventListener("click", function() {
+                let joinImage = document.createElement("img");
+                joinImage.src = "/../Icons/arrow-circle-right-filled.png";
+                joinImage.className = "icon";
+                joinButton.appendChild(joinImage);
+
+                let joinP = document.createElement("p");
+                joinP.innerText = "Join";
+                joinButton.appendChild(joinP);
+
+                joinButton.addEventListener("click", function() {
                     socket.emit("join game", games[i].host);
                 });
 
-                container.appendChild(joinImage);
+                container.appendChild(joinButton);
 
                 parent.appendChild(container);
             }
         }
-
     });
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();
