@@ -3,6 +3,8 @@ pages[currentPage].activeScripts.push(function() {
     let otherIndex = -1;
     const myFoundColor = "#26B4D9";
     const otherFoundColor = "#D94B26";
+    let myFound = [];
+    let otherFound = [];
 
     for(let i = 0; i < mygame.players.length; i++) {
         if(mygame.players[i] != myid) {
@@ -471,6 +473,8 @@ pages[currentPage].activeScripts.push(function() {
     let otherGainedPointsFadeAwayInteval = null;
 
     function foundWord() {
+        myFound.push(guessedWord);
+
         let parent = document.getElementsByClassName("found")[0];
         let wordElem = parent.children[game.words.indexOf(guessedWord) + 1];
 
@@ -625,7 +629,6 @@ pages[currentPage].activeScripts.push(function() {
             col += colChange;
         }
 
-        iFoundTheWord = true;
         highlightFound();
 
         if(game.found.length == game.words.length) {
@@ -633,10 +636,9 @@ pages[currentPage].activeScripts.push(function() {
         }
     }
 
-    let iFoundTheWord = false;
     function highlightFound() {
         for(let i = 0; i < game.found.length; i++) {
-            if(iFoundTheWord) {
+            if(myFound.includes(game.found[i])) {
                 r.strokeStyle = myFoundColor;
             }
             else {
@@ -840,6 +842,8 @@ pages[currentPage].activeScripts.push(function() {
         otherPoints.innerText = allPoints[otherIndex];
         
         if(playerId != myid) {
+            otherFound.push(word);
+
             // update words list
             let parent = document.querySelector(".found");
             let wordElem = parent.children[game.words.indexOf(word) + 1];
@@ -929,7 +933,7 @@ pages[currentPage].activeScripts.push(function() {
             
             pages[currentPage].intervals.push(otherGainedPointsInterval);
 
-            game.found.push(guessedWord);
+            game.found.push(word);
             game.foundPosesStart.push(guessedPosStart);
             game.foundPosesEnd.push(guessedPosEnd);
 
@@ -956,7 +960,6 @@ pages[currentPage].activeScripts.push(function() {
                 col += colChange;
             }
 
-            iFoundTheWord = false;
             highlightFound();
 
             if(game.found.length == game.words.length) {
