@@ -80,6 +80,15 @@ function getGame(host) {
     return game;
 }
 
+const acceptedNameChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~)!@#$%^&*(-_=+[{]}|,<.>/?";
+const minNameLength = 3;
+const maxNameLength = 15;
+let acceptedFormatted = "";
+for(let i = 0; i < acceptedNameChars.length - 1; i++) {
+    acceptedFormatted += acceptedNameChars[i] + ", ";
+}
+acceptedFormatted += acceptedNameChars[acceptedNameChars.length - 1];
+
 // handle users
 io.on("connection", (socket) => {
     // initiale user data when first connecting
@@ -113,6 +122,58 @@ io.on("connection", (socket) => {
     socket.on("request active games", () => {
         // send the actve games to the requester
         io.to(socket.id).emit("send active games", games);
+    });
+
+    socket.on("attempt name change", (name) => {
+        let taken = false;
+        
+        let playersMapAsArray = [];
+        playersMap.forEach((value, key) => {
+            if(!(taken)) {
+                if(value == name) {
+                    taken = true;
+                }
+            }
+        });
+
+        if(!(taken)) {
+            if(name.length > maxNameLength) {
+                io.to(socket.id).emit("failed name change", "Cannot change username, too long");
+            }
+            else if(name.length < minNameLength) {
+                io.to(socket.id).emit("failed name change", "Cannot change username, too short");
+            }
+            else {
+                let valid = true;
+
+                for(let i = 0; i < name.length; i++) {
+                    if(!(acceptedNameChars.includes(name.charAt(i)))) {
+                        valid = false;
+                        break;
+                    }
+                }
+
+                if(!(valid)) {
+                    io.to(socket.id).emit("failed name change", "Cannot change username, invalid character");
+                }
+                else {
+                    playersMap.set(socket.id, name);
+
+                    let playersMapAsArray = [];
+                    playersMap.forEach((value, key) => {
+                        playersMapAsArray.push([key, value]);
+                    });
+                    
+                    io.to(socket.id).emit("success name change");
+
+                    // send all clients the updated players map
+                    io.sockets.emit("players map updated", playersMapAsArray);
+                }
+            }
+        }
+        else {
+            io.to(socket.id).emit("failed name change", "Username already taken");
+        }
     });
 
     socket.on("create game", (type) => {

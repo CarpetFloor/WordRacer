@@ -1,5 +1,7 @@
 <section class="online">
-    <p class="errorMessage"></p>
+    <p class="errorMessage" style="
+    margin-top: -3.5em;
+    "></p>
 
     <button class="navIconButton"
     onclick="window.open('/./index.html', '_self')">
@@ -9,12 +11,21 @@
     
     <section class="name">
         <p>Welcome back, </p>
-        <input id="nameInput" type="text">
-        
-        <img class="icon nameInputNotActive" src="/../Icons/pencil.png">
-        
-        <img class="icon nameInputActive" src="/../Icons/check.png">
-        <img class="icon nameInputActive" src="/../Icons/cancel.png">
+
+        <div class="inputContainer">
+            <input id="nameInput" type="text">
+            
+            <div class="controlsContainer nameInputNotActive">
+                <img class="icon" src="/../Icons/pencil.png">
+            </div>
+            
+            <div class="controlsContainer nameInputActive">
+                <img class="icon" src="/../Icons/check.png">
+            </div>
+            <div class="controlsContainer nameInputActive">
+                <img class="icon" src="/../Icons/cancel.png">
+            </div>
+        </div>
     </section>
 
     <section class="info">
