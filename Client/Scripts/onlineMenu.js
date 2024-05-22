@@ -70,11 +70,16 @@ pages[currentPage].activeScripts.push(function() {
     // receive an updated list of the games
     socket.emit("request active games");
     socket.on("send active games", (games) => {
-        let parent = document.getElementsByClassName("join")[0];
+        console.log("recieved active games");
+        console.log(games);
+        console.log("\n\n\n\n");
+
+        let parent = document.querySelector(".join");
+        let toRemoves = [...parent.querySelectorAll(".container")];
         
         // clear existing HTML
-        for(let i = 0; i < parent.children.length; i++) {
-            parent.children[i].remove();
+        for(let i = 0; i < toRemoves.length; i++) {
+            toRemoves[i].remove();
         }
             
         // create HTML

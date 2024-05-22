@@ -128,6 +128,8 @@ io.on("connection", (socket) => {
 
         // send the updated games array to all clients
         io.sockets.emit("send active games", games);
+
+        debugPrintGames();
     });
 
     socket.on("join game", (host) => {
@@ -159,6 +161,8 @@ io.on("connection", (socket) => {
 
             // send all clients the updated games array
             io.sockets.emit("send active games", games);
+
+            debugPrintGames();
         }
         else {
             let removeIndex = game.players.indexOf(socket.id);
@@ -203,6 +207,9 @@ io.on("connection", (socket) => {
             
             game.active = true;
             io.to(game.roomName).emit("load game page");
+
+            io.sockets.emit("send active games", games);
+            debugPrintGames();
         }
         else {
             io.to(socket.id).emit("not enough players to start game");
@@ -232,6 +239,9 @@ io.on("connection", (socket) => {
             let removeIndex = games.indexOf(game);
             games.splice(removeIndex, 1);
         }
+
+        io.sockets.emit("send active games", games);
+        debugPrintGames();
     });
 
     socket.on("disconnect", () => {
@@ -323,6 +333,7 @@ io.on("connection", (socket) => {
 
         // send all clients the updated games array
         io.sockets.emit("send active games", games);
+        debugPrintGames();
     });
 });
 
@@ -516,4 +527,15 @@ function setupGameData(game) {
             }
         }
     }
+}
+
+// debug
+function debugPrintGames() {
+    console.log("Games");
+    for(let i = 0; i < games.length; i++) {
+        console.log(games[i]);
+        console.log("____________________");
+    }
+
+    console.log("\n\n====================\n\n");
 }
