@@ -1,8 +1,8 @@
 pages[currentPage].activeScripts.push(function() {
     let myIndex = -1;
     let otherIndex = -1;
-    const myFoundColor = "#888fda";
-    const otherFoundColor = "#eb4034";
+    const myFoundColor = "#26B4D9";
+    const otherFoundColor = "#D94B26";
 
     for(let i = 0; i < mygame.players.length; i++) {
         if(mygame.players[i] != myid) {
@@ -13,6 +13,41 @@ pages[currentPage].activeScripts.push(function() {
             myIndex = i;
         }
     }
+
+    // darken a hex by a given RGB amount
+    function darken(hex, amount) {
+        let decs = [];
+
+        for(let i = 1; i < hex.length; i += 2) {
+            let value = Number("0x" + hex.charAt(i) + hex.charAt(i + 1));
+            value -= amount;
+            if(value < 0) {
+                value = 0;
+            }
+
+            decs.push(value);
+        }
+
+        let ansHex = "#";
+
+        for(let i = 0; i < decs.length; i++) {
+            let value = (decs[i]).toString(16);
+            if(value.length == 1) {
+                value = "0" + value;
+            }
+            ansHex += (value).toString(16);
+        }
+
+        return ansHex;
+    }
+
+    let myPoints = document.querySelector("#youPoints");
+    // darken hex by given RGB value
+    myPoints.style.color = darken(myFoundColor, 50);
+
+    let otherPoints = document.querySelector("#otherPoints");
+    // darken hex by given RGB value
+    otherPoints.style.color = darken(otherFoundColor, 40);
 
     // for calculating point bonused based off of time
     let timer = {
@@ -154,7 +189,6 @@ pages[currentPage].activeScripts.push(function() {
     function drawSelection(e) {
         if(finishedDrawingSelection && !(gameOver)) {
             finishedDrawingSelection = false;
-            c.style.opacity = "0.5";
 
             if(selecting && !(animation.active)) {
                 document.querySelector("table").style.cursor = "pointer";
@@ -180,7 +214,7 @@ pages[currentPage].activeScripts.push(function() {
                 // cell at start of selection should always be highlighted
                 if(selection.start[0] != -1) {
                     let startId = selection.start[0] + "," + selection.start[1];
-                    document.getElementById(startId).style.backgroundColor = "var(--colorMain)";
+                    document.getElementById(startId).style.backgroundColor = myFoundColor;
                     document.getElementById(startId).style.fontWeight = "bold";
                     document.getElementById(startId).style.opacity = "0.85";
                 }
@@ -242,7 +276,7 @@ pages[currentPage].activeScripts.push(function() {
                         selection.poses.push(selected[i]);
 
                         document.getElementById(selected[i]).style.transition = "none";
-                        document.getElementById(selected[i]).style.backgroundColor = "var(--colorMain)";
+                        document.getElementById(selected[i]).style.backgroundColor = myFoundColor;
                         document.getElementById(selected[i]).style.fontWeight = "bold";
                         document.getElementById(selected[i]).style.opacity = "0.85";
                     }
@@ -288,7 +322,7 @@ pages[currentPage].activeScripts.push(function() {
                     );
 
                     r.lineWidth = 10;
-                    r.strokeStyle = "#69eeb2";
+                    r.strokeStyle = myFoundColor;
                     r.stroke();
                 }
             }
@@ -366,7 +400,7 @@ pages[currentPage].activeScripts.push(function() {
                 r.clearRect(0, 0, w, h);
 
                 if(animation.properties.found) {
-                    r.strokeStyle = "#3cfaa7";
+                    r.strokeStyle = myFoundColor;
                 }
                 else {
                     r.strokeStyle = "red";
@@ -656,6 +690,23 @@ pages[currentPage].activeScripts.push(function() {
                 table.children[i].children[j].style.cursor = "default";
             }
         }
+
+        document.querySelector(".navIconButton").style.display = "flex";
+
+        let gameOverMessage = document.createElement("p");
+        gameOverMessage.id = "gameOverMessage";
+
+        let myPointsValue = parseInt(myPoints.innerText);
+        let otherPointsValue = parseInt(otherPoints.innerText);
+
+        if(myPointsValue > otherPointsValue) {
+            gameOverMessage.innerText = "You Win!";
+        }
+        else {
+            gameOverMessage.innerText = "You Lose!";
+        }
+
+        document.querySelector(".navIconButton").insertAdjacentElement("afterend", gameOverMessage);
     }
 
     socket.on("game removed", () => {
@@ -696,6 +747,7 @@ pages[currentPage].activeScripts.push(function() {
         
         c.style.position = "absolute";
         c.style.display = "flex";
+        c.style.opacity = "0.5";
         
         c.width = table.scrollWidth;
         c.height = table.scrollHeight;
@@ -765,37 +817,6 @@ pages[currentPage].activeScripts.push(function() {
             }
         }
     }
-
-    // darken a hex by a given RGB amount
-    function darken(hex, amount) {
-        let decs = [];
-
-        for(let i = 1; i < hex.length; i += 2) {
-            let value = Number("0x" + hex.charAt(i) + hex.charAt(i + 1));
-            value -= amount;
-            if(value < 0) {
-                value = 0;
-            }
-
-            decs.push(value);
-        }
-
-        let ansHex = "#";
-
-        for(let i = 0; i < decs.length; i++) {
-            ansHex += (decs[i]).toString(16);
-        }
-
-        return ansHex;
-    }
-
-    let myPoints = document.querySelector("#youPoints");
-    // darken hex by given RGB value
-    myPoints.style.color = darken(myFoundColor, 50);
-
-    let otherPoints = document.querySelector("#otherPoints");
-    // darken hex by given RGB value
-    myPoints.style.color = darken(otherFoundColor, 50);
 
     /**
      * This implementation was the easiest to implement without a significant amount 

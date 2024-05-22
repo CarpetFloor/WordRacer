@@ -227,6 +227,11 @@ io.on("connection", (socket) => {
         game.points[playerIndex] += pointsGained;
 
         io.to(game.roomName).emit("word has been found", word, game.points, pointsGained, socket.id, guessedPosStart, guessedPosEnd);
+
+        if(game.data.found.length == game.data.words) {
+            let removeIndex = games.indexOf(game);
+            games.splice(removeIndex, 1);
+        }
     });
 
     socket.on("disconnect", () => {
