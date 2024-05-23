@@ -247,6 +247,9 @@ button:hover {
     height: 20px;
     width: 20px;
 }
+.online .name .nameInputNotActive {
+    opacity: 0;
+}
 .online .name .nameInputActive {
     display: none;
 }

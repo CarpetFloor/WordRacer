@@ -17,6 +17,7 @@ pages[currentPage].activeScripts.push(function() {
         nameInput.style.width = (width * 2) + "px";
 
         nameInput.style.opacity = "1";
+        document.querySelector(".nameInputNotActive").style.opacity = "1";
     }, 200);
 
     const minWidth = 10;
