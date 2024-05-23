@@ -150,6 +150,16 @@ button:hover {
 }
 .landing button {
     font-size: 1.2em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.2em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+.landing button .icon {
+    margin-right: 0.5em;
+    filter: invert(1);
 }
 .landing div {
     display: flex;
@@ -164,7 +174,7 @@ button:hover {
     color: var(--black);
     filter: brightness(1.15);
     position: absolute;
-    margin-top: 4em;
+    margin-top: 3.5em;
     transition: all var(--delay);
 }
 
