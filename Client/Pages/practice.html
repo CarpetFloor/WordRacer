@@ -16,16 +16,21 @@
             <p>Back</p>
         </button>
 
+        <p class="timerComponent" id="mainTimer">0:00</p>
+        
+        <div class="timerComponent">
+            <p>Since last found:</p>
+            <p id="lastTimer">0:00</p>
+        </div>
+
         <div class="total">
             <p>Total:</p>
             <p id="totalPoints">0pts</p>
         </div>
 
-        <p id="mainTimer">0:00</p>
-        
-        <div>
-            <p>Since last found:</p>
-            <p id="lastTimer">0:00</p>
+        <div id="togglePracticeTimer">
+            <img class="icon" src="/../Icons/checkbox-light.png">
+            <p>Show Timer</p>
         </div>
     </section>
 
@@ -45,5 +50,48 @@
 
     <script src="/./words.js"></script>
     <script src="/./Scripts/practice.js"></script>
+
+    <!-- toggle timer -->
+    <script>
+        let showTimer = true;
+
+        let timerElems = document.querySelectorAll(".timerComponent");
+        let total = document.querySelector(".total");
+        let timerToggle = document.querySelector("#togglePracticeTimer");
+
+        timerToggle.addEventListener("click", function() {
+            showTimer = !(showTimer);
+
+            // toggle icon in timer toggle controls
+            if(showTimer) {
+                timerToggle.children[0].src = "/../Icons/checkbox-light.png";
+            }
+            else {
+                timerToggle.children[0].src = "/../Icons/square.png";
+            }
+
+            // toggle timer components
+            if(showTimer) {
+                timerElems[0].style.height = "1.1em";
+                timerElems[1].style.height = "2em";
+            }
+            else {
+                timerElems[0].style.height = "0";
+                timerElems[1].style.height = "0";
+            }
+
+            // reposition stuff
+            if(showTimer) {
+                timerToggle.style.marginTop = "0";
+                total.style.marginTop = "-2em";
+                total.style.marginBottom = "0";
+            }
+            else {
+                timerToggle.style.marginTop = "1em";
+                total.style.marginTop = "0";
+                total.style.marginBottom = "-2em";
+            }
+        });
+    </script>
 </body>
 </html>

@@ -14,7 +14,7 @@
 
         <div>
             <button onclick="window.open('Pages/practice.html', '_self')">Practice</button>
-            <p id="practiceHighScoreHover"></p>
+            <p id="practiceHighScore"></p>
             <button onclick="window.open('online.html', '_self')">Online</button>
         </div>
 
@@ -31,8 +31,15 @@
                 seconds = "0" + seconds;
             }
 
-            let elem = document.getElementById("practiceHighScoreHover");
-            elem.innerText = "Highscore: " + minutes + ":" + seconds;
+            let elem = document.getElementById("practiceHighScore");
+            elem.innerHTML = 
+            "Highscore: " + 
+            "<span style='" + 
+            "font-weight: bold;" + 
+            "margin-left: 0.35em;" +  
+            "'>" + 
+                minutes + ":" + seconds + 
+            "</span>";
         }
     </script>
 </body>

@@ -6,7 +6,7 @@
  * username.
  */
 
-const showAnswers = true;
+const showAnswers = false;
 
 const express = require("express");
 const app = express();
