@@ -8,14 +8,14 @@ pages[currentPage].activeScripts.push(function() {
     let nameInput = document.querySelector("#nameInput");
     window.setTimeout(function() {
         nameInput.value = playersMap.get(myid);
-    }, 250);
 
-    let measure = widthCalcR.measureText(nameInput.value);
-    let width = measure.width;
-    if(width < 25) {
-        width = 25;
-    }
-    nameInput.style.width = (width * 2) + "px";
+        let measure = widthCalcR.measureText(nameInput.value);
+        let width = measure.width;
+        if(width < 25) {
+            width = 25;
+        }
+        nameInput.style.width = (width * 2) + "px";
+    }, 250);
 
     const minWidth = 10;
     let startingName = nameInput.value;
