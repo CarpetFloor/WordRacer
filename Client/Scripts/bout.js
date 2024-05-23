@@ -609,7 +609,7 @@ pages[currentPage].activeScripts.push(function() {
          *          --------------------
          * Goal opacity / opacity change
          */
-        let marginChange = (2.9 - 2.25) / (1 / 0.2);
+        let marginChange = (3.5 - 2.25) / (1 / 0.2);
         let scale = 0.75;
 
         elem.style.opacity = opacity;
@@ -626,7 +626,7 @@ pages[currentPage].activeScripts.push(function() {
             // ensure values at end will be consistent
             if(opacity > 1) {
                 opacity = 1;
-                marginTop = 2.9;
+                marginTop = 3.5;
                 scale = 1;
                 
                 done = true;
