@@ -613,23 +613,55 @@ table tr td {
 
 /* bout */
 
+#connectionStatus {
+    display: flex;
+    text-align: center;
+    margin-top: 4em;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
 .boutTop {
     display: flex;
     flex-direction: row;
-}
-.boutTop div {
-    display: flex;
-    flex-direction: row;
+    justify-content: center;
+    opacity: 0;
 }
 
-.gainedPointsContainer {
+.boutTop .vs {
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+.boutTop div {
+    display: flex;
+    flex-direction: column;
+}
+.boutTop div p:first-of-type {
+    font-weight: bold;
+}
+
+.boutTop div .gainedPoints {
+    scale: 1;
+    margin: 0;
+    padding: 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    line-height: 1em;
+    width: 5em;
+    height: fit-content;
+    text-align: center;
+    background-color: var(--grey3);
+    color: gold;
+    border-radius: 20px;
+    user-select: none;
     display: flex;
     flex-direction: row;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-}
-.gainedPointsContainer p {
-    opacity: 1;
-    pointer-events: none;
+    justify-content: center;
+    padding-top: 0.35em;
+    padding-bottom: 0.35em;
+    margin-left: -1em !important;
+    margin-bottom: 2.9em !important;
+    position: absolute;
+    opacity: 0;
 }

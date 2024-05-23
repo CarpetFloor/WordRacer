@@ -59,10 +59,6 @@ pages[currentPage].activeScripts.push(function() {
 
     let game = null;
 
-    function random(min, max) {
-        return Math.floor(Math.random() * (max - min) + min);
-    }
-
     let c = document.querySelector("canvas");
     let r = c.getContext("2d");
     let w = -1;
@@ -515,87 +511,12 @@ pages[currentPage].activeScripts.push(function() {
         // animate gained points
 
         // first, if animation is already playing clear it
-        if(gainedPointsInterval != null) {
-            window.clearInterval(gainedPointsInterval);
-        }
-        document.getElementById("myGainedPoints").style.opacity = "0";
-        document.getElementById("myGainedPoints").style.marginTop = "0.25em";
-        document.getElementById("myGainedPoints").style.marginBottom = "-2em";
-        document.getElementById("myGainedPoints").style.scale = "1";
-        document.getElementById("myGainedPoints").style.marginLeft = "50vw";
-        
-        document.getElementById("myGainedPoints").innerText = "+" + pointsGained + "pts";
-        let opacity = 0;
-
-        let marginTop = 0.75;
-        let marginBottom = 0 - 2.75;
-        let marginChange = 0.15;
-        
-        let scale = 0.75;
-        
-        // well, this is certainly one way to do animation
-
-        gainedPointsInterval = window.setInterval(function() {
-            opacity += 0.2;
-            marginTop -= marginChange;
-            marginBottom += marginChange;
-            scale += 0.05;
-            
-            let done = false;
-            if(opacity > 1) {
-                opacity = 1;
-                
-                done = true;
-            }
-
-            document.getElementById("myGainedPoints").style.opacity = opacity;
-            document.getElementById("myGainedPoints").style.marginTop = marginTop + "em";
-            document.getElementById("myGainedPoints").style.marginBottom = marginBottom + "em";
-            document.getElementById("myGainedPoints").style.scale = scale;
-
-            if(done) {
-                window.clearInterval(gainedPointsInterval);
-                gainedPointsInterval = null;
-
-                // ensure floating-point errors don't cause styles to not be set properly
-                document.getElementById("myGainedPoints").style.opacity = "1";
-                document.getElementById("myGainedPoints").style.marginTop = "0.25em";
-                document.getElementById("myGainedPoints").style.marginBottom = "-2em";
-                document.getElementById("myGainedPoints").style.scale = "1";
-
-                // fade away
-                let timeout = window.setTimeout(function() {
-                    // don't fade away if the animation has been started again
-                    if(gainedPointsInterval == null) {
-                        let fadeOpacity = 1;
-                        let fadeMarginLeft = 50;
-                        gainedPointsFadeAwayInteval = window.setInterval(function() {
-                            if(gainedPointsInterval == null) {
-                                document.getElementById("myGainedPoints").style.opacity = fadeOpacity;
-                                document.getElementById("myGainedPoints").style.marginLeft = fadeMarginLeft + "vw";
-
-                                fadeOpacity -= 0.15;
-                                fadeMarginLeft += 2;
-
-                                if(fadeOpacity <= 0) {
-                                    document.getElementById("myGainedPoints").style.opacity = "0";
-                                    window.clearInterval(gainedPointsFadeAwayInteval);
-                                }
-                            }
-                            else {
-                                window.clearInterval(gainedPointsFadeAwayInteval);
-                            }
-                        }, 1000 / 30);
-
-                        pages[currentPage].intervals.push(gainedPointsFadeAwayInteval);
-                    }
-                }, 1000 * 3.5);
-                
-                pages[currentPage].timeouts.push(timeout);
-            }
-        }, 1000 / 30);
-        
-        pages[currentPage].intervals.push(gainedPointsInterval);
+        animatedGainedPoints(
+            gainedPointsInterval, 
+            gainedPointsFadeAwayInteval, 
+            document.getElementById("myGainedPoints"), 
+            pointsGained
+        );
 
         points += pointsGained;
         document.getElementById("youPoints").innerText = points + "pts";
@@ -676,6 +597,82 @@ pages[currentPage].activeScripts.push(function() {
         }
     }
 
+    function animatedGainedPoints(interval, fadeAwayInterval, elem, pointsGainedPassed) {
+        if(interval != null) {
+            window.clearInterval(interval);
+        }
+
+        let opacity = 0;
+        let marginTop = 2.25;
+        /**
+         * Goal margin bottom - starting margin bottom
+         *          --------------------
+         * Goal opacity / opacity change
+         */
+        let marginChange = (2.9 - 2.25) / (1 / 0.2);
+        let scale = 0.75;
+
+        elem.style.opacity = opacity;
+        elem.innerText = "+" + pointsGainedPassed + "pts";
+        
+        // well, this is certainly one way to do animation
+
+        interval = window.setInterval(function() {
+            opacity += 0.2;
+            marginTop += marginChange;
+            scale += 0.05;
+            
+            let done = false;
+            // ensure values at end will be consistent
+            if(opacity > 1) {
+                opacity = 1;
+                marginTop = 2.9;
+                scale = 1;
+                
+                done = true;
+            }
+
+            elem.style.opacity = opacity;
+            elem.style.marginTop = marginTop + "em";
+            elem.style.scale = scale;
+
+            if(done) {
+                window.clearInterval(interval);
+                interval = null;
+
+                // fade away
+                let timeout = window.setTimeout(function() {
+                    // don't fade away if the animation has been started again
+                    if(interval == null) {
+                        let fadeOpacity = 1;
+
+                        fadeAwayInterval = window.setInterval(function() {
+                            if(interval == null) {
+                                elem.style.opacity = fadeOpacity;
+
+                                fadeOpacity -= 0.15;
+
+                                if(fadeOpacity <= 0) {
+                                    elem.style.opacity = "0";
+                                    window.clearInterval(fadeAwayInterval);
+                                }
+                            }
+                            else {
+                                window.clearInterval(fadeAwayInterval);
+                            }
+                        }, 1000 / 30);
+
+                        pages[currentPage].intervals.push(fadeAwayInterval);
+                    }
+                }, 1000 * 3.5);
+                
+                pages[currentPage].timeouts.push(timeout);
+            }
+        }, 1000 / 30);
+
+        pages[currentPage].intervals.push(interval);
+    }
+
     let gameOver = false;
     function endGame() {
         gameOver = true;
@@ -722,9 +719,11 @@ pages[currentPage].activeScripts.push(function() {
     socket.on("game has started", (gameData) => {
         game = gameData;
 
+        // show scores totals
+        document.querySelector(".boutTop").style.opacity = "1";
+
         // hide waiting for players messages
-        document.querySelector("#connectionStatus").style.opacity = "0";
-        document.querySelector("#connectionStatus").style.pointerEvents = "none";
+        document.querySelector("#connectionStatus").style.display = "none";
 
         addWordsList();
 
@@ -852,86 +851,12 @@ pages[currentPage].activeScripts.push(function() {
             wordElem.style.backgroundColor = otherFoundColor;
             wordElem.style.opacity = "0.85";
 
-            // first, if animation is already playing clear it
-            if(otherGainedPointsInterval != null) {
-                window.clearInterval(otherGainedPointsInterval);
-            }
-            document.getElementById("otherGainedPoints").style.opacity = "0";
-            document.getElementById("otherGainedPoints").style.marginTop = "0.25em";
-            document.getElementById("otherGainedPoints").style.marginBottom = "-2em";
-            document.getElementById("otherGainedPoints").style.scale = "1";
-            document.getElementById("otherGainedPoints").style.marginLeft = "50vw";
-            
-            document.getElementById("otherGainedPoints").innerText = "+" + pointsGained + "pts";
-            let opacity = 0;
-
-            let marginTop = 0.75;
-            let marginBottom = 0 - 2.75;
-            let marginChange = 0.15;
-            
-            let scale = 0.75;
-
-            otherGainedPointsInterval = window.setInterval(function() {
-                opacity += 0.2;
-                marginTop -= marginChange;
-                marginBottom += marginChange;
-                scale += 0.05;
-                
-                let done = false;
-                if(opacity > 1) {
-                    opacity = 1;
-                    
-                    done = true;
-                }
-
-                document.getElementById("otherGainedPoints").style.opacity = opacity;
-                document.getElementById("otherGainedPoints").style.marginTop = marginTop + "em";
-                document.getElementById("otherGainedPoints").style.marginBottom = marginBottom + "em";
-                document.getElementById("otherGainedPoints").style.scale = scale;
-
-                if(done) {
-                    window.clearInterval(otherGainedPointsInterval);
-                    otherGainedPointsInterval = null;
-
-                    // ensure floating-point errors don't cause styles to not be set properly
-                    document.getElementById("otherGainedPoints").style.opacity = "1";
-                    document.getElementById("otherGainedPoints").style.marginTop = "0.25em";
-                    document.getElementById("otherGainedPoints").style.marginBottom = "-2em";
-                    document.getElementById("otherGainedPoints").style.scale = "1";
-
-                    // fade away
-                    let timeout = window.setTimeout(function() {
-                        // don't fade away if the animation has been started again
-                        if(otherGainedPointsInterval == null) {
-                            let fadeOpacity = 1;
-                            let fadeMarginLeft = 50;
-                            otherGainedPointsFadeAwayInteval = window.setInterval(function() {
-                                if(otherGainedPointsInterval == null) {
-                                    document.getElementById("otherGainedPoints").style.opacity = fadeOpacity;
-                                    document.getElementById("otherGainedPoints").style.marginLeft = fadeMarginLeft + "vw";
-
-                                    fadeOpacity -= 0.15;
-                                    fadeMarginLeft += 2;
-
-                                    if(fadeOpacity <= 0) {
-                                        document.getElementById("otherGainedPoints").style.opacity = "0";
-                                        window.clearInterval(otherGainedPointsFadeAwayInteval);
-                                    }
-                                }
-                                else {
-                                    window.clearInterval(otherGainedPointsFadeAwayInteval);
-                                }
-                            }, 1000 / 30);
-
-                            pages[currentPage].intervals.push(otherGainedPointsFadeAwayInteval);
-                        }
-                    }, 1000 * 3.5);
-                    
-                    pages[currentPage].timeouts.push(timeout);
-                }
-            }, 1000 / 30);
-            
-            pages[currentPage].intervals.push(otherGainedPointsInterval);
+            animatedGainedPoints(
+                otherGainedPointsInterval, 
+                otherGainedPointsFadeAwayInteval, 
+                document.getElementById("otherGainedPoints"), 
+                pointsGained
+            );
 
             game.found.push(word);
             game.foundPosesStart.push(guessedPosStart);
