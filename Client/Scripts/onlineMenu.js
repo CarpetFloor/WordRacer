@@ -6,7 +6,9 @@ pages[currentPage].activeScripts.push(function() {
     let widthCalcR = widthCalcCanvas.getContext("2d");
 
     let nameInput = document.querySelector("#nameInput");
-    nameInput.value = playersMap.get(myid);
+    window.setTimeout(function() {
+        nameInput.value = playersMap.get(myid);
+    }, 250);
 
     let measure = widthCalcR.measureText(nameInput.value);
     let width = measure.width;
