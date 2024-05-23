@@ -54,6 +54,7 @@ button {
     outline: none;
     border: none;
     background-color: var(--colorMainDarker);
+    border: 2px solid transparent;
     color: var(--white3);
     line-height: 0;
     padding: 1.5em;
@@ -67,6 +68,19 @@ button:hover {
     cursor: pointer;
     color: white;
     background-color: var(--colorMainDarkerHighlight);
+}
+
+.invertButton {
+    background-color: transparent;
+    color: var(--colorMainDarker);
+    border: 2px solid var(--colorMainDarker);
+}
+.invertButton:hover {
+    border-color: transparent;
+}
+
+.invertButton:hover .icon {
+    filter: brightness(0) invert(1);
 }
 
 .navIconButton {
@@ -160,7 +174,7 @@ button:hover {
     margin-left: 0;
 }
 
-/* online */
+/* online menu */
 
 .online {
     display: flex;
@@ -387,6 +401,87 @@ button:hover {
 }
 .online .join .joinButton .icon {
     filter: invert(1);
+}
+
+/* lobby */
+
+.lobby {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5em;
+}
+
+.lobby h1 {
+    font-size: 2em;
+    margin: 0;
+}
+
+.lobby .controls {
+    margin-top: 0.5em;
+    margin-bottom: 2em;
+    display: flex;
+    flex-direction: row;
+}
+.lobby .controls button {
+    font-size: 1em;
+    padding: 0.5em;
+    margin-right: 0.5em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.lobby .controls button .icon {
+    margin-right: 0.5em;
+}
+
+.lobby .players {
+    display: flex;
+    flex-direction: column;
+}
+
+.lobby .players .container {
+    background-color: rgb(245, 245, 245);
+    border-radius: 10px;
+    padding: 1em;
+    margin-top: 5.35em;
+    border: 1px solid grey;
+    border-bottom: 4px solid grey;
+}
+
+.lobby .players .container .heading {
+    margin-top: -5.8em;
+    margin-left: -1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: fit-content;
+}
+.lobby .players .container .heading h2 {
+    font-weight: bold;
+    font-size: 1.2em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.lobby .players .container .heading #playersCount {
+    margin-right: 0.5em;
+    background-color: var(--grey1);
+    border: 1px solid var(--grey2);
+    border-bottom: 3px solid var(--grey2);
+    border-radius: 5px;
+    padding: 0.5em;
+}
+
+.lobby .players .container p {
+    font-size: 1.1em;
+    margin: 0;
+    margin-bottom: 0.5em;
+}
+.lobby .players .container p:first-of-type {
+    margin-top: 0.5em;
 }
 
 /* game */

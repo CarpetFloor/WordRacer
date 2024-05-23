@@ -1,4 +1,7 @@
 pages[currentPage].activeScripts.push(function() {
+    // set page title
+    document.querySelector("h1").innerText = playersMap.get(mygame.host) + "'s Game Lobby";
+
     let countDisplay = document.getElementById("playersCount");
     let div = document.querySelector("div");
     let maxPlayers = (mygame.type == "bout") ? 2 : 4;
@@ -56,20 +59,27 @@ pages[currentPage].activeScripts.push(function() {
         socket.emit("request game start", mygame.host);
     });
 
+    hideErrorTimeout = null;
+    
     socket.on("not enough players to start game", () => {
-        if(errorMessageHideTimeout != null) {
-            pages[currentPage].timeouts[0] = null;
-            window.clearTimeout(errorMessageHideTimeout);
-            errorMessageHideTimeout = null;
-        }
+        errorMessage.style.opacity = "0";   
+        errorMessage.style.borderColor = "transparent";
+        errorMessage.style.boxShadow = "none";
 
-        errorMessage.style.opacity = "1";
+        window.setTimeout(function() {
+            errorMessage.style.opacity = "1";
+            errorMessage.style.borderColor = "#EF5350";
+            errorMessage.style.boxShadow = "0 0 5px #EF5350";
 
-        errorMessageHideTimeout = window.setTimeout(function() {
-            errorMessageHideTimeout = null;
-            errorMessage.style.opacity = "0";
-        }, 5000);
-        pages[currentPage].timeouts.push(errorMessageHideTimeout);
+            if(hideErrorTimeout != null) {
+                window.clearTimeout(hideErrorTimeout);
+            }
+
+            hideErrorTimeout = window.setTimeout(function() {
+                errorMessage.style.opacity = "0";
+                hideErrorTimeout = null;
+            }, 7000);
+        }, 100);
     });
 
     socket.on("load game page", () => {

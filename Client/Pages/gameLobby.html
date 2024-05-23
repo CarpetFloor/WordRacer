@@ -1,15 +1,26 @@
 <section class="lobby">
-    <p class="errorMessage">Not enough players to start!</p>
+    <p class="errorMessage" style="margin-top: -3em;">Not enough players to start!</p>
     
+    <h1></h1>
+
     <section class="controls">
-        <button>Start</button>
-        <button>Leave</button>
+        <button>
+            <img class="icon iconInvert" src="/../Icons/rocket-launch-filled.png">
+            <p>Start</p>
+        </button>
+
+        <button class="invertButton">
+            <img class="icon" src="/../Icons/exit-colored.png">
+            <p>Leave</p>
+        </button>
     </section>
 
     <section class="players">
-        <div>
-            <p id="playersCount">1 / 2</p>
-            <p>Players:</p>
+        <div class="container">
+            <div class="heading">
+                <h2 id="playersCount">1 / 2</p>
+                <h2>Players:</p>
+            </div>
         </div>
     </section>
 </section>
