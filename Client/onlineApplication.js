@@ -178,6 +178,7 @@ function loadPageByName(name) {
     }
 }
 
+let hideErrorTimeout = null;
 function showErrorMessageCheck() {
     if(globalErrorMessage.show) {
         globalErrorMessage.show = false;
@@ -188,12 +189,25 @@ function showErrorMessageCheck() {
 
         let elem = document.querySelector(".errorMessage");
         elem.innerText = globalErrorMessage.message;
-        elem.style.opacity = "1";
+        
+        elem.style.opacity = "0";   
+        elem.style.borderColor = "transparent";
+        elem.style.boxShadow = "none";
 
-        globalErrorMessage.timeout = window.setTimeout(function() {
-            globalErrorMessage.timeout = null;
-            elem.style.opacity = "0";
-        }, 8000);
+        window.setTimeout(function() {
+            elem.style.opacity = "1";
+            elem.style.borderColor = "#EF5350";
+            elem.style.boxShadow = "0 0 5px #EF5350";
+
+            if(hideErrorTimeout != null) {
+                window.clearTimeout(hideErrorTimeout);
+            }
+
+            hideErrorTimeout = window.setTimeout(function() {
+                elem.style.opacity = "0";
+                hideErrorTimeout = null;
+            }, 8500);
+        }, 100);
     }
 }
 
