@@ -15,7 +15,9 @@ pages[currentPage].activeScripts.push(function() {
             width = 25;
         }
         nameInput.style.width = (width * 2) + "px";
-    }, 250);
+
+        nameInput.style.opacity = "1";
+    }, 200);
 
     const minWidth = 10;
     let startingName = nameInput.value;
