@@ -8,6 +8,7 @@ pages[currentPage].activeScripts.push(function() {
     let nameInput = document.querySelector("#nameInput");
     window.setTimeout(function() {
         nameInput.value = playersMap.get(myid);
+        startingName = nameInput.value;
 
         let measure = widthCalcR.measureText(nameInput.value);
         let width = measure.width;
@@ -21,7 +22,7 @@ pages[currentPage].activeScripts.push(function() {
     }, 200);
 
     const minWidth = 10;
-    let startingName = nameInput.value;
+    let startingName = "";
 
     nameInput.oninput = function() {
         let measure = widthCalcR.measureText(nameInput.value);
