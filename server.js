@@ -6,7 +6,7 @@
  * username.
  */
 
-const showAnswers = false;
+const showAnswers = true;
 
 const express = require("express");
 const app = express();
@@ -297,12 +297,19 @@ io.on("connection", (socket) => {
         io.to(game.roomName).emit("word has been found", word, game.points, pointsGained, socket.id, guessedPosStart, guessedPosEnd);
 
         if(game.data.found.length == game.data.words) {
+            // remove players from game room
+            for(let i = 0; i < game.players.length; i++) {
+                let playerIndex = players.indexOf(game.players[i]);
+                let playerSocket = sockets[playerIndex];
+                
+                playerSocket.leave(game.roomName);
+            }
+
             let removeIndex = games.indexOf(game);
             games.splice(removeIndex, 1);
+            
+            debugPrintGames();
         }
-
-        io.sockets.emit("send active games", games);
-        debugPrintGames();
     });
 
     socket.on("disconnect", () => {
