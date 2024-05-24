@@ -690,10 +690,16 @@ pages[currentPage].activeScripts.push(function() {
             }
         }
 
+        document.querySelector(".navIconButton").style.marginLeft = "auto";
+        document.querySelector(".navIconButton").style.marginRight = "auto";
         document.querySelector(".navIconButton").style.display = "flex";
 
         let gameOverMessage = document.createElement("p");
         gameOverMessage.id = "gameOverMessage";
+        
+        gameOverMessage.style.width = "fit-content";
+        gameOverMessage.style.marginLeft = "auto";
+        gameOverMessage.style.marginRight = "auto";
 
         let myPointsValue = parseInt(myPoints.innerText);
         let otherPointsValue = parseInt(otherPoints.innerText);
