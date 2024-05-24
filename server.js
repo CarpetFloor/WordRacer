@@ -297,6 +297,10 @@ io.on("connection", (socket) => {
         io.to(game.roomName).emit("word has been found", word, game.points, pointsGained, socket.id, guessedPosStart, guessedPosEnd);
 
         if(game.data.found.length == game.data.words) {
+            // remove room from tracked room names
+            let roomNameIndex = roomNames.indexOf(game.roomName);
+            roomNames.splice(roomNameIndex, 1);
+            
             // remove players from game room
             for(let i = 0; i < game.players.length; i++) {
                 let playerIndex = players.indexOf(game.players[i]);
