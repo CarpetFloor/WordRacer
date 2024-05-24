@@ -133,7 +133,7 @@ pages[currentPage].activeScripts.push(function() {
     }
 
     // allow attempting to change name by pressing enter
-    nameInput.addEventListener("key", function(e) {
+    nameInput.addEventListener("keypress", function(e) {
         if(e.key == "Enter") {
             if(startingName != nameInput.value) {
                 errorMessage.style.opacity = "0";
