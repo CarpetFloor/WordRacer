@@ -388,5 +388,57 @@ pages[currentPage].activeScripts.push(function() {
             }
         }
     });
+
+    function mobileResponsiveness() {
+        if(window.innerHeight > window.innerWidth) {
+            document.querySelector(".online").style.maxWidth = "none";
+            document.querySelector(".online").style.width = "92vw";
+
+            let containers = document.querySelectorAll(".container");
+            for(let i = 0; i < containers.length; i++) {
+                containers[i].style.padding = "0";
+                containers[i].style.paddingTop = "0.5em";
+                containers[i].style.marginTop = "-1.75em";
+            }
+
+            let containerTops = document.querySelectorAll(".containerTop");
+            for(let i = 0; i < containerTops.length; i++) {
+                containerTops[i].style.flexDirection = "column";
+            }
+
+            let icons = document.querySelectorAll(".createIcon");
+            for(let i = 0; i < icons.length; i++) {
+                icons[i].style.width = "10px";
+                icons[i].style.height = "10px";
+            }
+
+            document.querySelector("#boutCreateButton").style.width = "5em";
+            document.querySelector("#boutCreateButton").style.padding = "0.75em";
+            document.querySelector("#boutCreateButton").style.marginTop = "-0.05em";
+
+            document.querySelector("#clashCreateButton").style.width = "5em";
+            document.querySelector("#clashCreateButton").style.padding = "0.75em";
+            document.querySelector("#clashCreateButton").style.marginTop = "-0.05em";
+        }
+        else if(window.innerWidth < 1000) {
+            document.querySelector(".online").style.maxWidth = "none";
+            document.querySelector(".online").style.width = "75vw";
+            document.querySelector(".online").style.marginTop = "1em";
+            
+            document.querySelector(".info").style.marginTop = "-2em";
+            document.querySelector(".info").style.marginBottom = "-1.5em";
+
+            document.querySelector(".info").children[2].innerText += " (at the bottom of the page)";
+
+            document.querySelector(".create").style.marginTop = "-1.5em";
+
+            document.querySelector(".openCreate").addEventListener("click", () => {
+                window.setTimeout(() => {
+                    window.scrollBy({ top: 500, behavior: "smooth" });
+                }, 100);
+            });
+        }
+    }
+    mobileResponsiveness();
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();
