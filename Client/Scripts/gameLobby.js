@@ -88,10 +88,13 @@ pages[currentPage].activeScripts.push(function() {
     function mobileResponsiveness() {
         if(window.innerHeight > window.innerWidth) {
             document.querySelector(".lobby").style.fontSize = "1.25em";
+            document.querySelector(".lobby").style.marginTop = "1em";
         }
         else if(window.innerWidth < 1000) {
             document.querySelector(".lobby").style.fontSize = "1.25em";
             document.querySelector(".lobby").style.marginTop = "0.5em";
+
+            document.querySelector(".container").style.marginTop = "2em";
         }
     }
     mobileResponsiveness();
