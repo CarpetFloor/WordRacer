@@ -130,10 +130,10 @@ button:hover {
     padding-top: 1.25em;
     line-height: 0;
     height: 1em;
-    text-overflow: clip;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     transition: all 0.2s;
-    /* width: 0;
-    padding: 0; */
 }
 
 /* landing page */
@@ -622,6 +622,10 @@ table tr td {
     color: var(--black);
     user-select: none;
     transition: all calc(var(--delay) * 0.7);
+}
+
+td {
+    padding: 0;
 }
 
 .game table {

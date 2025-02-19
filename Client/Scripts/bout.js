@@ -743,6 +743,7 @@ pages[currentPage].activeScripts.push(function() {
         document.querySelector("table").style.opacity = "1";
         document.querySelector("table").style.pointerEvents = "auto";
 
+        mobileResponsiveness();
         setupCanvas();
 
         // add event listeners
@@ -751,18 +752,21 @@ pages[currentPage].activeScripts.push(function() {
 
     function setupCanvas() {
         let table = document.querySelector("table");
+        let tableBounds = table.getBoundingClientRect();
         
+        c.width = tableBounds.width;
+        c.height = tableBounds.height;
+        
+        c.style.top = `${tableBounds.top}px`;
+        c.style.left = `${tableBounds.left}px`;
         c.style.position = "absolute";
-        c.style.display = "flex";
-        c.style.opacity = "0.5";
-        
-        c.width = table.scrollWidth;
-        c.height = table.scrollHeight;
         
         w = c.width;
         h = c.height;
-
+        
         r.lineCap = "round";
+
+        spaceBetweenCells = (w - (25 * game.width)) / game.width;
     }
 
     function addWordsList() {
@@ -897,6 +901,41 @@ pages[currentPage].activeScripts.push(function() {
                 endGame();
             }
         }
-    })
+    });
+
+    function mobileResponsiveness() {
+        if(window.innerHeight > window.innerWidth) {
+            document.querySelector("table").style.padding = "0";
+            document.querySelector("table").style.margin = "0";
+            document.querySelector("table").style.marginLeft = "0.2em";
+    
+            let letters = document.querySelectorAll("td");
+            for(let letter of letters) {
+                letter.style.paddingRight = "0.55em";
+            }
+    
+            document.querySelector(".game").style.flexDirection = "column";
+    
+            document.querySelector(".found h1").style.display = "none";
+    
+            let foundHeading = document.createElement("h1");
+            foundHeading.innerText = "Words";
+            foundHeading.style.padding = "0";
+            foundHeading.style.margin = "0";
+            foundHeading.style.marginTop = "0.5em";
+    
+            document.querySelector(".game").insertBefore(foundHeading, document.querySelector(".found"));
+    
+            document.querySelector(".found").style.flexDirection = "row";
+            document.querySelector(".found").style.flexWrap = "wrap";
+            
+            document.querySelector("canvas").style.margin = "0";
+            document.querySelector("canvas").style.marginTop = "-1em";
+            document.querySelector("canvas").style.marginLeft = "-0.2em";
+        }
+        else if(window.innerWidth < 1000) {
+            window.alert("Please use portrait mode - this game was not designed for landscape mode");
+        }
+    }
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();

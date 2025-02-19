@@ -253,19 +253,23 @@ let h = -1;
 let spaceBetweenCells = -1;
 
 function setupCanvas() {
-    c.style.position = "absolute";
     let table = document.querySelector("table");
-    c.width = table.scrollWidth;
-    c.height = table.scrollHeight;
+    let tableBounds = table.getBoundingClientRect();
+    
+    c.width = tableBounds.width;
+    c.height = tableBounds.height;
+    
+    c.style.top = `${tableBounds.top}px`;
+    c.style.left = `${tableBounds.left}px`;
+    c.style.position = "absolute";
+    
     w = c.width;
     h = c.height;
-
+    
     r.lineCap = "round";
 
     spaceBetweenCells = (w - (25 * game.width)) / game.width;
 }
-
-setupCanvas();
 
 let selecting = false;
 
@@ -948,3 +952,58 @@ let backButton = document.getElementsByClassName("navIconButton")[0];
 
 backButton.style.marginLeft = "auto";
 backButton.style.marginRight = "auto";
+
+function mobileResponsiveness() {
+    if(window.innerHeight > window.innerWidth) {
+        document.querySelector(".search").style.padding = "0";
+        document.querySelector(".search").style.margin = "0";
+        document.querySelector(".search").style.marginTop = "-2em";
+
+        document.querySelector("#mainTimer").style.fontSize = "2em";
+        let topTexts = document.querySelectorAll(".timerComponent > p");
+        for(text of topTexts) {
+            text.style.fontSize = "1em";
+        }
+
+        document.querySelector("#togglePracticeTimer > p").style.fontSize = "1em";
+
+        document.querySelector(".top").style.marginLeft = "0";
+
+        document.querySelector(".total").style.fontSize = "1em";
+        document.querySelector(".total").style.marginLeft = "20em";
+
+        document.querySelector("table").style.padding = "0";
+        document.querySelector("table").style.margin = "0";
+        document.querySelector("table").style.marginLeft = "0.2em";
+
+        let letters = document.querySelectorAll("td");
+        for(let letter of letters) {
+            letter.style.paddingRight = "0.55em";
+        }
+
+        document.querySelector(".game").style.flexDirection = "column";
+
+        document.querySelector(".found h1").style.display = "none";
+
+        let foundHeading = document.createElement("h1");
+        foundHeading.innerText = "Words";
+        foundHeading.style.padding = "0";
+        foundHeading.style.margin = "0";
+        foundHeading.style.marginTop = "0.5em";
+
+        document.querySelector(".game").insertBefore(foundHeading, document.querySelector(".found"));
+
+        document.querySelector(".found").style.flexDirection = "row";
+        document.querySelector(".found").style.flexWrap = "wrap";
+        
+        document.querySelector("canvas").style.margin = "0";
+        document.querySelector("canvas").style.marginTop = "-1em";
+        document.querySelector("canvas").style.marginLeft = "-0.2em";
+    }
+    else if(window.innerWidth < 1000) {
+        window.alert("Please use portrait mode - this game was not designed for landscape mode");
+    }
+}
+
+mobileResponsiveness();
+setupCanvas();

@@ -88,13 +88,25 @@ pages[currentPage].activeScripts.push(function() {
     function mobileResponsiveness() {
         if(window.innerHeight > window.innerWidth) {
             document.querySelector(".lobby").style.fontSize = "1.25em";
-            document.querySelector(".lobby").style.marginTop = "1em";
+            document.querySelector(".lobby").style.marginTop = "2em";
+
+            document.querySelector(".controls").style.marginBottom = "0";
+
+            document.querySelector(".errorMessage").style.fontSize = "1em";
+            document.querySelector(".errorMessage").style.paddingTop = "1em";
+            document.querySelector(".errorMessage").style.paddingBottom = "0";
+            document.querySelector(".errorMessage").style.marginTop = "4em";
         }
         else if(window.innerWidth < 1000) {
             document.querySelector(".lobby").style.fontSize = "1.25em";
-            document.querySelector(".lobby").style.marginTop = "0.5em";
+            document.querySelector(".lobby").style.marginTop = "2em";
 
             document.querySelector(".container").style.marginTop = "2em";
+
+            document.querySelector(".errorMessage").style.fontSize = "1em";
+            document.querySelector(".errorMessage").style.paddingTop = "1em";
+            document.querySelector(".errorMessage").style.paddingBottom = "0";
+            document.querySelector(".errorMessage").style.marginTop = "4em";
         }
     }
     mobileResponsiveness();

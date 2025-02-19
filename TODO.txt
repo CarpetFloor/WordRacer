@@ -1,1 +1,2 @@
--
+-Fix bout on mobile portrait
+-Start working on anagram game:

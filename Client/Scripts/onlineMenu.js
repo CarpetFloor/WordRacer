@@ -425,6 +425,13 @@ pages[currentPage].activeScripts.push(function() {
             document.querySelector("#clashCreateButton").style.width = "5em";
             document.querySelector("#clashCreateButton").style.padding = "0.75em";
             document.querySelector("#clashCreateButton").style.marginTop = "-0.05em";
+
+            document.querySelector(".errorMessage").style.fontSize = "1em";
+            document.querySelector(".errorMessage").style.paddingTop = "0";
+            document.querySelector(".errorMessage").style.paddingBottom = "0";
+            document.querySelector(".errorMessage").style.marginTop = "5.75em";
+            document.querySelector(".errorMessage").style.lineHeight = "normal";
+            document.querySelector(".errorMessage").style.height = "fit-content";
         }
         else if(window.innerWidth < 1000) {
             document.querySelector(".online").style.maxWidth = "none";
@@ -443,6 +450,11 @@ pages[currentPage].activeScripts.push(function() {
                     window.scrollBy({ top: 550, behavior: "smooth" });
                 }, 150);
             });
+
+            document.querySelector(".errorMessage").style.fontSize = "1em";
+            document.querySelector(".errorMessage").style.paddingTop = "1em";
+            document.querySelector(".errorMessage").style.paddingBottom = "0";
+            document.querySelector(".errorMessage").style.marginTop = "2.5em";
         }
     }
     mobileResponsiveness();
