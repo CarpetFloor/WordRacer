@@ -1,6 +1,5 @@
 pages[currentPage].activeScripts.push(function() {
     // set page title
-    document.querySelector("h1").innerText = playersMap.get(mygame.host) + "'s Game Lobby";
 
     let countDisplay = document.getElementById("playersCount");
     let div = document.querySelector("div");

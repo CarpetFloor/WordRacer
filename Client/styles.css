@@ -50,6 +50,10 @@ html {
     font-family: "Nunito", sans-serif;
 }
 
+body {
+    transition: margin-left 0.5s;
+}
+
 button {
     outline: none;
     border: none;

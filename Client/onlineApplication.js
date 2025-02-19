@@ -125,6 +125,8 @@ function loadPage(index) {
         .then((content) => {
             document.body.innerHTML = content;
 
+            document.body.style.display = "none";
+
             document.title = page.title;
             
             if(debugPageLoader) {
@@ -153,6 +155,15 @@ function loadScriptsLoop(page, index) {
                 console.log("Loaded scripts");
                 console.log("----------------------------------------\n\n\n");
             }
+
+            function pageOpenAnimation() {
+                document.body.style.marginLeft = "-200vw"
+                document.body.style.display = "flex";
+                window.setTimeout(() => {
+                    document.body.style.marginLeft = "0";
+                }, 100);
+            }
+            pageOpenAnimation();
 
             showErrorMessageCheck();
         }

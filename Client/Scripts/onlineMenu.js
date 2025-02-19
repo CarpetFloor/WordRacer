@@ -1,6 +1,5 @@
 pages[currentPage].activeScripts.push(function() {
     // resize name change input based on name length
-
     let widthCalcCanvas = document.createElement("canvas");
     widthCalcCanvas.font = "Nunito";
     let widthCalcR = widthCalcCanvas.getContext("2d");
