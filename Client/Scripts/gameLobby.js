@@ -84,5 +84,16 @@ pages[currentPage].activeScripts.push(function() {
     socket.on("load game page", () => {
         loadPageByName(mygame.type);
     });
+
+    function mobileResponsiveness() {
+        if(window.innerHeight > window.innerWidth) {
+            document.querySelector(".lobby").style.fontSize = "1.25em";
+        }
+        else if(window.innerWidth < 1000) {
+            document.querySelector(".lobby").style.fontSize = "1.25em";
+            document.querySelector(".lobby").style.marginTop = "0.5em";
+        }
+    }
+    mobileResponsiveness();
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();
