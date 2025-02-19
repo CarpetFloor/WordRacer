@@ -144,13 +144,47 @@ button:hover {
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
-    margin-top: var(--topMargin);
+    margin-top: -20em;
     align-items: center;
+}
+.landing #overallGameModeLabel {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+.landing #overallGameModeSwitchContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    background-color: var(--colorLight4);
+    border-radius: 15px;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 1em;
+}
+.landing #overallGameModeSwitchContainer p {
+    font-size: 1.1em;
+    border-radius: 15px;
+    padding: 0.2em;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    margin: 0;
+    font-weight: bold;
+    user-select: none;
+}
+.landing #overallGameModeSwitchContainer p:first-child {
+    background-color: var(--colorMain);
 }
 .landing h1 {
     font-size: 3em;
     margin: 0;
-    margin-bottom: 0.5em;
+}
+.landing .subHeading {
+    font-weight: normal;
+    font-size: 1.2em;
+    margin: 0;
+    margin-top: -0.5em;
+    margin-bottom: 2em;
 }
 .landing button {
     font-size: 1.2em;

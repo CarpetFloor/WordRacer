@@ -12,6 +12,15 @@
     <section class="landing">
         <h1>Word Racer</h1>
 
+        <h2 class="subHeading">Some random word games</h2>
+
+        <p id="overallGameModeLabel">Game <span style="font-size: 0.75em; font-style: italic;">(coming soon)</span></p>
+        <div id="overallGameModeSwitchContainer">
+            <p id="wordSearch" onclick="switchOverallGameMode('search')">Word Search</p>
+
+            <p id="wordScramble" onclick="switchOverallGameMode('scramble')">Word Scramble</p>
+        </div>
+
         <div>
             <button onclick="window.open('Pages/practice.html', '_self')">
                 <img class="icon" src="/../Icons/graduation-cap-filled.png">
@@ -28,8 +37,8 @@
 
     </section>
 
-    <!-- set practice highscore -->
     <script>
+        // set practice highscore
         let practiceHighScoreCheck = localStorage.getItem("practiceHighScore");
         if(practiceHighScoreCheck != null) {
             let total = parseInt(practiceHighScoreCheck);
@@ -49,6 +58,85 @@
                 minutes + ":" + seconds + 
             "</span>";
         }
+
+        // toggle overall game mode
+        let wordSearchMode = "search";
+
+        // add hover effect
+        let modes = document.querySelectorAll("#overallGameModeSwitchContainer > p");
+        for(let mode of modes) {
+            let modeId = "";
+            console.log(mode.id)
+            switch(mode.id) {
+                case "wordSearch":
+                    modeId = "search";
+                    break;
+                case "wordScramble":
+                    modeId = "scramble";
+                    break;
+            }
+
+            mode.addEventListener("mouseover", () => {
+                ((modeId) => {
+                    if(wordSearchMode != modeId) {
+                        mode.style.cursor = "pointer";
+                        mode.style.backgroundColor = "var(--colorLight2)";
+                    }
+                })(modeId);
+            });
+            mode.addEventListener("mouseleave", () => {
+                ((modeId) => {
+                    if(wordSearchMode != modeId) {
+                        mode.style.cursor = "default";
+                        mode.style.backgroundColor = "transparent";
+                    }
+                })(modeId);
+            })
+        }
+
+        function switchOverallGameMode(mode) {
+            let modes = document.querySelectorAll("#overallGameModeSwitchContainer > p");
+            for(let mode of modes) {
+                mode.style.backgroundColor = "transparent";
+            }
+
+            switch(mode) {
+                case "search":
+                    document.querySelector("#wordSearch").style.backgroundColor = "var(--colorMain)";
+                    break;
+                case "scramble":
+                    document.querySelector("#wordScramble").style.backgroundColor = "var(--colorMain)";
+                    break;
+            }
+
+            wordSearchMode = mode;
+        }
+
+        // also contains page load animation
+        let goalMarginTop = -20;
+        function mobileResponsiveness() {
+            if(window.innerWidth < 1000) {
+                goalMarginTop = 2;
+            }
+            else {
+                goalMarginTop = 5;
+            }
+        }
+        mobileResponsiveness();
+
+        let marginTop = -20;
+        let pageLoadInterval = window.setInterval(() => {
+            marginTop += 1.75;
+
+            if(marginTop >= goalMarginTop) {
+                marginTop = goalMarginTop;
+                window.clearInterval(pageLoadInterval);
+            }
+
+            document.querySelector(".landing").style.marginTop = marginTop + "em";
+
+            console.log(marginTop);
+        }, 1000 / 60);
     </script>
 </body>
 </html>
