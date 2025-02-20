@@ -757,8 +757,6 @@ pages[currentPage].activeScripts.push(function() {
         c.width = tableBounds.width;
         c.height = tableBounds.height;
         
-        c.style.top = `${tableBounds.top}px`;
-        c.style.left = `${tableBounds.left}px`;
         c.style.position = "absolute";
         
         w = c.width;
@@ -767,6 +765,11 @@ pages[currentPage].activeScripts.push(function() {
         r.lineCap = "round";
 
         spaceBetweenCells = (w - (25 * game.width)) / game.width;
+
+        document.body.style.flexDirection = "column";
+        c.style.position = "absolute";
+        c.style.display = "flex";
+        c.style.opacity = "0.5";
     }
 
     function addWordsList() {
@@ -905,6 +908,9 @@ pages[currentPage].activeScripts.push(function() {
 
     function mobileResponsiveness() {
         if(window.innerHeight > window.innerWidth) {
+            document.body.style.flexDirection = "column";
+            document.body.style.marginLeft = "0.5em";
+
             document.querySelector("table").style.padding = "0";
             document.querySelector("table").style.margin = "0";
             document.querySelector("table").style.marginLeft = "0.2em";
@@ -929,9 +935,10 @@ pages[currentPage].activeScripts.push(function() {
             document.querySelector(".found").style.flexDirection = "row";
             document.querySelector(".found").style.flexWrap = "wrap";
             
-            document.querySelector("canvas").style.margin = "0";
-            document.querySelector("canvas").style.marginTop = "-1em";
-            document.querySelector("canvas").style.marginLeft = "-0.2em";
+            document.querySelector("canvas").style.marginLeft = "0.1em";
+
+            document.querySelector("h1").style.marginLeft = "0.5em";
+            document.querySelector(".found").style.marginLeft = "0.5em";
         }
         else if(window.innerWidth < 1000) {
             window.alert("Please use portrait mode - this game was not designed for landscape mode");

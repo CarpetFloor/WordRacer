@@ -259,8 +259,6 @@ function setupCanvas() {
     c.width = tableBounds.width;
     c.height = tableBounds.height;
     
-    c.style.top = `${tableBounds.top}px`;
-    c.style.left = `${tableBounds.left}px`;
     c.style.position = "absolute";
     
     w = c.width;
@@ -997,8 +995,6 @@ function mobileResponsiveness() {
         document.querySelector(".found").style.flexWrap = "wrap";
         
         document.querySelector("canvas").style.margin = "0";
-        document.querySelector("canvas").style.marginTop = "-1em";
-        document.querySelector("canvas").style.marginLeft = "-0.2em";
     }
     else if(window.innerWidth < 1000) {
         window.alert("Please use portrait mode - this game was not designed for landscape mode");
