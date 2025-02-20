@@ -107,7 +107,12 @@ function checkForValidWord() {
         }
     }
 
-    if(valid && wordsList.includes((inputElem.getHTML()).toLowerCase())) {
+    if(debug) {
+        console.log(wordsList.indexOf(inputted.toLowerCase()));
+        console.log(wordsList[wordsList.indexOf(inputted.toLowerCase())]);
+    }
+
+    if(valid && (wordsList.indexOf(inputted.toLowerCase()) != -1)) {
         if(!(foundWords.includes(inputted))) {
             foundWords.push(inputted);
 
