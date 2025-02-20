@@ -1,3 +1,24 @@
+function random(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+let anagramElem = document.querySelector("#anagram");
+
+function generateWord() {
+    let word = wordsList[random(0, wordsList.length)];
+    console.log(word);
+    
+    let letters = word.split("");
+    for(let i = 0; i < word.length; i++) {
+        let index = random(0, letters.length)
+        let letter = letters[index];
+        letters.splice(index, 1);
+
+        anagramElem.innerText += letter;
+    }
+}
+generateWord();
+
 const acceptedKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
 let inputElem = document.querySelector("#wordInput");
@@ -71,4 +92,4 @@ let interval = window.setInterval(() => {
     }, 1000 / 60)
 
     timerElem.innerText = time + "s";
-}, 1000)
+}, 1000);
