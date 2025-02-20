@@ -1,1 +1,2 @@
 -Anagram single player
+-Switch practice high score on index.html when switching overall game mode

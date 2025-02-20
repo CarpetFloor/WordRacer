@@ -14,7 +14,7 @@
 
         <h2 class="subHeading">Some random word games</h2>
 
-        <p id="overallGameModeLabel">Game <span style="font-size: 0.75em; font-style: italic;">(coming soon)</span></p>
+        <p id="overallGameModeLabel">Game Type</p>
         <div id="overallGameModeSwitchContainer">
             <p id="wordSearch" onclick="switchOverallGameMode('search')">Word Search</p>
 
@@ -22,14 +22,14 @@
         </div>
 
         <div>
-            <button onclick="window.open('Pages/practice.html', '_self')">
+            <button onclick="openPractice()">
                 <img class="icon" src="/../Icons/graduation-cap-filled.png">
                 <p>Practice</p>
             </button>
             
             <p id="practiceHighScore"></p>
             
-            <button onclick="window.open('online.html', '_self')">
+            <button onclick="openOnline()">
                 <img class="icon" src="/../Icons/world.png">
                 <p>Online</p>
             </button>
@@ -94,6 +94,13 @@
             })
         }
 
+        if(localStorage.getItem("overallGameMode") == null) {
+            localStorage.setItem("overallGameMode", "search");
+        }
+        else {
+            switchOverallGameMode(localStorage.getItem("overallGameMode"));
+        }
+
         function switchOverallGameMode(mode) {
             let modes = document.querySelectorAll("#overallGameModeSwitchContainer > p");
             for(let mode of modes) {
@@ -108,6 +115,8 @@
                     document.querySelector("#wordScramble").style.backgroundColor = "var(--colorMain)";
                     break;
             }
+
+            localStorage.setItem("overallGameMode", mode);
 
             wordSearchMode = mode;
         }
@@ -137,6 +146,20 @@
 
             console.log(marginTop);
         }, 1000 / 60);
+
+        const pageURLs = {
+            "searchPractice": "Pages/practice.html", 
+            "searchOnline": "online.html", 
+            "scramblePractice": "Pages/scramble.html"
+        }
+
+        function openPractice() {
+            window.open(pageURLs[wordSearchMode + "Practice"], '_self');
+        }
+
+        function openOnline() {
+            window.open(pageURLs[wordSearchMode + "Online"], '_self');
+        }
     </script>
 </body>
 </html>

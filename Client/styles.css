@@ -748,3 +748,44 @@ td {
     position: absolute;
     opacity: 0;
 }
+
+/* scramble stuff */
+
+/* practice */
+
+.scrambleContainer {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 4em;
+}
+.scrambleContainer #anagram {
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    user-select: none;
+}
+.scrambleContainer #words {
+    height: 70vh;
+    background-color: blue;
+}
+.scrambleContainer #wordInput {
+    width: 15em;
+    height: 1em;
+    min-height: 1em;
+    margin-top: 3em;
+    align-self: center;
+    padding: 0.75em;
+    padding-left: 0;
+    padding-right: 0;
+    border: none;
+    border-bottom: 4px solid var(--black);
+    font-size: 1.25em;
+    letter-spacing: 0.2em;
+    outline: none;
+    user-select: none;
+}
+.scrambleContainer #wordInput:focus {
+    border-color: var(--colorMain);
+}
