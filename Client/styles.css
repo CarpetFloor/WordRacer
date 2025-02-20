@@ -759,7 +759,25 @@ td {
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 4em;
+    margin-top: 2em;
+}
+.scrambleContainer #timer {
+    margin: 0;
+    padding: 0;
+    font-size: 2.5em;
+    font-weight: bolder;
+    margin-bottom: -0.25em;
+    align-self: center;
+    background-color: var(--black);
+    color: white;
+    border-radius: 20px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    letter-spacing: 0.1em;
+    width: 2em;
+    min-width: 2em;
+    text-align: right;
+    transform: padding 0.5s;
 }
 .scrambleContainer #anagram {
     text-transform: uppercase;

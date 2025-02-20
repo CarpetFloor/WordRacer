@@ -36,3 +36,39 @@ document.body.addEventListener("keydown", (e) => {
         }
     }
 })
+
+let time = 30;
+let timerElem = document.querySelector("#timer");
+let interval = window.setInterval(() => {
+    --time;
+
+    let padding = 0.5
+    let increment = 0.035;
+    let reverse = false;
+    let updateInterval = window.setInterval(() => {
+        if(reverse) {
+            padding -= increment;
+        }
+        else {
+            padding += increment;
+        }
+        
+        timerElem.style.paddingLeft = padding + "em";
+        timerElem.style.paddingRight = padding + "em";
+
+        if(!(reverse)) {
+            if(padding >= 0.7) {
+                reverse = true;
+            }
+        }
+        else {
+            if(padding <= 0.5) {
+                timerElem.style.paddingLeft = "0.5em";
+                timerElem.style.paddingRight = "0.5em";
+                window.clearInterval(updateInterval);
+            }
+        }
+    }, 1000 / 60)
+
+    timerElem.innerText = time + "s";
+}, 1000)
