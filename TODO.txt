@@ -1,2 +1,6 @@
--Anagram single player
+-Anagram single player:
+    >Input valid and not valid animations
+    >End game when timer runs out
+    >Show game over screen
+    >Add back button
 -Switch practice high score on index.html when switching overall game mode

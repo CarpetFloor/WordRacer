@@ -778,6 +778,7 @@ td {
     min-width: 2em;
     text-align: right;
     transform: padding 0.5s;
+    user-select: none;
 }
 .scrambleContainer #anagram {
     text-transform: uppercase;
@@ -786,7 +787,16 @@ td {
 }
 .scrambleContainer #words {
     height: 70vh;
-    background-color: blue;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    user-select: none;
+    margin-left: 1em;
+}
+.scrambleContainer #words p {
+    margin: 0;
+    margin-bottom: 0.5em;
+    font-size: 1.25em;
 }
 .scrambleContainer #wordInput {
     width: 15em;
