@@ -215,6 +215,25 @@ button:hover {
     margin-top: 3.5em;
     transition: all var(--delay);
 }
+.landing .comingSoon {
+    position: absolute;
+    margin-left: 9.25em;
+    margin-top: -1em;
+    background-color: var(--grey3);
+    color: white;
+    padding: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    border-radius: 15px;
+    border: 1px solid grey;
+    border-bottom: 3px solid grey;
+    transition: all 0.25s;
+    pointer-events: none;
+    opacity: 0;
+}
+.landing .onlineButton:hover ~ .comingSoon {
+    opacity: 1;
+}
 
 /* online menu */
 

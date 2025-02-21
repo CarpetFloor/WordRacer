@@ -29,10 +29,12 @@
             
             <p id="practiceHighScore"></p>
             
-            <button onclick="openOnline()">
+            <button onclick="openOnline()" class="onlineButton">
                 <img class="icon" src="/../Icons/world.png">
                 <p>Online</p>
             </button>
+
+            <p class="comingSoon">Coming Soon!</p>
         </div>
 
     </section>
@@ -78,9 +80,15 @@
 
         if(localStorage.getItem("overallGameMode") == null) {
             localStorage.setItem("overallGameMode", "search");
+
+            document.querySelector(".comingSoon").style.display = "none";
         }
         else {
             switchOverallGameMode(localStorage.getItem("overallGameMode"));
+
+            if(localStorage.getItem("overallGameMode") == "search") {
+                document.querySelector(".comingSoon").style.display = "none";
+            }
         }
 
         function showHighScore() {
@@ -144,9 +152,11 @@
             switch(mode) {
                 case "search":
                     document.querySelector("#wordSearch").style.backgroundColor = "var(--colorMain)";
+                    document.querySelector(".comingSoon").style.display = "none";
                     break;
                 case "scramble":
                     document.querySelector("#wordScramble").style.backgroundColor = "var(--colorMain)";
+                    document.querySelector(".comingSoon").style.display = "block";
                     break;
             }
 
