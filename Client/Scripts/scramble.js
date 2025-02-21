@@ -335,11 +335,21 @@ let interval = window.setInterval(() => {
             window.clearInterval(interval);
             timerElem.style.marginLeft = "1em";
             timerElem.style.marginTop = "0.5em";
-            timerElem.style.marginBottom = "-0.5em";
             timerElem.style.fontSize = "1.75em";
             
             let wordCount = document.querySelector("#words").childElementCount;
-            localStorage.setItem("scramblePracticeHighScore", wordCount);
+
+            let highScoreCheck = localStorage.getItem("scramblePracticeHighScore");
+            if(localStorage != null) {
+                highScoreCheck = parseInt(highScoreCheck);
+
+                if(wordCount > highScoreCheck) {
+                    localStorage.setItem("scramblePracticeHighScore", wordCount);
+                }
+            }
+            else {
+                localStorage.setItem("scramblePracticeHighScore", wordCount);
+            }
 
             let wordText = " word";
             if(wordCount > 1) {
