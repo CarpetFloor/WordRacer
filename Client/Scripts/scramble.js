@@ -128,13 +128,18 @@ function checkForValidWord() {
         console.log(wordsList[wordsList.indexOf(inputted.toLowerCase())]);
     }
 
+    let addedWordElem = null;
+    
     if(valid && (wordsList.indexOf(inputted.toLowerCase()) != -1) && (inputted.length > 1)) {
         if(!(foundWords.includes(inputted))) {
             foundWords.push(inputted);
 
             let elem = document.createElement("p");
+            elem.style.display = "none";
             elem.innerText = inputted;
             document.querySelector("#words").appendChild(elem);
+
+            addedWordElem = elem;
 
             inputPlaceholder = true;
             inputElem.innerText = "Enter word...";
@@ -153,7 +158,7 @@ function checkForValidWord() {
         invalidInputAnimation.animate();
     }
     else {
-        console.log("ye, valid");
+        validInputAnimation(addedWordElem);
     }
 }
 
@@ -259,6 +264,35 @@ let invalidInputAnimation = {
         }, 1000 / 60);
     }
 };
+
+
+function validInputAnimation(elem) {
+    // in em
+    let leftMargin = -2;
+    let leftMarginIncrement = 0.3;
+    let opacity = 0;
+    let opacityIncrement = 0.1;
+
+    elem.style.marginLeft = leftMargin + "em";
+    elem.style.display = "block";
+
+    let interval = window.setInterval(() => {
+        leftMargin += leftMarginIncrement;
+        opacity += opacityIncrement;
+        
+        if(leftMargin >= 0) {
+            elem.style.marginLeft = "0";
+            elem.style.opacity = "1";
+
+            window.clearInterval(interval);
+        }
+        else {
+            elem.style.marginLeft = leftMargin + "em";
+            elem.style.opacity = opacity + "em";
+        }
+        
+    }, 1000 / 60);
+}
 
 let time = 30;
 let timerElem = document.querySelector("#timer");

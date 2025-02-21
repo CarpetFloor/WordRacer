@@ -865,7 +865,8 @@ td {
     flex-direction: column;
     overflow-y: auto;
     user-select: none;
-    margin-left: 1em;
+    padding-left: 2em;
+    margin-left: -1em;
 }
 .scrambleContainer #words p {
     margin: 0;

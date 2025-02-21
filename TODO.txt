@@ -1,3 +1,3 @@
 -Anagram single player:
-    >Input valid and not valid animations
+    >Anagram practice mobile responsiveness
 -Switch practice high score on index.html when switching overall game mode
