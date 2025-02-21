@@ -9,7 +9,36 @@
     <title>Word Racer - Scramble Practice</title>
 </head>
 <body>
+    <div class="instructionsModal">
+        <div class="content">
+            <button class="closeModal" onclick="closeInstructions()">x</button>
+
+            <p>To enter a word, just type - you don't have to click on the input 
+                or anything.</p>
+            <p>Then hit enter to try a word.</p>
+            <p>You can use backspace to delete a character, or left arrow to clear 
+                the entire input</p>
+            <p>Words are case-insensitive, and will automatically get converted to 
+                uppercase.
+            </p>
+            <br>
+            <p>Please note that input words can only have a max length of 15 letters, 
+                so if you are typing but nothing is happening, that might be why.
+            </p>
+        </div>
+    </div>
+
     <div class="scrambleContainer">
+        <div class="top">
+            <button class="navIconButton"
+            onclick="window.open('/./index.html', '_self')">
+                <img class="icon iconInvert" src="/../Icons/home-filled.png">
+                <p>Back</p>
+            </button>
+
+            <p class="help" onclick="openInstructions()">?</p>
+        </div>
+
         <p id="timer">30s</p>
 
         <h1 id="anagram"></h1>

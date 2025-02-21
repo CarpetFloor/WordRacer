@@ -753,13 +753,87 @@ td {
 
 /* practice */
 
+.instructionsModal {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.78);
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    overflow: hidden;
+    display: none;
+}
+.instructionsModal .closeModal {
+    position: absolute;
+    padding: 1em;
+    width: 2em;
+    height: 2em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: -2em !important;
+    margin-left: 20.5em !important;
+}
+.instructionsModal .content {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white1);
+    width: 25em;
+    height: 25em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5em;
+    padding: 3em;
+    border-radius: 15px;
+}
+.instructionsModal .content * {
+    margin: 0;
+    margin-bottom: 1em;
+    font-size: 1.2em;
+}
+
 .scrambleContainer {
     display: flex;
     flex-direction: column;
-    width: fit-content;
+    width: 25em;
+    /* background-color: aqua; */
     margin-left: auto;
     margin-right: auto;
     margin-top: 2em;
+}
+.scrambleContainer .top {
+    flex-direction: row;
+    border: none;
+    position: absolute;
+    /* background-color: blue; */
+    width: 25em;
+    margin: 0;
+    margin-left: 1.2em;
+    margin-top: 0.35em;
+    justify-content: space-between;
+}.scrambleContainer .top .navIconButton{
+    user-select: none;
+}
+.scrambleContainer .top .help {
+    margin-right: 1em;
+    background-color: var(--grey3);
+    padding: 0.5em;
+    width: 1em;
+    height: 1em;
+    border-radius: 100%;
+    font-weight: bold;
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: filter var(--delay);
+}
+.scrambleContainer .top .help:hover {
+    cursor: pointer;
+    filter: brightness(1.1);
 }
 .scrambleContainer #timer {
     margin: 0;
@@ -786,7 +860,7 @@ td {
     user-select: none;
 }
 .scrambleContainer #words {
-    height: 70vh;
+    height: 60vh;
     display: flex;
     flex-direction: column;
     overflow-y: auto;

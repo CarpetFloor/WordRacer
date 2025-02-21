@@ -4,6 +4,19 @@ function random(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
+// instructions modal
+let paused = false;
+
+function openInstructions() {
+    paused = true;
+    document.querySelector(".instructionsModal").style.display = "flex";
+}
+
+function closeInstructions() {
+    paused = false;
+    document.querySelector(".instructionsModal").style.display = "none";
+}
+
 let anagramElem = document.querySelector("#anagram");
 
 function generateWord() {
@@ -57,18 +70,20 @@ let inputPlaceholder = true;
 
 // normal input
 document.body.addEventListener("keypress", (e) => {
-    if(e.key == "Enter") {
-        checkForValidWord()
-    }
-    else if((inputElem.getHTML()).length < 14) {
-        if(acceptedKeys.includes((e.key).toLowerCase())) {
-            if(inputPlaceholder) {
-                inputElem.innerText = "";
-                inputPlaceholder = false;
-                inputElem.style.fontWeight = "bold";
-            }
+    if(!(paused)) {
+        if(e.key == "Enter") {
+            checkForValidWord()
+        }
+        else if((inputElem.getHTML()).length < 14) {
+            if(acceptedKeys.includes((e.key).toLowerCase())) {
+                if(inputPlaceholder) {
+                    inputElem.innerText = "";
+                    inputPlaceholder = false;
+                    inputElem.style.fontWeight = "bold";
+                }
 
-            inputElem.innerText += (e.key).toUpperCase();
+                inputElem.innerText += (e.key).toUpperCase();
+            }
         }
     }
 });
@@ -124,24 +139,34 @@ function checkForValidWord() {
             inputElem.innerText = "Enter word...";
             inputElem.style.fontWeight = "normal";
         }
+        else {
+            valid = false;
+        }
+    }
+
+    // invalid word input animation
+    if(!(valid)) {
+        document.querySelector("#wordInput").style.marginLeft = "2em";
     }
 }
 
 // controls inputs
 document.body.addEventListener("keydown", (e) => {
-    if(e.key == "ArrowLeft") {
-        inputPlaceholder = true;
-        inputElem.innerText = "Enter word...";
-        inputElem.style.fontWeight = "normal";
-    }
-    else if((e.key == "Backspace") && ((inputElem.getHTML()).length > 0)) {
-        let sub = inputElem.innerText.substring(0, inputElem.innerText.length - 1);
-        inputElem.innerText = sub;
-
-        if(sub.length == 0) {
+    if(!(paused)) {
+        if(e.key == "ArrowLeft") {
             inputPlaceholder = true;
             inputElem.innerText = "Enter word...";
             inputElem.style.fontWeight = "normal";
+        }
+        else if((e.key == "Backspace") && ((inputElem.getHTML()).length > 0)) {
+            let sub = inputElem.innerText.substring(0, inputElem.innerText.length - 1);
+            inputElem.innerText = sub;
+
+            if(sub.length == 0) {
+                inputPlaceholder = true;
+                inputElem.innerText = "Enter word...";
+                inputElem.style.fontWeight = "normal";
+            }
         }
     }
 })
@@ -149,35 +174,37 @@ document.body.addEventListener("keydown", (e) => {
 let time = 30;
 let timerElem = document.querySelector("#timer");
 let interval = window.setInterval(() => {
-    --time;
+    if(!(paused)) {
+        --time;
 
-    let padding = 0.5
-    let increment = 0.035;
-    let reverse = false;
-    let updateInterval = window.setInterval(() => {
-        if(reverse) {
-            padding -= increment;
-        }
-        else {
-            padding += increment;
-        }
-        
-        timerElem.style.paddingLeft = padding + "em";
-        timerElem.style.paddingRight = padding + "em";
-
-        if(!(reverse)) {
-            if(padding >= 0.7) {
-                reverse = true;
+        let padding = 0.5
+        let increment = 0.035;
+        let reverse = false;
+        let updateInterval = window.setInterval(() => {
+            if(reverse) {
+                padding -= increment;
             }
-        }
-        else {
-            if(padding <= 0.5) {
-                timerElem.style.paddingLeft = "0.5em";
-                timerElem.style.paddingRight = "0.5em";
-                window.clearInterval(updateInterval);
+            else {
+                padding += increment;
             }
-        }
-    }, 1000 / 60)
+            
+            timerElem.style.paddingLeft = padding + "em";
+            timerElem.style.paddingRight = padding + "em";
 
-    timerElem.innerText = time + "s";
+            if(!(reverse)) {
+                if(padding >= 0.7) {
+                    reverse = true;
+                }
+            }
+            else {
+                if(padding <= 0.5) {
+                    timerElem.style.paddingLeft = "0.5em";
+                    timerElem.style.paddingRight = "0.5em";
+                    window.clearInterval(updateInterval);
+                }
+            }
+        }, 1000 / 60)
+
+        timerElem.innerText = time + "s";
+    }
 }, 1000);
