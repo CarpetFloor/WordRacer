@@ -1,4 +1,5 @@
 let debug = false;
+let over = false;
 
 function random(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -70,7 +71,7 @@ let inputPlaceholder = true;
 
 // normal input
 document.body.addEventListener("keypress", (e) => {
-    if(!(paused)) {
+    if(!(paused) && !(over)) {
         if(e.key == "Enter") {
             checkForValidWord()
         }
@@ -152,7 +153,7 @@ function checkForValidWord() {
 
 // controls inputs
 document.body.addEventListener("keydown", (e) => {
-    if(!(paused)) {
+    if(!(paused) && !(over)) {
         if(e.key == "ArrowLeft") {
             inputPlaceholder = true;
             inputElem.innerText = "Enter word...";
@@ -169,7 +170,7 @@ document.body.addEventListener("keydown", (e) => {
             }
         }
     }
-})
+});
 
 let time = 30;
 let timerElem = document.querySelector("#timer");
@@ -206,5 +207,24 @@ let interval = window.setInterval(() => {
         }, 1000 / 60)
 
         timerElem.innerText = time + "s";
+
+        if(time == 0) {
+            over = true;
+            window.clearInterval(interval);
+            timerElem.style.marginLeft = "1em";
+            timerElem.style.marginTop = "0.5em";
+            timerElem.style.marginBottom = "-0.5em";
+            timerElem.style.fontSize = "1.75em";
+            
+            let wordCount = document.querySelector("#words").childElementCount;
+            let wordText = " word";
+            if(wordCount > 1) {
+                wordText += "s";
+            }
+            timerElem.innerText = wordCount + wordText;
+
+            timerElem.style.backgroundColor = "var(--colorMain)";
+            timerElem.style.width = "fit-content"
+        }
     }
 }, 1000);
