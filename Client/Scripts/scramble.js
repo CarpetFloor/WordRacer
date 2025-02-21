@@ -340,7 +340,7 @@ let interval = window.setInterval(() => {
             let wordCount = document.querySelector("#words").childElementCount;
 
             let highScoreCheck = localStorage.getItem("scramblePracticeHighScore");
-            if(localStorage != null) {
+            if(highScoreCheck != null) {
                 highScoreCheck = parseInt(highScoreCheck);
 
                 if(wordCount > highScoreCheck) {
