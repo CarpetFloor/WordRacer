@@ -128,7 +128,7 @@ function checkForValidWord() {
         console.log(wordsList[wordsList.indexOf(inputted.toLowerCase())]);
     }
 
-    if(valid && (wordsList.indexOf(inputted.toLowerCase()) != -1)) {
+    if(valid && (wordsList.indexOf(inputted.toLowerCase()) != -1) && (inputted.length > 1)) {
         if(!(foundWords.includes(inputted))) {
             foundWords.push(inputted);
 
@@ -144,10 +144,16 @@ function checkForValidWord() {
             valid = false;
         }
     }
+    else {
+        valid = false;
+    }
 
     // invalid word input animation
     if(!(valid)) {
-        document.querySelector("#wordInput").style.marginLeft = "2em";
+        invalidInputAnimation.animate();
+    }
+    else {
+        console.log("ye, valid");
     }
 }
 
@@ -171,6 +177,88 @@ document.body.addEventListener("keydown", (e) => {
         }
     }
 });
+
+let invalidInputAnimation = {
+    interval: null,
+    // when animation is over, but need to glide back to center
+    reseting: false,
+    // full shake counts as move left to max dist, then right to max dist
+    shakeCount: 0,
+    shakeMaxCount: 1,
+    // in em
+    shakeMaxDist: 0.7,
+    shakeIncrement: 0.22,
+    shakeDist: 0,
+    // if shaking to the left
+    left: true,
+    debug: false,
+    animate: () => {
+        let ref = invalidInputAnimation;
+        
+        if(ref.debug) {
+            console.log("animation called");
+        }
+
+        if(ref.interval != null) {
+            window.clearInterval(ref.interval);
+        }
+    
+        ref.over = false;
+        ref.shakeCount = 0;
+        ref.shakeDist = 0;
+
+        ref.interval = window.setInterval(() => {
+            if(ref.debug) {
+                console.log("in animation")
+            }
+
+            if(ref.over) {
+                ref.shakeDist += ref.shakeIncrement * -1;
+
+                if(ref.shakeDist <= 0) {
+                    inputElem.style.marginLeft = "0";
+                    window.clearInterval(ref.interval);
+                }
+                else {
+                    inputElem.style.marginLeft = ref.shakeDist + "em";
+                }
+            }
+            else {
+                let multiply = 1;
+                if(ref.left) {
+                    multiply = -1;
+                }
+
+                ref.shakeDist += ref.shakeIncrement * multiply;
+
+                if(ref.debug) {
+                    console.log(ref.shakeCount, ref.shakeDist, ref.shakeMaxDist);
+                }
+
+                if(Math.abs(ref.shakeDist) > ref.shakeMaxDist) {
+                    ref.shakeDist = ref.shakeMaxDist * multiply;
+                    
+                    if(ref.left) {
+                        ref.left = false;
+                    }
+                    else {
+                        ref.left = true;
+                        ++ref.shakeCount;
+
+                        if(ref.shakeCount == ref.shakeMaxCount) {
+                            ref.over = true;
+                        }
+                    }
+                }
+                else {
+                    inputElem.style.marginLeft = ref.shakeDist + "em";
+                }
+
+            }
+
+        }, 1000 / 60);
+    }
+};
 
 let time = 30;
 let timerElem = document.querySelector("#timer");
