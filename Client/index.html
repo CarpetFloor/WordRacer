@@ -38,26 +38,8 @@
     </section>
 
     <script>
-        // set practice highscore
         let practiceHighScoreCheck = localStorage.getItem("practiceHighScore");
-        if(practiceHighScoreCheck != null) {
-            let total = parseInt(practiceHighScoreCheck);
-            let minutes = Math.floor(total / 60);
-            let seconds = total - (minutes * 60);
-            if(seconds < 10) {
-                seconds = "0" + seconds;
-            }
-
-            let elem = document.getElementById("practiceHighScore");
-            elem.innerHTML = 
-            "Highscore: " + 
-            "<span style='" + 
-            "font-weight: bold;" + 
-            "margin-left: 0.35em;" +  
-            "'>" + 
-                minutes + ":" + seconds + 
-            "</span>";
-        }
+        let scramblePracticeHighScoreCheck = localStorage.getItem("scramblePracticeHighScore");
 
         // toggle overall game mode
         let wordSearchMode = "search";
@@ -66,7 +48,7 @@
         let modes = document.querySelectorAll("#overallGameModeSwitchContainer > p");
         for(let mode of modes) {
             let modeId = "";
-            console.log(mode.id)
+            
             switch(mode.id) {
                 case "wordSearch":
                     modeId = "search";
@@ -101,6 +83,58 @@
             switchOverallGameMode(localStorage.getItem("overallGameMode"));
         }
 
+        function showHighScore() {
+            let scoreCheck = practiceHighScoreCheck;
+            let gameModeCheck = localStorage.getItem("overallGameMode");
+            if(gameModeCheck == "scramble") {
+                scoreCheck = scramblePracticeHighScoreCheck;
+            }
+
+            if(scoreCheck != null) {
+                if(gameModeCheck == "search") {
+                    let total = parseInt(scoreCheck);
+                    let minutes = Math.floor(total / 60);
+                    let seconds = total - (minutes * 60);
+                    if(seconds < 10) {
+                        seconds = "0" + seconds;
+                    }
+
+                    let elem = document.getElementById("practiceHighScore");
+                    elem.innerHTML = 
+                    "Highscore: " + 
+                    "<span style='" + 
+                    "font-weight: bold;" + 
+                    "margin-left: 0.35em;" +  
+                    "'>" + 
+                        minutes + ":" + seconds + 
+                    "</span>";
+                }
+                else {
+                    let wordText = " word";
+
+                    if(parseInt(scoreCheck) > 1) {
+                        wordText += "s";
+                    }
+
+                    let elem = document.getElementById("practiceHighScore");
+                    elem.innerHTML = 
+                    "Highscore: " + 
+                    "<span style='" + 
+                    "font-weight: bold;" + 
+                    "margin-left: 0.35em;" +  
+                    "'>" + 
+                        scoreCheck + wordText + 
+                    "</span>";
+                }
+
+            }
+            else {
+                document.getElementById("practiceHighScore").innerHTML = "No highscore";
+            }
+
+        }
+        showHighScore();
+
         function switchOverallGameMode(mode) {
             let modes = document.querySelectorAll("#overallGameModeSwitchContainer > p");
             for(let mode of modes) {
@@ -117,6 +151,7 @@
             }
 
             localStorage.setItem("overallGameMode", mode);
+            showHighScore();
 
             wordSearchMode = mode;
         }
@@ -143,8 +178,6 @@
             }
 
             document.querySelector(".landing").style.marginTop = marginTop + "em";
-
-            console.log(marginTop);
         }, 1000 / 60);
 
         const pageURLs = {

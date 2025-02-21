@@ -339,6 +339,8 @@ let interval = window.setInterval(() => {
             timerElem.style.fontSize = "1.75em";
             
             let wordCount = document.querySelector("#words").childElementCount;
+            localStorage.setItem("scramblePracticeHighScore", wordCount);
+
             let wordText = " word";
             if(wordCount > 1) {
                 wordText += "s";
