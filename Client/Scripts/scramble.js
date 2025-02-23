@@ -148,7 +148,7 @@ function checkForValidWord() {
             let elem = document.createElement("p");
             elem.style.display = "none";
             elem.innerText = inputted;
-            document.querySelector("#words").appendChild(elem);
+            document.querySelector(".words").appendChild(elem);
 
             addedWordElem = elem;
 
@@ -357,7 +357,7 @@ let interval = window.setInterval(() => {
             timerElem.style.marginTop = "0.5em";
             timerElem.style.fontSize = "1.75em";
             
-            let wordCount = document.querySelector("#words").childElementCount;
+            let wordCount = document.querySelector(".words").childElementCount;
 
             let highScoreCheck = localStorage.getItem("scramblePracticeHighScore");
             if(highScoreCheck != null) {

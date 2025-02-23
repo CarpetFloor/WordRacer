@@ -1,68 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=0.9, user-scalable=no"">
 
-    <link rel="stylesheet" href="/./styles.css">
+<div class="instructionsModal">
+    <div class="content">
+        <button class="closeModal" onclick="closeInstructions()">x</button>
 
-    <title>Word Racer - Scramble Practice</title>
-</head>
-<body>
-    <div class="instructionsModal">
-        <div class="content">
-            <button class="closeModal" onclick="closeInstructions()">x</button>
+        <p>To enter a word, just type - you don't have to click on the input 
+            or anything.</p>
+        <p>Then hit enter to try a word.</p>
+        <p>You can use backspace to delete a character, or left arrow to clear 
+            the entire input</p>
+        <p>Words are case-insensitive, and will automatically get converted to 
+            uppercase.
+        </p>
+        <br>
+        <p>Please note that input words can only have a max length of 15 letters, 
+            so if you are typing but nothing is happening, that might be why.
+        </p>
 
-            <p>To enter a word, just type - you don't have to click on the input 
-                or anything.</p>
-            <p>Then hit enter to try a word.</p>
-            <p>You can use backspace to delete a character, or left arrow to clear 
-                the entire input</p>
-            <p>Words are case-insensitive, and will automatically get converted to 
-                uppercase.
-            </p>
-            <br>
-            <p>Please note that input words can only have a max length of 15 letters, 
-                so if you are typing but nothing is happening, that might be why.
-            </p>
+        <a href="https://forms.gle/EzErPNyL5nEh1Qdq6" target="_blank">Word missing?</a>
+    </div>
+</div>
 
-            <a href="https://forms.gle/EzErPNyL5nEh1Qdq6" target="_blank">Word missing?</a>
+<div class="scrambleContainer">
+    <div class="top">
+        <button class="navIconButton"
+        onclick="window.open('/./index.html', '_self')">
+            <img class="icon iconInvert" src="/../Icons/home-filled.png">
+            <p>Back</p>
+        </button>
+
+        <p class="help" onclick="openInstructions()">?</p>
+    </div>
+
+    <p id="timer">30s</p>
+
+    <h1 id="anagram"></h1>
+
+    <div id="onlineWords" class="words">
+        <div id="myWords">
+            <h2>My Words</h2>
+        </div>
+
+        <div id="opponentWords">
+            <h2 id="opponentName">name</h2>
         </div>
     </div>
 
-    <div class="scrambleContainer">
-        <div class="top">
-            <button class="navIconButton"
-            onclick="window.open('/./index.html', '_self')">
-                <img class="icon iconInvert" src="/../Icons/home-filled.png">
-                <p>Back</p>
-            </button>
+    <p id="wordInput">Enter word...</p>
 
-            <p class="help" onclick="openInstructions()">?</p>
+    <div class="mobileWordInput">
+        <div>
+            <p>Q</p><p>W</p><p>E</p><p>R</p><p>T</p><p>Y</p><p>U</p><p>I</p><p>O</p><p>P</p>
         </div>
-
-        <p id="timer">30s</p>
-
-        <h1 id="anagram"></h1>
-    
-        <div id="words"></div>
-
-        <p id="wordInput">Enter word...</p>
-
-        <div class="mobileWordInput">
-            <div>
-                <p>Q</p><p>W</p><p>E</p><p>R</p><p>T</p><p>Y</p><p>U</p><p>I</p><p>O</p><p>P</p>
-            </div>
-            <div>
-                <p>A</p><p>S</p><p>D</p><p>F</p><p>G</p><p>H</p><p>J</p><p>K</p><p>L</p>
-            </div>
-            <div>
-                <p class="action">ENTER</p><p>Z</p><p>X</p><p>C</p><p>V</p><p>B</p><p>N</p><p>M</p><p class="action">DEL</p>
-            </div>
+        <div>
+            <p>A</p><p>S</p><p>D</p><p>F</p><p>G</p><p>H</p><p>J</p><p>K</p><p>L</p>
+        </div>
+        <div>
+            <p class="action">ENTER</p><p>Z</p><p>X</p><p>C</p><p>V</p><p>B</p><p>N</p><p>M</p><p class="action">DEL</p>
         </div>
     </div>
-
-    <script src="/./words.js"></script>
-    <script src="/./Scripts/scramble.js"></script>
-</body>
-</html>
+</div>

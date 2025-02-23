@@ -301,6 +301,41 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("check for valid scramble word", (host, word) => {
+        let game = getGame(host);
+        let wordCheck = (game.data.anagram).split("");
+        let inputted = word;
+
+        let valid = true;
+        for(let i = 0; i < inputted.length; i++) {
+            if(wordCheck.includes(inputted[i].toUpperCase())) {
+                wordCheck.splice(wordCheck.indexOf(inputted[i]), 1);
+            }
+            else {
+                valid = false;
+                break;
+            }
+        }
+        
+        if(valid && (wordsList.words.indexOf(inputted.toLowerCase()) != -1) && (inputted.length > 1)) {
+            if(game.data.found.includes(inputted)) {
+                valid = false;
+            }
+        }
+        else {
+            valid = false;
+        }
+
+        // invalid word input animation
+        if(!(valid)) {
+            io.to(socket.id).emit("invalid word");
+        }
+        else {
+            game.data.found.push(word);
+            io.to(game.roomName).emit("valid word found", word);
+        }
+    })
+
     socket.on("found word", (host, word, pointsGained, guessedPosStart, guessedPosEnd) => {
         let game = getGame(host);
         game.data.found.push(word);

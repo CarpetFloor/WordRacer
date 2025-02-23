@@ -35,6 +35,7 @@ pages[currentPage].activeScripts.push(function() {
         processNormalInput(e);
     });
 
+    let guess = "";
     function processNormalInput(e) {
         let inputRef = e.key;
         if(mobile) {
@@ -43,7 +44,8 @@ pages[currentPage].activeScripts.push(function() {
 
         if(!(paused) && !(over)) {
             if(inputRef == "Enter") {
-                checkForValidWord()
+                guess = inputElem.getHTML();
+                socket.emit("check for valid scramble word", mygame.host, inputElem.getHTML());
             }
             else if((inputElem.getHTML()).length < 14) {
                 if(acceptedKeys.includes((inputRef).toLowerCase())) {
@@ -56,79 +58,6 @@ pages[currentPage].activeScripts.push(function() {
                     inputElem.innerText += (inputRef).toUpperCase();
                 }
             }
-        }
-    }
-
-    let foundWords = [];
-
-    function checkForValidWord() {
-        let wordCheck = (anagramElem.getHTML()).split("");
-        let inputted = inputElem.getHTML();
-
-        if(debug) {
-            console.log("-----");
-            console.log("-", wordCheck);
-        }
-
-        let valid = true;
-        for(let i = 0; i < inputted.length; i++) {
-            if(debug) {
-                console.log(inputted[i], wordCheck);
-            }
-
-            if(wordCheck.includes(inputted[i].toUpperCase())) {
-                wordCheck.splice(wordCheck.indexOf(inputted[i]), 1);
-                
-                if(debug) {
-                    console.log("+");
-                }
-            }
-            else {
-                valid = false;
-
-                if(debug) {
-                    console.log("-");
-                }
-                break;
-            }
-        }
-
-        if(debug) {
-            console.log(wordsList.indexOf(inputted.toLowerCase()));
-            console.log(wordsList[wordsList.indexOf(inputted.toLowerCase())]);
-        }
-
-        let addedWordElem = null;
-        
-        if(valid && (wordsList.indexOf(inputted.toLowerCase()) != -1) && (inputted.length > 1)) {
-            if(!(foundWords.includes(inputted))) {
-                foundWords.push(inputted);
-
-                let elem = document.createElement("p");
-                elem.style.display = "none";
-                elem.innerText = inputted;
-                document.querySelector("#words").appendChild(elem);
-
-                addedWordElem = elem;
-
-                inputPlaceholder = true;
-                inputElem.innerText = "Enter word...";
-                inputElem.style.fontWeight = "normal";
-            }
-            else {
-                valid = false;
-            }
-        }
-        else {
-            valid = false;
-        }
-
-        // invalid word input animation
-        if(!(valid)) {
-            invalidInputAnimation.animate();
-        }
-        else {
-            validInputAnimation(addedWordElem);
         }
     }
 
@@ -161,6 +90,29 @@ pages[currentPage].activeScripts.push(function() {
             }
         }
     }
+
+    socket.on("invalid word", () => {
+        invalidInputAnimation.animate();
+    });
+
+    socket.on("valid word found", (wordFound) => {
+        let elem = document.createElement("p");
+        elem.style.display = "none";
+        elem.innerText = wordFound;
+
+        if(wordFound == guess) {
+            document.querySelector("#myWords").appendChild(elem);
+    
+            inputPlaceholder = true;
+            inputElem.innerText = "Enter word...";
+            inputElem.style.fontWeight = "normal";
+        }
+        else {
+            document.querySelector("#opponentWords").appendChild(elem);
+        }
+
+        validInputAnimation(elem);
+    });
 
     let invalidInputAnimation = {
         interval: null,
@@ -243,7 +195,6 @@ pages[currentPage].activeScripts.push(function() {
             }, 1000 / 60);
         }
     };
-
 
     function validInputAnimation(elem) {
         // in em
@@ -330,7 +281,14 @@ pages[currentPage].activeScripts.push(function() {
 
     socket.on("game has started", (gameData) => {
         game = gameData;
-        console.log(game);
+        // console.log(game);
+
+        for(let i = 0; i < mygame.players.length; i++) {
+            if(mygame.players[i] != myid) {
+                otherIndex = i;
+                document.querySelector("#opponentName").innerText = playersMap.get(mygame.players[i]) + "'s Words";
+            }
+        }
 
         let word = game.anagram;
 
