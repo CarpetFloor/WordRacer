@@ -1,5 +1,7 @@
 let debug = false;
 let over = false;
+let mobile = false;
+let mobileInput = "";
 
 function random(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -71,23 +73,32 @@ let inputPlaceholder = true;
 
 // normal input
 document.body.addEventListener("keypress", (e) => {
+    processNormalInput(e);
+});
+
+function processNormalInput(e) {
+    let inputRef = e.key;
+    if(mobile) {
+        inputRef = mobileInput;
+    }
+
     if(!(paused) && !(over)) {
-        if(e.key == "Enter") {
+        if(inputRef == "Enter") {
             checkForValidWord()
         }
         else if((inputElem.getHTML()).length < 14) {
-            if(acceptedKeys.includes((e.key).toLowerCase())) {
+            if(acceptedKeys.includes((inputRef).toLowerCase())) {
                 if(inputPlaceholder) {
                     inputElem.innerText = "";
                     inputPlaceholder = false;
                     inputElem.style.fontWeight = "bold";
                 }
 
-                inputElem.innerText += (e.key).toUpperCase();
+                inputElem.innerText += (inputRef).toUpperCase();
             }
         }
     }
-});
+}
 
 let foundWords = [];
 
@@ -164,13 +175,22 @@ function checkForValidWord() {
 
 // controls inputs
 document.body.addEventListener("keydown", (e) => {
+    processControlInput(e);
+});
+
+function processControlInput(e) {
+    let inputRef = e.key;
+    if(mobile) {
+        inputRef = mobileInput;
+    }
+
     if(!(paused) && !(over)) {
-        if(e.key == "ArrowLeft") {
+        if(inputRef == "ArrowLeft") {
             inputPlaceholder = true;
             inputElem.innerText = "Enter word...";
             inputElem.style.fontWeight = "normal";
         }
-        else if((e.key == "Backspace") && ((inputElem.getHTML()).length > 0)) {
+        else if((inputRef == "Backspace") && ((inputElem.getHTML()).length > 0) && !(inputPlaceholder)) {
             let sub = inputElem.innerText.substring(0, inputElem.innerText.length - 1);
             inputElem.innerText = sub;
 
@@ -181,7 +201,7 @@ document.body.addEventListener("keydown", (e) => {
             }
         }
     }
-});
+}
 
 let invalidInputAnimation = {
     interval: null,
@@ -295,7 +315,7 @@ function validInputAnimation(elem) {
 }
 
 let time = 30;
-let timerElem = document.querySelector("#timer");
+let timerElem = document.querySelector("#timer")
 let interval = window.setInterval(() => {
     if(!(paused)) {
         --time;
@@ -362,3 +382,58 @@ let interval = window.setInterval(() => {
         }
     }
 }, 1000);
+
+function mobileResponsiveness() {
+    if(window.innerHeight > window.innerWidth) {
+        mobile = true;
+
+        
+        document.querySelector(".top").style.height = "10vh";
+        document.querySelector("h1").style.marginTop = "5vh";
+        
+        document.querySelector("#wordInput").style.position = "absolute";
+        document.querySelector("#wordInput").style.bottom = "20vh";
+        
+        document.querySelector(".mobileWordInput").style.display = "flex";
+
+        addMobileControlListeners();
+    }
+    else if(window.innerWidth < 1000) {
+        window.alert("Please use portrait mode - this game was not designed for landscape mode");
+    }
+}
+mobileResponsiveness();
+
+function addMobileControlListeners() {
+    let container = document.querySelector(".mobileWordInput");
+
+    for(let div = 0; div < container.children.length; div++) {
+        let inputs = container.children[div].children;
+
+        for(let i = 0; i < inputs.length; i++) {
+            let character = inputs[i].getHTML();
+            let control = false;
+            
+            switch(character) {
+                case "ENTER":
+                    character = "Enter";
+                    break;
+                case "DEL":
+                    character = "Backspace";
+                    control = true;
+                    break;
+            }
+
+            inputs[i].addEventListener("click", () => {
+                mobileInput = character;
+
+                if(control) {
+                    processControlInput("");
+                }
+                else {
+                    processNormalInput("");
+                }
+            })
+        }
+    }
+}
