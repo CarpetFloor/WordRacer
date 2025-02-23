@@ -953,6 +953,7 @@ backButton.style.marginRight = "auto";
 
 function mobileResponsiveness() {
     if(window.innerHeight > window.innerWidth) {
+        document.querySelector(".search").style.alignSelf = "center";
         document.querySelector(".search").style.padding = "0";
         document.querySelector(".search").style.margin = "0";
         document.querySelector(".search").style.marginTop = "-2em";
@@ -976,7 +977,9 @@ function mobileResponsiveness() {
 
         let letters = document.querySelectorAll("td");
         for(let letter of letters) {
-            letter.style.paddingRight = "0.55em";
+            letter.style.width = "1.25em";
+            letter.style.height = "1em";
+            letter.style.padding = "0";
         }
 
         document.querySelector(".game").style.flexDirection = "column";
@@ -994,7 +997,15 @@ function mobileResponsiveness() {
         document.querySelector(".found").style.flexDirection = "row";
         document.querySelector(".found").style.flexWrap = "wrap";
         
-        document.querySelector("canvas").style.margin = "0";
+        let table = document.querySelector("table");
+        let tableBounds = table.getBoundingClientRect();
+
+        let c = document.querySelector("canvas");
+        c.style.margin = "0";
+        c.style.marginLeft = "0.25em";
+
+        c.style.width = ((tableBounds.width * 1) * 0.87) + "px";
+        c.style.height = ((tableBounds.height * 1) * 0.95) + "px";
     }
     else if(window.innerWidth < 1000) {
         window.alert("Please use portrait mode - this game was not designed for landscape mode");

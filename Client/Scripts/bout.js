@@ -740,24 +740,35 @@ pages[currentPage].activeScripts.push(function() {
         fillTable();
         
         // show table
+        // document.querySelector("table").style.transition = "none";
         document.querySelector("table").style.opacity = "1";
         document.querySelector("table").style.pointerEvents = "auto";
 
-        mobileResponsiveness();
         setupCanvas();
-
-        // add event listeners
+        mobileResponsiveness();
+        
         addEventListener();
     });
 
+    let canvasStyleSize = {width: -1, height: -1};
+    
     function setupCanvas() {
         let table = document.querySelector("table");
         let tableBounds = table.getBoundingClientRect();
         
         c.width = tableBounds.width;
         c.height = tableBounds.height;
+
+        canvasStyleSize.width = tableBounds.width * 1;
+        canvasStyleSize.height = tableBounds.height * 1;
+
+        c.style.width = (tableBounds.width * 1) + "px";
+        c.style.height = (tableBounds.height * 1) + "px";
         
+        document.body.style.flexDirection = "column";
         c.style.position = "absolute";
+        c.style.opacity = "0.5";
+        c.style.display = "flex";
         
         w = c.width;
         h = c.height;
@@ -766,10 +777,6 @@ pages[currentPage].activeScripts.push(function() {
 
         spaceBetweenCells = (w - (25 * game.width)) / game.width;
 
-        document.body.style.flexDirection = "column";
-        c.style.position = "absolute";
-        c.style.display = "flex";
-        c.style.opacity = "0.5";
     }
 
     function addWordsList() {
@@ -911,13 +918,17 @@ pages[currentPage].activeScripts.push(function() {
             document.body.style.flexDirection = "column";
             document.body.style.marginLeft = "0.5em";
 
+            document.querySelector(".search").style.alignSelf = "center";
+
             document.querySelector("table").style.padding = "0";
             document.querySelector("table").style.margin = "0";
             document.querySelector("table").style.marginLeft = "0.2em";
     
             let letters = document.querySelectorAll("td");
             for(let letter of letters) {
-                letter.style.paddingRight = "0.55em";
+                letter.style.width = "1.25em";
+                letter.style.height = "1em";
+                letter.style.padding = "0";
             }
     
             document.querySelector(".game").style.flexDirection = "column";
@@ -934,9 +945,18 @@ pages[currentPage].activeScripts.push(function() {
     
             document.querySelector(".found").style.flexDirection = "row";
             document.querySelector(".found").style.flexWrap = "wrap";
-            
-            document.querySelector("canvas").style.marginLeft = "0.1em";
 
+            let table = document.querySelector("table");
+            let tableBounds = table.getBoundingClientRect();
+
+            let c = document.querySelector("canvas");
+            // c.style.background = "purple";
+            c.style.margin = "0";
+            c.style.marginLeft = "0.25em";
+
+            c.style.width = ((tableBounds.width * 1) * 0.87) + "px";
+            c.style.height = ((tableBounds.height * 1) * 0.95) + "px";
+            
             document.querySelector("h1").style.marginLeft = "0.5em";
             document.querySelector(".found").style.marginLeft = "0.5em";
         }
