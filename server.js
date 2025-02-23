@@ -40,6 +40,7 @@ function Game() {
     this.players = [], 
     this.points = [], 
     this.connectedCount = 0, 
+    this.interval = null, 
     this.data = {
         width: -1, 
         height: -1, 
@@ -526,92 +527,129 @@ function addWord(gameData, row, col, word) {
 }
 
 function setupGameData(game) {
-    for(let i = 0; i < game.players.length; i++) {
-        game.points.push(0);
-    }
-
     let gameData = game.data;
 
-    // set size of game
-    let sizeData = gameSizeMap.get(game.type);
-    gameData.width = sizeData.width;
-    gameData.height = sizeData.height;
+    if(game.overallType == "search") {
+        for(let i = 0; i < game.players.length; i++) {
+            game.points.push(0);
+        }
 
-    // generate a random list of words
-    for(let i = 0; i < wordCountMap.get(game.type); i++) {
-        let index = random(0, wordsList.words.length - 1);
-        let picked = wordsList.words[index];
+        // set size of game
+        let sizeData = gameSizeMap.get(game.type);
+        gameData.width = sizeData.width;
+        gameData.height = sizeData.height;
 
-        // make sure each word is distinct
-        if(gameData.words.includes(picked)) {
-            while(gameData.words.includes(picked)) {
-                ++index;
+        // generate a random list of words
+        for(let i = 0; i < wordCountMap.get(game.type); i++) {
+            let index = random(0, wordsList.words.length - 1);
+            let picked = wordsList.words[index];
 
-                if(index == gameData.words.length) {
-                    index = 0;
+            // make sure each word is distinct
+            if(gameData.words.includes(picked)) {
+                while(gameData.words.includes(picked)) {
+                    ++index;
+
+                    if(index == gameData.words.length) {
+                        index = 0;
+                    }
                 }
+
+                picked = wordsList.words[index];
             }
 
-            picked = wordsList.words[index];
+            gameData.words.push(picked);
         }
 
-        gameData.words.push(picked);
-    }
+        // generate array that represent game
+        for(let row = 0; row < gameData.height; row++) {
+            let row = [];
 
-    // generate array that represent game
-    for(let row = 0; row < gameData.height; row++) {
-        let row = [];
+            for(let col = 0; col < gameData.width; col++) {
+                row.push(0);
+            }
 
-        for(let col = 0; col < gameData.width; col++) {
-            row.push(0);
+            gameData.grid.push(row);
         }
 
-        gameData.grid.push(row);
-    }
+        // fill words at random spots
+        let index = 0;
+        let done = false;
+        while(index < gameData.words.length) {
+            for(let row = 0; row < gameData.height; row++) {
+                for(let col = 0; col < gameData.width; col++) {
+                    if(random(1, 500) == 1) {
+                        let addCheck = addWord(gameData, row, col, gameData.words[index]);
 
-    // fill words at random spots
-    let index = 0;
-    let done = false;
-    while(index < gameData.words.length) {
+                        if(addCheck) {
+                            if(showAnswers) {
+                                console.log(gameData.words[index]);
+                                console.log("(", row, ",", col, ")");
+                                console.log("____________________");
+                            }
+                            ++index;
+                        }
+
+                        if(index > gameData.words.length - 1) {
+                            done = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(done) {
+                    break;
+                }
+            }
+        }
+
+        if(showAnswers) {
+            console.log("\n\n++++++++++\n\n");
+        }
+
+        // fill in remaining letters
         for(let row = 0; row < gameData.height; row++) {
             for(let col = 0; col < gameData.width; col++) {
-                if(random(1, 500) == 1) {
-                    let addCheck = addWord(gameData, row, col, gameData.words[index]);
-
-                    if(addCheck) {
-                        if(showAnswers) {
-                            console.log(gameData.words[index]);
-                            console.log("(", row, ",", col, ")");
-                            console.log("____________________");
-                        }
-                        ++index;
-                    }
-
-                    if(index > gameData.words.length - 1) {
-                        done = true;
-                        break;
-                    }
+                if(gameData.grid[row][col] == 0) {
+                    gameData.grid[row][col] = letters[random(0, letters.length - 1)];
                 }
             }
-
-            if(done) {
-                break;
-            }
         }
     }
-
-    if(showAnswers) {
-        console.log("\n\n++++++++++\n\n");
+    else {
+        gameData.anagram = generateScrambleWord();
     }
+}
 
-    // fill in remaining letters
-    for(let row = 0; row < gameData.height; row++) {
-        for(let col = 0; col < gameData.width; col++) {
-            if(gameData.grid[row][col] == 0) {
-                gameData.grid[row][col] = letters[random(0, letters.length - 1)];
-            }
+function generateScrambleWord() {
+    let word = "";
+
+    let attempts = 0;
+    let index = -1;
+    const goalWordLength = 7;
+
+    while(word.length < goalWordLength) {
+        index = random(0, wordsList.words.length)
+        word = wordsList.words[index];
+
+        if(attempts > 100) {
+            break;
         }
     }
+    
+    if(word.length < goalWordLength) {
+        while(word.length < goalWordLength) {
+            ++index;
+            if(index > wordsList.words.length - 1) {
+                index = 0;
+            }
+
+            word = wordsList.words[index];
+        }
+    }
+    
+    word = word.toUpperCase();
+
+    return word;
 }
 
 let debugPrints = false;

@@ -23,7 +23,7 @@ function closeInstructions() {
 let anagramElem = document.querySelector("#anagram");
 
 function generateWord() {
-    let word = ""
+    let word = "";
 
     let attempts = 0;
     let index = -1;

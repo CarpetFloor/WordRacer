@@ -1,10 +1,14 @@
 -Generate word and shuffle server-side, then send to players
+-Handle timer server-side
+-Clean up timer interval for all ways game can end
 -New UI to show player names and words found by each player
 -Players send input attempt to server
 -Player found word:
     >Add to respective ui list for both clients
     >Make word not valid guess server-side
->End game and notify player when a player leaves the game while it is active
->Hide back button until game is over
->Respective game over UI screen for both clients
->Handle ended game clean up
+-End game and notify player when a player leaves the game while it is active
+-Hide back button until game is over
+-Respective game over UI screen for both clients
+-Handle ended game clean up
+
+-Check mobile responsive on scramble instructions modal

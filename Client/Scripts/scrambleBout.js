@@ -1,4 +1,6 @@
 pages[currentPage].activeScripts.push(function() {
+    let game = null;
+    
     let debug = false;
     let over = false;
     let mobile = false;
@@ -22,50 +24,6 @@ pages[currentPage].activeScripts.push(function() {
     }
 
     let anagramElem = document.querySelector("#anagram");
-
-    function generateWord() {
-        let word = ""
-
-        let attempts = 0;
-        let index = -1;
-        const goalWordLength = 7;
-
-        while(word.length < goalWordLength) {
-            index = random(0, wordsList.length)
-            word = wordsList[index];
-
-            if(attempts > 100) {
-                break;
-            }
-        }
-        
-        if(word.length < goalWordLength) {
-            while(word.length < goalWordLength) {
-                ++index;
-                if(index > wordsList.length - 1) {
-                    index = 0;
-                }
-
-                word = wordsList[index];
-            }
-        }
-        
-        word = word.toUpperCase();
-        
-        if(debug) {
-            console.log(word);
-        }
-        
-        let letters = word.split("");
-        for(let i = 0; i < word.length; i++) {
-            let index = random(0, letters.length)
-            let letter = letters[index];
-            letters.splice(index, 1);
-
-            anagramElem.innerText += letter;
-        }
-    }
-    // generateWord();
 
     const acceptedKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
@@ -315,75 +273,6 @@ pages[currentPage].activeScripts.push(function() {
         }, 1000 / 60);
     }
 
-    let time = 30;
-    let timerElem = document.querySelector("#timer")
-    let interval = window.setInterval(() => {
-        if(!(paused)) {
-            --time;
-
-            let padding = 0.5
-            let increment = 0.035;
-            let reverse = false;
-            let updateInterval = window.setInterval(() => {
-                if(reverse) {
-                    padding -= increment;
-                }
-                else {
-                    padding += increment;
-                }
-                
-                timerElem.style.paddingLeft = padding + "em";
-                timerElem.style.paddingRight = padding + "em";
-
-                if(!(reverse)) {
-                    if(padding >= 0.7) {
-                        reverse = true;
-                    }
-                }
-                else {
-                    if(padding <= 0.5) {
-                        timerElem.style.paddingLeft = "0.5em";
-                        timerElem.style.paddingRight = "0.5em";
-                        window.clearInterval(updateInterval);
-                    }
-                }
-            }, 1000 / 60)
-
-            timerElem.innerText = time + "s";
-
-            if(time == 0) {
-                over = true;
-                window.clearInterval(interval);
-                timerElem.style.marginLeft = "1em";
-                timerElem.style.marginTop = "0.5em";
-                timerElem.style.fontSize = "1.75em";
-                
-                let wordCount = document.querySelector("#words").childElementCount;
-
-                let highScoreCheck = localStorage.getItem("scramblePracticeHighScore");
-                if(highScoreCheck != null) {
-                    highScoreCheck = parseInt(highScoreCheck);
-
-                    if(wordCount > highScoreCheck) {
-                        localStorage.setItem("scramblePracticeHighScore", wordCount);
-                    }
-                }
-                else {
-                    localStorage.setItem("scramblePracticeHighScore", wordCount);
-                }
-
-                let wordText = " word";
-                if(wordCount > 1) {
-                    wordText += "s";
-                }
-                timerElem.innerText = wordCount + wordText;
-
-                timerElem.style.backgroundColor = "var(--colorMain)";
-                timerElem.style.width = "fit-content"
-            }
-        }
-    }, 1000);
-
     function mobileResponsiveness() {
         if(window.innerHeight > window.innerWidth) {
             mobile = true;
@@ -396,14 +285,12 @@ pages[currentPage].activeScripts.push(function() {
             document.querySelector("#wordInput").style.bottom = "20vh";
             
             document.querySelector(".mobileWordInput").style.display = "flex";
-
-            addMobileControlListeners();
         }
         else if(window.innerWidth < 1000) {
             window.alert("Please use portrait mode - this game was not designed for landscape mode");
         }
     }
-    mobileResponsiveness();
+    // mobileResponsiveness();
 
     function addMobileControlListeners() {
         let container = document.querySelector(".mobileWordInput");
@@ -438,5 +325,27 @@ pages[currentPage].activeScripts.push(function() {
             }
         }
     }
+
+    socket.emit("loaded game page", mygame.host);
+
+    socket.on("game has started", (gameData) => {
+        game = gameData;
+        console.log(game);
+
+        let word = game.anagram;
+
+        let letters = word.split("");
+        for(let i = 0; i < word.length; i++) {
+            let index = random(0, letters.length)
+            let letter = letters[index];
+            letters.splice(index, 1);
+
+            anagramElem.innerText += letter;
+        }
+
+        // if(mobile) {
+        //     addMobileControlListeners();
+        // }
+    });
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();
