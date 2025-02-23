@@ -311,6 +311,16 @@ button:hover {
     display: none;
 }
 
+.online #gameModeText {
+    font-size: 1.2em;
+    background-color: var(--colorMainDarker);
+    color: white;
+    width: fit-content;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    border-radius: 15px;
+}
+
 .online .info h1 {
     font-size: 1.8em;
 }

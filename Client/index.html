@@ -33,8 +33,6 @@
                 <img class="icon" src="/../Icons/world.png">
                 <p>Online</p>
             </button>
-
-            <p class="comingSoon">Coming Soon!</p>
         </div>
 
     </section>
@@ -80,15 +78,9 @@
 
         if(localStorage.getItem("overallGameMode") == null) {
             localStorage.setItem("overallGameMode", "search");
-
-            document.querySelector(".comingSoon").style.display = "none";
         }
         else {
             switchOverallGameMode(localStorage.getItem("overallGameMode"));
-
-            if(localStorage.getItem("overallGameMode") == "search") {
-                document.querySelector(".comingSoon").style.display = "none";
-            }
         }
 
         function showHighScore() {
@@ -152,11 +144,9 @@
             switch(mode) {
                 case "search":
                     document.querySelector("#wordSearch").style.backgroundColor = "var(--colorMain)";
-                    document.querySelector(".comingSoon").style.display = "none";
                     break;
                 case "scramble":
-                    document.querySelector("#wordScramble").style.backgroundColor = "var(--colorMain)";
-                    document.querySelector(".comingSoon").style.display = "block";
+                    document.querySelector("#wordScramble").style.backgroundColor = "var(--colorMain)"
                     break;
             }
 
@@ -193,7 +183,8 @@
         const pageURLs = {
             "searchPractice": "Pages/practice.html", 
             "searchOnline": "online.html", 
-            "scramblePractice": "Pages/scramble.html"
+            "scramblePractice": "Pages/scramble.html",
+            "scrambleOnline": "online.html"
         }
 
         function openPractice() {

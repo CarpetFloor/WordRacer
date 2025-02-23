@@ -1,4 +1,21 @@
 pages[currentPage].activeScripts.push(function() {
+    let scramble = false;
+
+    function handleGameMode() {
+        if(localStorage.getItem("overallGameMode") == "scramble") {
+            scramble = true;
+
+            document.querySelector("#gameModeText").innerText = "Word Scramble";
+
+            document.querySelector("#info1").innerText = "Compete with other player(s) to see who is the fastest at unscrambling a word!";
+            document.querySelector("#info2").innerText = "See who can uncover the most words from a scrambled word - but be prepared, because an uncovered word can only be discovered by a single player and not both.";
+
+            document.querySelector("#boutGameDescription").innerText = "Standard word scramble challenge between 2 players.";
+            document.querySelector("#clashGameDescription").innerText = "Play with up to 4 players.";
+        }
+    }
+    handleGameMode();
+
     // resize name change input based on name length
     let widthCalcCanvas = document.createElement("canvas");
     widthCalcCanvas.font = "Nunito";
@@ -437,6 +454,8 @@ pages[currentPage].activeScripts.push(function() {
             document.querySelector(".online").style.maxWidth = "none";
             document.querySelector(".online").style.width = "75vw";
             document.querySelector(".online").style.marginTop = "1em";
+
+            document.querySelector("#gameModeText").style.marginBottom = "2em";
             
             document.querySelector(".info").style.marginTop = "-2em";
             document.querySelector(".info").style.marginBottom = "-1.5em";
@@ -450,6 +469,20 @@ pages[currentPage].activeScripts.push(function() {
                     window.scrollBy({ top: 550, behavior: "smooth" });
                 }, 150);
             });
+
+            document.querySelector("#boutCreateButton").style.width = "5em";
+            document.querySelector("#boutCreateButton").style.padding = "0.75em";
+            document.querySelector("#boutCreateButton").style.marginTop = "-0.05em";
+
+            document.querySelector("#clashCreateButton").style.width = "5em";
+            document.querySelector("#clashCreateButton").style.padding = "0.75em";
+
+            if(scramble) {
+                document.querySelector("#clashCreateButton").style.marginTop = "2.75em";
+            }
+            else {
+                document.querySelector("#clashCreateButton").style.marginTop = "1.25em";
+            }
 
             document.querySelector(".errorMessage").style.fontSize = "1em";
             document.querySelector(".errorMessage").style.paddingTop = "1em";
