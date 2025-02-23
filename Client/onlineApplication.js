@@ -61,9 +61,17 @@ function generatePagesData() {
 
     pages.push(new Page(
         "bout", 
-        "Word Racer - Bout", 
+        "Word Racer - Search Bout", 
         [
             "/Scripts/bout.js"
+        ]
+    ));
+
+    pages.push(new Page(
+        "scrambleBout", 
+        "Word Racer - Scramble Bout", 
+        [
+            "/Scripts/scrambleBout.js"
         ]
     ));
 }

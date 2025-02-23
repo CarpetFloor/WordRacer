@@ -34,6 +34,7 @@ let playersMap = new Map();
 function Game() {
     this.host = null, 
     this.roomName = null, 
+    this.overallType = null, 
     this.type = null, 
     this.active = false, 
     this.players = [], 
@@ -176,12 +177,24 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("create game", (type) => {
+    socket.on("create game", (type, scramble) => {
         let game = new Game();
         game.host = socket.id;
         game.type = type;
         game.active = false;
         game.players.push(socket.id);
+
+        if(scramble) {
+            game.overallType = "scramble";
+            game.data = {
+                anagram: "",
+                found: []
+            };
+        }
+        else {
+            game.overallType = "search";
+        }
+
         games.push(game);
 
         // let requester know that the game has been created

@@ -82,7 +82,12 @@ pages[currentPage].activeScripts.push(function() {
     });
 
     socket.on("load game page", () => {
-        loadPageByName(mygame.type);
+        if(localStorage.getItem("overallGameMode") == "search") {
+            loadPageByName(mygame.type);
+        }
+        else {
+            loadPageByName("scrambleBout");
+        }
     });
 
     function mobileResponsiveness() {

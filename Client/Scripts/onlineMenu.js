@@ -329,7 +329,7 @@ pages[currentPage].activeScripts.push(function() {
 
     let boutCreateButton = document.getElementById("boutCreateButton");
     boutCreateButton.addEventListener("click", function() {
-        socket.emit("create game", "bout");
+        socket.emit("create game", "bout", scramble);
     });
 
     /*
@@ -361,46 +361,48 @@ pages[currentPage].activeScripts.push(function() {
         for(let i = 0; i < games.length; i++) {
             // only show games that haven't yet started
             if(!(games[i].active)) {
-                let container = document.createElement("div");
-                container.className = "container";
+                if(games[i].overallType == localStorage.getItem("overallGameMode")) {
+                    let container = document.createElement("div");
+                    container.className = "container";
 
-                let typeImage = document.createElement("img");
-                if(games[i].type == "bout") {
-                    typeImage.src = "/../Icons/users-square-filled.png";
+                    let typeImage = document.createElement("img");
+                    if(games[i].type == "bout") {
+                        typeImage.src = "/../Icons/users-square-filled.png";
+                    }
+                    else {
+                        typeImage.src = "/../Icons/users-alt-square-filled.png";
+                    }
+                    typeImage.classList.add("icon");
+                    typeImage.classList.add("typeIcon");
+
+                    container.appendChild(typeImage);
+
+                    let p = document.createElement("p");
+                    p.className = "gameName";
+                    p.innerText = playersMap.get(games[i].host) + "'s game";
+
+                    container.appendChild(p);
+
+                    let joinButton = document.createElement("button");
+                    joinButton.className = "joinButton";
+
+                    let joinImage = document.createElement("img");
+                    joinImage.src = "/../Icons/arrow-circle-right-filled.png";
+                    joinImage.className = "icon";
+                    joinButton.appendChild(joinImage);
+
+                    let joinP = document.createElement("p");
+                    joinP.innerText = "Join";
+                    joinButton.appendChild(joinP);
+
+                    joinButton.addEventListener("click", function() {
+                        socket.emit("join game", games[i].host);
+                    });
+
+                    container.appendChild(joinButton);
+
+                    parent.appendChild(container);
                 }
-                else {
-                    typeImage.src = "/../Icons/users-alt-square-filled.png";
-                }
-                typeImage.classList.add("icon");
-                typeImage.classList.add("typeIcon");
-
-                container.appendChild(typeImage);
-
-                let p = document.createElement("p");
-                p.className = "gameName";
-                p.innerText = playersMap.get(games[i].host) + "'s game";
-
-                container.appendChild(p);
-
-                let joinButton = document.createElement("button");
-                joinButton.className = "joinButton";
-
-                let joinImage = document.createElement("img");
-                joinImage.src = "/../Icons/arrow-circle-right-filled.png";
-                joinImage.className = "icon";
-                joinButton.appendChild(joinImage);
-
-                let joinP = document.createElement("p");
-                joinP.innerText = "Join";
-                joinButton.appendChild(joinP);
-
-                joinButton.addEventListener("click", function() {
-                    socket.emit("join game", games[i].host);
-                });
-
-                container.appendChild(joinButton);
-
-                parent.appendChild(container);
             }
         }
     });
