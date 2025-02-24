@@ -228,6 +228,7 @@ pages[currentPage].activeScripts.push(function() {
         if(window.innerHeight > window.innerWidth) {
             mobile = true;
 
+            document.querySelector("#anagram").style.marginLeft = "0.5em"
             
             document.querySelector(".top").style.height = "10vh";
             document.querySelector("h1").style.marginTop = "5vh";
@@ -237,8 +238,8 @@ pages[currentPage].activeScripts.push(function() {
             
             document.querySelector(".mobileWordInput").style.display = "flex";
 
-            document.querySelector(".content").style.height = "30em";
-            document.querySelector(".closeModal").style.setProperty("margin-left", "17em", "important");
+            document.querySelector(".content").style.height = "32em";
+            document.querySelector(".closeModal").style.setProperty("margin-left", "15em", "important");
         }
         else if(window.innerWidth < 1000) {
             window.alert("Please use portrait mode - this game was not designed for landscape mode");

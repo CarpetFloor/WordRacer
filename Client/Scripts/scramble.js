@@ -387,6 +387,8 @@ function mobileResponsiveness() {
     if(window.innerHeight > window.innerWidth) {
         mobile = true;
         
+        document.querySelector("#anagram").style.marginLeft = "0.5em"
+            
         document.querySelector(".top").style.height = "10vh";
         document.querySelector("h1").style.marginTop = "5vh";
         
@@ -395,8 +397,8 @@ function mobileResponsiveness() {
         
         document.querySelector(".mobileWordInput").style.display = "flex";
 
-        document.querySelector(".content").style.height = "30em";
-        document.querySelector(".closeModal").style.setProperty("margin-left", "17em", "important");
+        document.querySelector(".content").style.height = "32em";
+        document.querySelector(".closeModal").style.setProperty("margin-left", "15em", "important");
 
         addMobileControlListeners();
     }
