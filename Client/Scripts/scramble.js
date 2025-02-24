@@ -386,7 +386,6 @@ let interval = window.setInterval(() => {
 function mobileResponsiveness() {
     if(window.innerHeight > window.innerWidth) {
         mobile = true;
-
         
         document.querySelector(".top").style.height = "10vh";
         document.querySelector("h1").style.marginTop = "5vh";
@@ -395,6 +394,9 @@ function mobileResponsiveness() {
         document.querySelector("#wordInput").style.bottom = "20vh";
         
         document.querySelector(".mobileWordInput").style.display = "flex";
+
+        document.querySelector(".content").style.height = "30em";
+        document.querySelector(".closeModal").style.setProperty("margin-left", "17em", "important");
 
         addMobileControlListeners();
     }

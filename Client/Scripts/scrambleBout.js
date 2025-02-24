@@ -236,12 +236,15 @@ pages[currentPage].activeScripts.push(function() {
             document.querySelector("#wordInput").style.bottom = "20vh";
             
             document.querySelector(".mobileWordInput").style.display = "flex";
+
+            document.querySelector(".content").style.height = "30em";
+            document.querySelector(".closeModal").style.setProperty("margin-left", "17em", "important");
         }
         else if(window.innerWidth < 1000) {
             window.alert("Please use portrait mode - this game was not designed for landscape mode");
         }
     }
-    // mobileResponsiveness();
+    mobileResponsiveness();
 
     function addMobileControlListeners() {
         let container = document.querySelector(".mobileWordInput");
@@ -301,9 +304,9 @@ pages[currentPage].activeScripts.push(function() {
             anagramElem.innerText += letter;
         }
 
-        // if(mobile) {
-        //     addMobileControlListeners();
-        // }
+        if(mobile) {
+            addMobileControlListeners();
+        }
     });
 
     socket.on("time update", (time) => {
