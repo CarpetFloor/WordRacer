@@ -25,14 +25,16 @@
         <button 
         id="backButton"
         class="navIconButton"
-        onclick="window.open('/./index.html', '_self')"
-        style="display: none"
+        style="
+            opacity: 0;
+            pointer-events: none;
+        "
         >
             <img class="icon iconInvert" src="/../Icons/home-filled.png">
             <p>Back</p>
         </button>
 
-        <p class="help" onclick="openInstructions()">?</p>
+        <p class="help">?</p>
     </div>
 
     <p id="timer">30s</p>

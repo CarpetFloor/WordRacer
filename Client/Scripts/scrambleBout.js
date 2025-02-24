@@ -13,13 +13,13 @@ pages[currentPage].activeScripts.push(function() {
     // instructions modal
     let paused = false;
 
+    document.querySelector(".help").addEventListener("click", openInstructions);
     function openInstructions() {
-        paused = true;
         document.querySelector(".instructionsModal").style.display = "flex";
     }
 
+    document.querySelector(".closeModal").addEventListener("click", closeInstructions);
     function closeInstructions() {
-        paused = false;
         document.querySelector(".instructionsModal").style.display = "none";
     }
 
@@ -331,7 +331,8 @@ pages[currentPage].activeScripts.push(function() {
                 document.querySelector("#timer").innerText = "Tie!"
             }
 
-            document.querySelector("#backButton").style.display = "flex";
+            document.querySelector("#backButton").style.opacity = "1";
+            document.querySelector("#backButton").style.pointerEvents = "auto";
         }
         else {
             document.querySelector("#timer").innerText = time + "s";
