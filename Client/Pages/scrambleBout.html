@@ -1,7 +1,7 @@
 
 <div class="instructionsModal">
     <div class="content">
-        <button class="closeModal" onclick="closeInstructions()">x</button>
+        <button class="closeModal">x</button>
 
         <p>To enter a word, just type - you don't have to click on the input 
             or anything.</p>
@@ -29,6 +29,7 @@
             opacity: 0;
             pointer-events: none;
         "
+        onclick="window.open('/./index.html', '_self')"
         >
             <img class="icon iconInvert" src="/../Icons/home-filled.png">
             <p>Back</p>
@@ -43,7 +44,7 @@
 
     <div id="onlineWords" class="words">
         <div id="myWords">
-            <h2>My Words</h2>
+            <h2>My<br>Words</h2>
         </div>
 
         <div id="opponentWords">

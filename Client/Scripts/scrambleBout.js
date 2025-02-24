@@ -235,6 +235,11 @@ pages[currentPage].activeScripts.push(function() {
             
             document.querySelector("#wordInput").style.position = "absolute";
             document.querySelector("#wordInput").style.bottom = "20vh";
+
+            let names = document.querySelectorAll("h2");
+            for(let name of names) {
+                name.style.fontSize = "1.2em";
+            }
             
             document.querySelector(".mobileWordInput").style.display = "flex";
 
@@ -290,7 +295,7 @@ pages[currentPage].activeScripts.push(function() {
         for(let i = 0; i < mygame.players.length; i++) {
             if(mygame.players[i] != myid) {
                 otherIndex = i;
-                document.querySelector("#opponentName").innerText = playersMap.get(mygame.players[i]) + "'s Words";
+                document.querySelector("#opponentName").innerText = playersMap.get(mygame.players[i]) + "'s\nWords";
             }
         }
 
@@ -336,7 +341,7 @@ pages[currentPage].activeScripts.push(function() {
             }
 
             document.querySelector("#backButton").style.opacity = "1";
-            document.querySelector("#backButton").style.pointerEvents = "auto";
+            document.querySelector("#backButton").style.pointerEvents = "initial";
         }
         else {
             document.querySelector("#timer").innerText = time + "s";
