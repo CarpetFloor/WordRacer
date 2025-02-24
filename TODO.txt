@@ -1,9 +1,3 @@
--Handle timer server-side
--Clean up timer interval for all ways game can end
--End game and notify player when a player leaves the game while it is active
--Hide back button until game is over
--Respective game over UI screen for both clients
--Handle ended game clean up
 -Fix instrunctions modal not able to open up
 
 -Check mobile responsive on scramble instructions modal

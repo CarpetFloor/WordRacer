@@ -189,7 +189,8 @@ io.on("connection", (socket) => {
             game.overallType = "scramble";
             game.data = {
                 anagram: "",
-                found: []
+                found: [], 
+                time: 30
             };
         }
         else {
@@ -426,6 +427,10 @@ io.on("connection", (socket) => {
                  * -Reset/ remove data related to game
                  */
                 else {
+                    if(game.interval != null) {
+                        clearInterval(game.interval);
+                    }
+
                     // kick players
                     for(let i = 0; i < game.players.length; i++) {
                         io.to(game.roomName).emit("game removed");
@@ -652,6 +657,33 @@ function setupGameData(game) {
     }
     else {
         gameData.anagram = generateScrambleWord();
+        // clients handle determining who won
+        game.interval = setInterval(() => {
+            --game.data.time;
+            io.to(game.roomName).emit("time update", game.data.time);
+
+            if(game.data.time == 0) {
+                clearInterval(game.interval);
+                game.interval = null;
+
+                // remove room from tracked room names
+                let roomNameIndex = roomNames.indexOf(game.roomName);
+                roomNames.splice(roomNameIndex, 1);
+                
+                // remove players from game room
+                for(let i = 0; i < game.players.length; i++) {
+                    let playerIndex = players.indexOf(game.players[i]);
+                    let playerSocket = sockets[playerIndex];
+                    
+                    playerSocket.leave(game.roomName);
+                }
+
+                let removeIndex = games.indexOf(game);
+                games.splice(removeIndex, 1);
+                
+                debugPrintGames();
+            }
+        }, 1000);
     }
 }
 

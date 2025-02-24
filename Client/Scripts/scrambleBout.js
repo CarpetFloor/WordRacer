@@ -305,5 +305,43 @@ pages[currentPage].activeScripts.push(function() {
         //     addMobileControlListeners();
         // }
     });
+
+    socket.on("time update", (time) => {
+        if(time == 0) {
+            over = true;
+
+            let myTotal = document.querySelector("#myWords").childElementCount;
+            let opponentTotal = document.querySelector("#opponentWords").childElementCount;
+
+            if(myTotal > opponentTotal) {
+                document.querySelector("#timer").style.backgroundColor = "#49d197";
+                document.querySelector("#timer").innerText = "You Win!"
+
+                document.querySelector("#timer").style.width = "3em";
+                document.querySelector("#timer").style.textAlign = "center";
+            }
+            else if(myTotal < opponentTotal) {
+                document.querySelector("#timer").style.backgroundColor = "#d1496a";
+                document.querySelector("#timer").innerText = "You Lose!"
+
+                document.querySelector("#timer").style.width = "3em";
+                document.querySelector("#timer").style.textAlign = "center";
+            }
+            else {
+                document.querySelector("#timer").innerText = "Tie!"
+            }
+
+            document.querySelector("#backButton").style.display = "flex";
+        }
+        else {
+            document.querySelector("#timer").innerText = time + "s";
+        }
+    });
+
+    socket.on("game removed", () => {
+        globalErrorMessage.message = "The game has ended due to the other player losing connection.";
+        globalErrorMessage.show = true;
+        loadPage(0);
+    });
 });
 pages[currentPage].activeScripts[pages[currentPage].activeScripts.length - 1]();
