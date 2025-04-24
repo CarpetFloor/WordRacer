@@ -14,7 +14,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-const port = process.env.PORT || 8081;
+const port = process.env.PORT || 80;
 
 const wordsList = require("./Client/wordsForServer");
 
